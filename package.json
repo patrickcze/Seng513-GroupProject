@@ -1,0 +1,12 @@
+{
+    "name": "umapit",
+    "version": "0.0.1",
+    "description": "",
+    "dependencies": {
+        "express": "^4.14.1",
+        "socket.io": "^1.7.3"
+    },
+    "scripts": {
+        "start": "node index.js"
+    }
+}
