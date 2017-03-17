@@ -24,4 +24,10 @@ app.use(express.static(__dirname + '/public'));
 // listen to 'chat' messages
 io.on('connection', function (socket) {
 
+    socket.on('getGlobalGeoJSON', (data) => {
+        var globalData = require('./geojsonFiles/global.geojson.json');
+        socket.emit('setGlobalGeoJSON', {
+            globalData: globalData
+        });
+    });
 });
