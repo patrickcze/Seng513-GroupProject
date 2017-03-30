@@ -11,3 +11,16 @@ html, body {
     padding: 0px 10px 0px 10px;
     background-color: #000000;
 }
+
+.card {
+    background-color: #000000;
+    color: #FFFFFF;
+    border: 1px solid;
+    border-color: #555555;
+    margin: 0px 5px 0px 5px;
+}
+
+.card:hover {
+    background-color: #ffffff;
+    color: #000000;
+}

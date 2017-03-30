@@ -40,7 +40,7 @@ $(function () {
         for (id in data.datasetIDs){
             //DO something with each id
 
-            var card = '<div class="card" style="width: 20rem;"> <div class="card-block"> <h4 class="card-title">'+data.datasetIDs[id]+'</h4> <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card\'s content.</p> </div> </div>';
+            var card = '<div class="card" style="width: 20rem;"> <div class="card-block"> <h4 class="card-title">'+data.datasetIDs[id]+'</h4> <p class="card-text">332 Entries</p> </div> </div>';
             $('#cardArea').append(card);
         }
     });
