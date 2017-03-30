@@ -22,12 +22,35 @@ http.listen(port, function () {
     console.log('listening on port', port);
 });
 
-// listen to 'chat' messages
+//
 io.on('connection', function (socket) {
     socket.on('getGlobalGeoJSON', (data) => {
         var globalData = require('./geojsonFiles/global.geojson.json');
         socket.emit('setGlobalGeoJSON', {
             globalData: globalData
         });
+    });
+
+    //Gets a list of the datasets that the user has associated with them
+    socket.on('getListOfUserDatasets', (data) => {
+        console.log("get user datasets");
+
+        let uid = data.uid;
+
+        if (uid) {
+            let ref = firebase.database().ref('users/' + uid + '/datasets');
+            let datasetIDs = [];
+
+            ref.once('value').then(function (snapshot) {
+                let x = snapshot.val();
+                for (item in x) {
+                    console.log(item);
+                    datasetIDs.push(item);
+                }
+            }).then(function () {
+                console.log(datasetIDs);
+                socket.emit('listOfUserDatasets', {datasetIDs: datasetIDs});
+            });
+        }
     });
 });

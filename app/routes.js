@@ -13,7 +13,7 @@ router.get('/maps', function (req, res) {
 });
 
 router.get('/datasets', function (req, res) {
-    res.sendFile(path.join(__dirname, 'maps.html'));
+    res.sendFile(path.join(__dirname, '../public/datasets.html'));
 });
 
 module.exports = router;

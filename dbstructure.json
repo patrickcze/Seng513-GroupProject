@@ -1,0 +1,17 @@
+{
+    "users": {
+        "1af7jb7FLgcfbPMTQRTWe7Au1g02": {
+            "uid": "1af7jb7FLgcfbPMTQRTWe7Au1g02",
+            "email": "patrick.cze@gmail.com",
+            "datasets": {
+                "id001": true
+            }
+        }
+    },
+    "datasets": {
+        "id001": {
+            "name": " ",
+            "userID": "1af7jb7FLgcfbPMTQRTWe7Au1g02"
+        }
+    }
+}
