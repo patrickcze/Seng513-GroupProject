@@ -1,8 +1,60 @@
-// shorthand for $(document).ready(...)
 $(function () {
     var socket = io();
 
+    //Initialize Firebase
+    var config = {
+        apiKey: "AIzaSyCDVUYROx4SJurgy01twBlRM9LZZuhGLpQ",
+        authDomain: "umapit-io.firebaseapp.com",
+        databaseURL: "https://umapit-io.firebaseio.com",
+        storageBucket: "umapit-io.appspot.com",
+        messagingSenderId: "349495637518"
+    };
+    firebase.initializeApp(config);
 
+    //Login the user when they click login
+    $("#loginUserBtn").on('click', function () {
+        console.log("login");
+
+        const txtemail = $("#emailField").val();
+        const txtpassword = $("#passField").val();
+        const auth = firebase.auth();
+
+
+        console.log(txtemail, txtpassword);
+        const promise = auth.signInWithEmailAndPassword(txtemail,txtpassword);
+        promise.catch(e => console.log(e.message));
+    });
+
+    //Register the user when they click register
+    $("#registerUserBtn").on('click', function () {
+        console.log("login");
+
+        const txtemail = $("#emailField").val();
+        const txtpassword = $("#passField").val();
+        const auth = firebase.auth();
+
+        const promise = auth.createUserWithEmailAndPassword(txtemail,txtpassword);
+        promise.then(function (user) {
+            console.log(user);
+
+            firebase.database().ref('users/'+user.uid).set({
+                uid: user.uid,
+                email: user.email
+            });
+
+        }).catch(e => console.log(e.message));
+    });
+
+    //Monitor authentication state change
+    firebase.auth().onAuthStateChanged(function (firebaseUser) {
+        if (firebaseUser) {
+            console.log(firebaseUser);
+        } else {
+            console.log("not logged in");
+        }
+    });
+
+    //Get the population density geojson as an example for the home page
     socket.emit('getGlobalGeoJSON', '');
     socket.on('setGlobalGeoJSON', function (data) {
         console.log(data);
