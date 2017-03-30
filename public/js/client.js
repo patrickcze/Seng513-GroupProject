@@ -60,7 +60,7 @@ $(function () {
     function setupBasicFrontPageMap(data) {
         var globalData = data;
 
-        var map = L.map('map').setView([51.0486, -114.0708], 4);
+        var map = L.map('map').setView([46.938984, 2.373590], 3);
         var geojson;
 
         var CartoDB_DarkMatter = L.tileLayer('http://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png', {
