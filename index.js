@@ -38,19 +38,43 @@ io.on('connection', function (socket) {
         let uid = data.uid;
 
         if (uid) {
-            let ref = firebase.database().ref('users/' + uid + '/datasets');
+            let ref = firebase.database();
             let datasetIDs = [];
+            let datasetDetials = [];
 
-            ref.once('value').then(function (snapshot) {
+            ref.ref('users/' + uid + '/datasets').once('value').then(function (snapshot) {
                 let x = snapshot.val();
                 for (item in x) {
                     console.log(item);
                     datasetIDs.push(item);
                 }
             }).then(function () {
-                console.log(datasetIDs);
-                socket.emit('listOfUserDatasets', {datasetIDs: datasetIDs});
+                for (i in datasetIDs) {
+                    var datasetID = datasetIDs[i];
+
+                    console.log(datasetID);
+
+                    ref.ref('datasets-metadata/'+datasetID).once('value').then(function (snapshot) {
+                        var result = snapshot.val();
+                        result["key"] = snapshot.key;
+
+                        console.log(result);
+
+                        datasetDetials.push(result);
+
+                        if (datasetDetials.length === datasetIDs.length){
+                            socket.emit('listOfUserDatasets', {dataset: datasetDetials});
+                        }
+                    });
+                }
+
+
+
+                // console.log(datasetIDs);
+                // socket.emit('listOfUserDatasets', {datasetIDs: datasetIDs});
             });
         }
     });
+
+
 });

@@ -10,18 +10,29 @@
             }
         }
     },
-    "datasets": {
+    "datasets-metadata": {
         "id001": {
-            "name": " ",
+            "name": "Test1",
             "userID": "1af7jb7FLgcfbPMTQRTWe7Au1g02"
         },
         "id002": {
-            "name": " ",
+            "name": "Test2",
             "userID": "1af7jb7FLgcfbPMTQRTWe7Au1g02"
         },
         "id003": {
-            "name": " ",
+            "name": "Test3",
             "userID": "1af7jb7FLgcfbPMTQRTWe7Au1g02"
+        }
+    },
+    "datasets": {
+        "id001": {
+            "data":" "
+        },
+        "id002": {
+            "data":" "
+        },
+        "id003": {
+            "data":" "
         }
     }
 }

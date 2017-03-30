@@ -17,7 +17,7 @@ $(function () {
             console.log(firebaseUser);
             //Redirect to the maps page
 
-
+            socket.emit('getListOfUserDatasets',{uid:firebaseUser.uid});
         } else {
             console.log("not logged in");
         }
@@ -30,6 +30,19 @@ $(function () {
         }, function(error) {
             // An error happened.
         });
+    });
+
+    $('#createNewMapCard').on('click', () => {
+        $('#myModal').modal('show');
+    })
+
+    socket.on('listOfUserDatasets', (data) => {
+        for (i in data.dataset){
+
+            let dataset = data.dataset[i];
+            let option = '<option value="'+dataset.key+'">'+dataset.name+'</option>';
+            $("#projectModalDataSetSelection").append(option);
+        }
     });
 
 });

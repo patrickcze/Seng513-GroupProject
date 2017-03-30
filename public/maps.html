@@ -44,11 +44,43 @@
     </div>
 </div>
 
+<!-- Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Create a New Project</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="form-group">
+                        <label for="exampleInputEmail1">Project Title</label>
+                        <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter a project name">
+                    </div>
+                    <div class="form-group">
+                        <label for="projectModalDataSetSelection">Select a dataset to use</label>
+                        <select class="form-control" id="projectModalDataSetSelection">
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-success">Create Project</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 </body>
 
 <script src="https://code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
 <script src="/socket.io/socket.io.js"></script>
 <script src="https://www.gstatic.com/firebasejs/3.7.4/firebase.js"></script>
+<script src="https://npmcdn.com/tether@1.2.4/dist/js/tether.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
 <script src="js/userLogout.js"></script>
 <script src="js/maps.js"></script>
