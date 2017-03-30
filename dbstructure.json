@@ -4,12 +4,22 @@
             "uid": "1af7jb7FLgcfbPMTQRTWe7Au1g02",
             "email": "patrick.cze@gmail.com",
             "datasets": {
-                "id001": true
+                "id001": true,
+                "id002": true,
+                "id003": true
             }
         }
     },
     "datasets": {
         "id001": {
+            "name": " ",
+            "userID": "1af7jb7FLgcfbPMTQRTWe7Au1g02"
+        },
+        "id002": {
+            "name": " ",
+            "userID": "1af7jb7FLgcfbPMTQRTWe7Au1g02"
+        },
+        "id003": {
             "name": " ",
             "userID": "1af7jb7FLgcfbPMTQRTWe7Au1g02"
         }

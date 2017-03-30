@@ -17,7 +17,6 @@ $(function () {
             console.log(firebaseUser);
             //Redirect to the maps page
 
-            socket.emit('getListOfUserDatasets', {uid: firebaseUser.uid});
 
         } else {
             console.log("not logged in");
@@ -33,17 +32,4 @@ $(function () {
         });
     });
 
-    socket.on('listOfUserDatasets', (data)=>{
-        console.log(data);
-        console.log(data.datasetIDs);
-
-        for (id in data.datasetIDs){
-            //DO something with each id
-
-            var card = '<div class="card" style="width: 20rem;"> <div class="card-block"> <h4 class="card-title">'+data.datasetIDs[id]+'</h4> <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card\'s content.</p> </div> </div>';
-            $('#cardArea').append(card);
-        }
-    });
-
 });
-
