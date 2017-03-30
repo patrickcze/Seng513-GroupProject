@@ -37,10 +37,10 @@ $(function () {
         console.log(data);
         console.log(data.datasetIDs);
 
-        for (id in data.datasetIDs){
-            //DO something with each id
+        for (i in data.dataset){
+            let dataset = data.dataset[i];
 
-            var card = '<div class="card" style="width: 20rem;"> <div class="card-block"> <h4 class="card-title">'+data.datasetIDs[id]+'</h4> <p class="card-text">332 Entries</p> </div> </div>';
+            var card = '<div class="card" style="width: 20rem;"><div class="card-block"> <h4 class="card-title">'+dataset.name+'</h4> <p class="card-text">332 Entries</p> </div> </div>';
             $('#cardArea').append(card);
         }
     });

@@ -56,7 +56,7 @@ io.on('connection', function (socket) {
 
                     ref.ref('datasets-metadata/'+datasetID).once('value').then(function (snapshot) {
                         var result = snapshot.val();
-                        result["key"] = snapshot.key;
+                        result["id"] = snapshot.key;
 
                         console.log(result);
 
