@@ -1,8 +1,56 @@
-// shorthand for $(document).ready(...)
 $(function () {
     var socket = io();
 
+    //Initialize Firebase
+    var config = {
+        apiKey: "AIzaSyCDVUYROx4SJurgy01twBlRM9LZZuhGLpQ",
+        authDomain: "umapit-io.firebaseapp.com",
+        databaseURL: "https://umapit-io.firebaseio.com",
+        storageBucket: "umapit-io.appspot.com",
+        messagingSenderId: "349495637518"
+    };
+    firebase.initializeApp(config);
 
+    //Login the user when they click login
+    $("#loginUserBtn").on('click', function () {
+        const txtemail = $("#emailField").val();
+        const txtpassword = $("#passField").val();
+        const auth = firebase.auth();
+
+        const promise = auth.signInWithEmailAndPassword(txtemail,txtpassword);
+        promise.catch(e => console.log(e.message));
+    });
+
+    //Register the user when they click register
+    $("#registerUserBtn").on('click', function () {
+        const txtemail = $("#emailField").val();
+        const txtpassword = $("#passField").val();
+        const auth = firebase.auth();
+
+        //Create the user
+        const promise = auth.createUserWithEmailAndPassword(txtemail,txtpassword);
+
+        //When the user is created add their details to the database
+        promise.then(function (user) {
+            firebase.database().ref('users/'+user.uid).set({
+                uid: user.uid,
+                email: user.email
+            });
+        }).catch(e => console.log(e.message));
+    });
+
+    //Monitor authentication state change
+    firebase.auth().onAuthStateChanged(function (firebaseUser) {
+        if (firebaseUser) {
+            console.log(firebaseUser);
+            //Redirect to the maps page
+            window.location.replace('/maps');
+        } else {
+            console.log("not logged in");
+        }
+    });
+
+    //Get the population density geojson as an example for the home page
     socket.emit('getGlobalGeoJSON', '');
     socket.on('setGlobalGeoJSON', function (data) {
         console.log(data);
