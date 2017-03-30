@@ -13,12 +13,13 @@ $(function () {
 
     //Login the user when they click login
     $("#loginUserBtn").on('click', function () {
-        const txtemail = $("#emailField").val();
-        const txtpassword = $("#passField").val();
-        const auth = firebase.auth();
+        loginUser();
+    });
 
-        const promise = auth.signInWithEmailAndPassword(txtemail,txtpassword);
-        promise.catch(e => console.log(e.message));
+    $('#passField').keypress(function (e) {
+        if (e.which == 13) {
+            loginUser();
+        }
     });
 
     //Register the user when they click register
@@ -56,6 +57,15 @@ $(function () {
         console.log(data);
         setupBasicFrontPageMap(data.globalData);
     });
+
+    function loginUser() {
+        const txtemail = $("#emailField").val();
+        const txtpassword = $("#passField").val();
+        const auth = firebase.auth();
+
+        const promise = auth.signInWithEmailAndPassword(txtemail,txtpassword);
+        promise.catch(e => console.log(e.message));
+    }
 
     function setupBasicFrontPageMap(data) {
         var globalData = data;
