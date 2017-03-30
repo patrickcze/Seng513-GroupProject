@@ -13,35 +13,29 @@ $(function () {
 
     //Login the user when they click login
     $("#loginUserBtn").on('click', function () {
-        console.log("login");
-
         const txtemail = $("#emailField").val();
         const txtpassword = $("#passField").val();
         const auth = firebase.auth();
 
-
-        console.log(txtemail, txtpassword);
         const promise = auth.signInWithEmailAndPassword(txtemail,txtpassword);
         promise.catch(e => console.log(e.message));
     });
 
     //Register the user when they click register
     $("#registerUserBtn").on('click', function () {
-        console.log("login");
-
         const txtemail = $("#emailField").val();
         const txtpassword = $("#passField").val();
         const auth = firebase.auth();
 
+        //Create the user
         const promise = auth.createUserWithEmailAndPassword(txtemail,txtpassword);
-        promise.then(function (user) {
-            console.log(user);
 
+        //When the user is created add their details to the database
+        promise.then(function (user) {
             firebase.database().ref('users/'+user.uid).set({
                 uid: user.uid,
                 email: user.email
             });
-
         }).catch(e => console.log(e.message));
     });
 
@@ -49,6 +43,8 @@ $(function () {
     firebase.auth().onAuthStateChanged(function (firebaseUser) {
         if (firebaseUser) {
             console.log(firebaseUser);
+            //Redirect to the maps page
+            window.location.replace('/maps');
         } else {
             console.log("not logged in");
         }

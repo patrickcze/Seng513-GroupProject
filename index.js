@@ -14,11 +14,13 @@ var firApp = firebase.initializeApp({
     messagingSenderId: "349495637518"
 });
 
+var router = require('./app/routes');
+app.use('/', router);
+app.use(express.static(__dirname + '/public'));
+
 http.listen(port, function () {
     console.log('listening on port', port);
 });
-
-app.use(express.static(__dirname + '/public'));
 
 // listen to 'chat' messages
 io.on('connection', function (socket) {
