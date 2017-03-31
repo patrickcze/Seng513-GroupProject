@@ -2,9 +2,119 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Map</title>
+    <title>umapit.io</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css"
+          integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.3/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+
+    <link rel="stylesheet" href="css/project.css">
+    <link rel="stylesheet" href="css/maps.css">
+    <link rel="stylesheet" href="css/datasets.css">
 </head>
 <body>
+
+<!--Setup the nav bar-->
+<nav class="navbar navbar-toggleable-md navbar-inverse fixed-top bg-inverse">
+    <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse"
+            data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false"
+            aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <a class="navbar-brand" href="#">umapit.io</a>
+
+    <div class="collapse navbar-collapse" id="navbarsExampleDefault">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item">
+                <a id="mapsLink" class="nav-link active" href="#">Maps</a>
+            </li>
+            <li class="nav-item">
+                <a id="datasetsLink" class="nav-link" href="#">Datasets</a>
+            </li>
+        </ul>
+
+        <form class="form-inline my-2 my-lg-0" onsubmit="return false">
+            <button class="btn btn-outline-danger my-2 my-sm-0" id="logoutUserBtn">Logout</button>
+        </form>
+    </div>
+</nav>
+
+<div id="pageContent">
+    <!--This section will display the map cards-->
+    <div class="container-fluid">
+        <div id="mapCardArea" class="row">
+            <div id="createNewMapCard" class="card" style="width: 20rem;">
+                <div class="card-block">
+                    <h4 class="card-title">Create a New Project</h4>
+                    <p class="card-text"><i class="fa fa-plus" aria-hidden="true"></i></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--This section will display the dataset cards-->
+    <div class="container-fluid">
+        <div id="datasetCardArea" class="row collapse">
+            <div id="createNewDatasetCard" class="card" style="width: 20rem;">
+                <div class="card-block">
+                    <h4 class="card-title">Create a New Dataset</h4>
+                    <p class="card-text"><i class="fa fa-plus" aria-hidden="true"></i></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--Display the map-->
+    <div id="main-map-container" class="container-fluid hidden">
+        <div id="map" class="col-12"></div>
+    </div>
+</div>
+
+<!-- Create New Project Modal -->
+<div class="modal fade" id="newProjectModal" tabindex="-1" role="dialog" aria-labelledby="newProjectModal"
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="newProjectModalLabel">Create a New Project</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="form-group">
+                        <label for="projectTitle">Project Title</label>
+                        <input type="email" class="form-control" id="projectTitle" aria-describedby="emailHelp"
+                               placeholder="Enter a project name">
+                    </div>
+                    <div class="form-group">
+                        <label for="projectModalDataSetSelection">Select a dataset to use</label>
+                        <select class="form-control" id="projectModalDataSetSelection">
+                            <option selected value="select">Select a Dataset...</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button id="createNewProjectButton" type="button" class="btn btn-success">Create Project</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--Needed Scripts-->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
+<script src="/socket.io/socket.io.js"></script>
+<script src="https://www.gstatic.com/firebasejs/3.7.4/firebase.js"></script>
+<script src="https://npmcdn.com/tether@1.2.4/dist/js/tether.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js"
+        integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn"
+        crossorigin="anonymous"></script>
+<script src="https://unpkg.com/leaflet@1.0.3/dist/leaflet.js"></script>
+<script src="js/userLogout.js"></script>
+<script src="js/project.js"></script>
 
 </body>
 </html>

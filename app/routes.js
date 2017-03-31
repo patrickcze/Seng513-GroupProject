@@ -8,12 +8,8 @@ router.get('/', function (req, res) {
     res.sendFile(path.join(__dirname,'../public/index.html'));
 });
 
-router.get('/maps', function (req, res) {
-    res.sendFile(path.join(__dirname, '../public/maps.html'));
-});
-
-router.get('/datasets', function (req, res) {
-    res.sendFile(path.join(__dirname, '../public/datasets.html'));
+router.get('/project', function (req, res) {
+    res.sendFile(path.join(__dirname, '../public/project.html'));
 });
 
 module.exports = router;

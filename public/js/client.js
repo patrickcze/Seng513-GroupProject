@@ -45,7 +45,7 @@ $(function () {
         if (firebaseUser) {
             console.log(firebaseUser);
             //Redirect to the maps page
-            window.location.replace('/maps');
+            window.location.replace('/project');
         } else {
             console.log("not logged in");
         }

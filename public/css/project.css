@@ -1,0 +1,35 @@
+html, body {
+    background-color: #000;
+    margin: 0;
+    height: 100%;
+}
+
+#pageContent {
+    margin-top: 56px;
+    height: 100%;
+}
+
+#main-map-container {
+    height: 100%;
+    display: flex ;
+    display: -webkit-flex;
+    flex-direction: row ;
+    -webkit-flex-direction: row;
+    -webkit-align-content: stretch;
+    align-content: stretch;
+    padding: 0 0 0 0 ;
+}
+
+#map {
+    -webkit-flex: 1;
+    flex: 1;
+    position: relative;
+}
+
+.hidden {
+    display: none !important;
+}
+
+.visible {
+    display: inherit !important;
+}

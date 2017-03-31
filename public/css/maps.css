@@ -1,13 +1,4 @@
-html, body {
-    background-color: #000;
-}
-
-.main-area {
-    margin-top: 56px;
-    padding-top: 20px;
-}
-
-#cardArea {
+#mapCardArea {
     padding: 0px 10px 0px 10px;
     background-color: #000000;
 }
