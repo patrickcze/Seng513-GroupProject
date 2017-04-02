@@ -32,9 +32,38 @@ io.on('connection', function (socket) {
     });
 
     //Gets a list of the datasets that the user has associated with them
-    socket.on('getListOfUserDatasets', (data) => {
-        console.log("get user datasets");
+    socket.on('getListOfUserProjects', (data) => {
+        let uid = data.uid;
 
+        if (uid) {
+            let ref = firebase.database();
+            let projectIDs = [];
+            let projects= [];
+
+            ref.ref('users/' + uid + '/projects').once('value').then(function (snapshot) {
+                let x = snapshot.val();
+                for (let item in x) {
+                    projectIDs.push(item);
+                }
+            }).then(function () {
+                for (let projectID of projectIDs){
+                    ref.ref('projects/'+projectID).once('value').then((snapshot) => {
+                        let result = snapshot.val();
+                        result['id'] = snapshot.key;
+
+                        projects.push(result);
+
+                        if (projects.length === projectIDs.length){
+                            socket.emit('listOfUserProjects', {projects: projects});
+                        }
+                    })
+                }
+            });
+        }
+    });
+
+    //Gets a list of the datasets that the user has associated with them
+    socket.on('getListOfUserDatasets', (data) => {
         let uid = data.uid;
 
         if (uid) {
@@ -44,21 +73,16 @@ io.on('connection', function (socket) {
 
             ref.ref('users/' + uid + '/datasets').once('value').then(function (snapshot) {
                 let x = snapshot.val();
-                for (item in x) {
-                    console.log(item);
+                for (let item in x) {
                     datasetIDs.push(item);
                 }
             }).then(function () {
                 for (i in datasetIDs) {
-                    var datasetID = datasetIDs[i];
-
-                    console.log(datasetID);
+                    let datasetID = datasetIDs[i];
 
                     ref.ref('datasets-metadata/'+datasetID).once('value').then(function (snapshot) {
-                        var result = snapshot.val();
+                        let result = snapshot.val();
                         result["id"] = snapshot.key;
-
-                        console.log(result);
 
                         datasetDetials.push(result);
 
@@ -67,14 +91,7 @@ io.on('connection', function (socket) {
                         }
                     });
                 }
-
-
-
-                // console.log(datasetIDs);
-                // socket.emit('listOfUserDatasets', {datasetIDs: datasetIDs});
             });
         }
     });
-
-
 });

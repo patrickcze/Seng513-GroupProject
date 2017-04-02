@@ -19,6 +19,7 @@ $(function () {
             //Redirect to the maps page
 
             socket.emit('getListOfUserDatasets',{uid:firebaseUser.uid});
+            socket.emit('getListOfUserProjects',{uid:firebaseUser.uid});
         } else {
             console.log("not logged in");
         }
@@ -36,16 +37,31 @@ $(function () {
 
     // Get a list of the user data sets so that this information can be prefilled within the modal
     socket.on('listOfUserDatasets', (data) => {
-        for (i in data.dataset){
+        for (let dataset of data.dataset) {
             //Setup the options within the modal
-            let dataset = data.dataset[i];
             let option = '<option value="'+dataset.id+'">'+dataset.name+'</option>';
             $("#projectModalDataSetSelection").append(option);
 
             //Setup the cards within the datasetCardArea
-            var card = '<div class="card" style="width: 20rem;"><div class="card-block"> <h4 class="card-title">'+dataset.name+'</h4> <p class="card-text">332 Entries</p> </div> </div>';
+            let card = '<div class="card" style="width: 20rem;"><div class="card-block"> <h4 class="card-title">'+dataset.name+'</h4> <p class="card-text">332 Entries</p> </div> </div>';
             $('#datasetCardArea').append(card);
         }
+    });
+
+
+
+    //Get a list of the users projects
+    socket.on('listOfUserProjects', (data) => {
+        for (let project of data.projects) {
+            let card = '<div class="card project-card" style="width: 20rem;" projectid="'+project.id+'"><div class="card-block"><h4 class="card-title">'+project.title+'</h4> <p class="card-text"></p> </div> </div>';
+            $('#mapCardArea').append(card);
+        }
+
+        $(".project-card").click(function() {
+            console.log( "Handler for .click() called." );
+            console.log($(this).attr("projectid"));
+            setupProjectFromID($(this).attr("projectid"));
+        });
     });
 
     //Make the different map view toggle appropriately
@@ -81,11 +97,27 @@ $(function () {
     });
 });
 
+function setupProjectFromID(id) {
+    changeToProjectView();
+
+    $('#main-map-container').removeClass('hidden');
+
+    let map = L.map('map').setView([46.938984, 2.373590], 4);
+    let CartoDB_DarkMatter = L.tileLayer('http://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="http://cartodb.com/attributions">CartoDB</a>',
+        subdomains: 'abcd',
+        maxZoom: 19,
+        maxBoundsViscosity: 1.0
+    }).addTo(map);
+
+    //TODO: Need to load in the details of the map
+}
+
 function setupMapView() {
     $('#main-map-container').removeClass('hidden');
 
-    var map = L.map('map').setView([46.938984, 2.373590], 4);
-    var CartoDB_DarkMatter = L.tileLayer('http://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png', {
+    let map = L.map('map').setView([46.938984, 2.373590], 4);
+    let CartoDB_DarkMatter = L.tileLayer('http://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="http://cartodb.com/attributions">CartoDB</a>',
         subdomains: 'abcd',
         maxZoom: 19,
