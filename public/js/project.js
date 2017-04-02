@@ -131,7 +131,10 @@ function setupProjectFromID(id, socket) {
     socket.on('globalGeoJSON', (globaljson) => {
         console.log(globaljson);
 
-        geojson = L.geoJson(globaljson).addTo(map);
+        geojson = L.geoJson(globaljson, {style: {
+            fillColor: "#FFFFFF",
+            opacity: 0
+        }}).addTo(map);
 
         socket.emit('getDatasetWithID', {datasetid: project.datasetIDs[0]});
     });
