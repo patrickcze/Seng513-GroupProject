@@ -94,4 +94,38 @@ io.on('connection', function (socket) {
             });
         }
     });
+
+    socket.on('getGlobalGeoJSON', () => {
+        var globaljson = require('./geojsonFiles/global.geojson.json');
+
+        socket.emit('globalGeoJSON', globaljson);
+    });
+
+    socket.on('getDatasetWithID', (data) => {
+        if (data) {
+            let ref = firebase.database();
+
+            console.log(data);
+            ref.ref('datasets/' + data.datasetid).once('value').then(function (snapshot) {
+                console.log(snapshot.val());
+
+                socket.emit('plotDataset', {datasetid: data, data: snapshot.val()});
+            })
+        }
+    });
+
+    socket.on('getProjectWithId', (id) => {
+        if (id) {
+            let ref = firebase.database();
+
+            console.log(id);
+
+            ref.ref('projects/' + id).once('value').then(function (snapshot) {
+                let project = snapshot.val();
+                project["id"] = id;
+
+                socket.emit('setProjectWithId', project);
+            });
+        }
+    });
 });

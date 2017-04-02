@@ -18,8 +18,8 @@ $(function () {
             console.log(firebaseUser);
             //Redirect to the maps page
 
-            socket.emit('getListOfUserDatasets',{uid:firebaseUser.uid});
-            socket.emit('getListOfUserProjects',{uid:firebaseUser.uid});
+            socket.emit('getListOfUserDatasets', {uid: firebaseUser.uid});
+            socket.emit('getListOfUserProjects', {uid: firebaseUser.uid});
         } else {
             console.log("not logged in");
         }
@@ -27,10 +27,10 @@ $(function () {
 
     // All for the user to be logged out when the logout button is clicked
     $('#logoutUserBtn').on("click", function () {
-        firebase.auth().signOut().then(function() {
+        firebase.auth().signOut().then(function () {
             // Sign-out successful.
             window.location.replace('/');
-        }, function(error) {
+        }, function (error) {
             // An error happened.
         });
     });
@@ -39,28 +39,27 @@ $(function () {
     socket.on('listOfUserDatasets', (data) => {
         for (let dataset of data.dataset) {
             //Setup the options within the modal
-            let option = '<option value="'+dataset.id+'">'+dataset.name+'</option>';
+            let option = '<option value="' + dataset.id + '">' + dataset.name + '</option>';
             $("#projectModalDataSetSelection").append(option);
 
             //Setup the cards within the datasetCardArea
-            let card = '<div class="card" style="width: 20rem;"><div class="card-block"> <h4 class="card-title">'+dataset.name+'</h4> <p class="card-text">332 Entries</p> </div> </div>';
+            let card = '<div class="card" style="width: 20rem;"><div class="card-block"> <h4 class="card-title">' + dataset.name + '</h4> <p class="card-text">332 Entries</p> </div> </div>';
             $('#datasetCardArea').append(card);
         }
     });
 
 
-
     //Get a list of the users projects
     socket.on('listOfUserProjects', (data) => {
         for (let project of data.projects) {
-            let card = '<div class="card project-card" style="width: 20rem;" projectid="'+project.id+'"><div class="card-block"><h4 class="card-title">'+project.title+'</h4> <p class="card-text"></p> </div> </div>';
+            let card = '<div class="card project-card" style="width: 20rem;" projectid="' + project.id + '"><div class="card-block"><h4 class="card-title">' + project.title + '</h4> <p class="card-text"></p> </div> </div>';
             $('#mapCardArea').append(card);
         }
 
-        $(".project-card").click(function() {
-            console.log( "Handler for .click() called." );
+        $(".project-card").click(function () {
+            console.log("Handler for .click() called.");
             console.log($(this).attr("projectid"));
-            setupProjectFromID($(this).attr("projectid"));
+            setupProjectFromID($(this).attr("projectid"), socket);
         });
     });
 
@@ -72,6 +71,8 @@ $(function () {
         $('#datasetCardArea').addClass('collapse');
         $('#main-map-container').addClass('hidden');
         $('#mapCardArea').removeClass('collapse');
+
+        clearMap();
     });
 
     $('#datasetsLink').on('click', function () {
@@ -81,6 +82,8 @@ $(function () {
         $('#mapCardArea').addClass('collapse');
         $('#main-map-container').addClass('hidden');
         $('#datasetCardArea').removeClass('collapse');
+
+        clearMap();
     });
 
     // Display modal to start creating a new project
@@ -97,20 +100,81 @@ $(function () {
     });
 });
 
-function setupProjectFromID(id) {
+function setupProjectFromID(id, socket) {
     changeToProjectView();
+
+    let project;
+    let geojson;
 
     $('#main-map-container').removeClass('hidden');
 
+    //Setup the Map
     let map = L.map('map').setView([46.938984, 2.373590], 4);
     let CartoDB_DarkMatter = L.tileLayer('http://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="http://cartodb.com/attributions">CartoDB</a>',
         subdomains: 'abcd',
-        maxZoom: 19,
+        maxZoom: 10,
         maxBoundsViscosity: 1.0
     }).addTo(map);
 
-    //TODO: Need to load in the details of the map
+    //Get the details of the project
+    socket.emit('getProjectWithId', id);
+
+    socket.on('setProjectWithId', (data) => {
+        project = data;
+
+        // Ask for geojson data
+        socket.emit('getGlobalGeoJSON');
+    });
+
+    // Draw the global geojson map
+    socket.on('globalGeoJSON', (globaljson) => {
+        console.log(globaljson);
+
+        geojson = L.geoJson(globaljson).addTo(map);
+
+        socket.emit('getDatasetWithID', {datasetid: project.datasetIDs[0]});
+    });
+
+    // Plot the dataset within the project onto the map
+    socket.on('plotDataset', (dataset) => {
+        console.log(dataset);
+        console.log(geojson);
+
+        let data = dataset.data.data;
+
+        geojson.eachLayer(function (layer) {
+            let countryCode = layer.feature.properties.iso_a3;
+
+            for (let dataPoint of data){
+                if (dataPoint.isoA3 === countryCode){
+                    layer.setStyle({
+                        fillColor: getColor(dataPoint.Value),
+                        weight: 2,
+                        opacity: 1,
+                        color: 'white',
+                        dashArray: '3',
+                        fillOpacity: 0.7
+                    });
+                }
+            }
+        });
+    });
+}
+
+function clearMap() {
+    $('#main-map-container').html('<div id="map" class="col-12"></div>');
+}
+
+function getColor(d) {
+    return d > 70 ? '#800026' :
+        d > 60 ? '#BD0026' :
+            d > 50 ? '#E31A1C' :
+                d > 40 ? '#FC4E2A' :
+                    d > 30 ? '#FD8D3C' :
+                        d > 20 ? '#FEB24C' :
+                            d > 10 ? '#FED976' :
+                                '#FFEDA0';
 }
 
 function setupMapView() {
