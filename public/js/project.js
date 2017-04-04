@@ -25,6 +25,18 @@ $(function () {
         }
     });
 
+    $('#uploadForm').submit(function() {
+        $("#status").empty().text("File is uploading...");
+        $(this).ajaxSubmit({
+            error: function(xhr) {
+                status('Error: ' + xhr.status);
+            },
+            success: function(response) {
+                console.log(response)
+                $("#status").empty().text(response);
+            }
+        });
+
     // All for the user to be logged out when the logout button is clicked
     $('#logoutUserBtn').on("click", function () {
         firebase.auth().signOut().then(function () {
@@ -97,6 +109,27 @@ $(function () {
         setupProjectInDatabase(firebase);
 
         setupMapView();
+    });
+
+    // Display modal to start creating a new project
+    $('#createNewDatasetCard').on('click', () => {
+        $('#newDatasetModal').modal('show');
+    });
+
+    $('#datasetNextStepButton').on('click', () => {
+        $('#newDatasetModalLabel').text("Upload your filled in template");
+        $('#newDatasetModalBody').html('<form id="uploadForm" enctype="multipart/form-data" action="/api/dataset" method="post" target="_blank"><input type="file" name="userDataset"/><input type="submit" value="Upload Image" name="submit"><input type=\'text\' id=\'random\' name=\'random\'><br><span id="status"></span></form>');
+
+        // <form id="uploadForm"
+        // enctype="multipart/form-data"
+        // action="/api/dataset"
+        // method="post"
+        // target="_blank">
+        //     <input type="file" name="userDataset"/>
+        //     <input type="submit" value="Upload Image" name="submit">
+        //     <input type='text' id='random' name='random'><br>
+        //     <span id="status"></span>
+        //     </form>
     });
 });
 

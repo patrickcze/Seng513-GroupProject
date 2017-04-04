@@ -64,6 +64,11 @@
         </div>
     </div>
 
+    <form id="uploadForm" enctype="multipart/form-data" action="/api/dataset" method="post" target="_blank">
+        <input type="file" name="userDataset"/><input type="submit" value="Upload Image" name="submit">
+        <input type=\'text\' id=\'random\' name=\'random\'><br><span id="status"></span>
+    </form>
+
     <!--Display the map-->
     <div id="main-map-container" class="container-fluid hidden">
         <div id="map" class="col-12"></div>
@@ -99,6 +104,34 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                 <button id="createNewProjectButton" type="button" class="btn btn-success">Create Project</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Create Dataset Modal -->
+<div class="modal fade" id="newDatasetModal" tabindex="-1" role="dialog" aria-labelledby="newDatasetModal"
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="newDatasetModalLabel">Download a CSV Template</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div id="newDatasetModalBody" class="modal-body">
+                <a href="/downloadGlobalTemplate" target="_blank">
+                    <button class="btn btn-info col-12">Global Countries Template</button>
+                </a>
+                <button class="btn btn-info col-12">USA & Canada Template</button>
+                <button class="btn btn-info col-12">USA Template</button>
+                <button class="btn btn-info col-12">Canada Template</button>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button id="datasetNextStepButton" type="button" class="btn btn-info">Next Step</button>
+                <button id="createNewDatasetButton" type="button" class="btn btn-success hidden">Create Dataset</button>
             </div>
         </div>
     </div>
