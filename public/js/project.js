@@ -10,6 +10,7 @@ $(function () {
         storageBucket: "umapit-io.appspot.com",
         messagingSenderId: "349495637518"
     };
+
     firebase.initializeApp(config);
 
     // Setup the auth object to get user details for further use
@@ -25,17 +26,18 @@ $(function () {
         }
     });
 
-    $('#uploadForm').submit(function() {
+    $('#uploadForm').submit(function () {
         $("#status").empty().text("File is uploading...");
         $(this).ajaxSubmit({
-            error: function(xhr) {
+            error: function (xhr) {
                 status('Error: ' + xhr.status);
             },
-            success: function(response) {
+            success: function (response) {
                 console.log(response)
                 $("#status").empty().text(response);
             }
         });
+    });
 
     // All for the user to be logged out when the logout button is clicked
     $('#logoutUserBtn').on("click", function () {
@@ -133,6 +135,7 @@ $(function () {
     });
 });
 
+
 function setupProjectFromID(id, socket) {
     changeToProjectView();
 
@@ -164,10 +167,12 @@ function setupProjectFromID(id, socket) {
     socket.on('globalGeoJSON', (globaljson) => {
         console.log(globaljson);
 
-        geojson = L.geoJson(globaljson, {style: {
-            fillColor: "#FFFFFF",
-            opacity: 0
-        }}).addTo(map);
+        geojson = L.geoJson(globaljson, {
+            style: {
+                fillColor: "#FFFFFF",
+                opacity: 0
+            }
+        }).addTo(map);
 
         socket.emit('getDatasetWithID', {datasetid: project.datasetIDs[0]});
     });
@@ -182,8 +187,8 @@ function setupProjectFromID(id, socket) {
         geojson.eachLayer(function (layer) {
             let countryCode = layer.feature.properties.iso_a3;
 
-            for (let dataPoint of data){
-                if (dataPoint.isoA3 === countryCode){
+            for (let dataPoint of data) {
+                if (dataPoint.isoA3 === countryCode) {
                     layer.setStyle({
                         fillColor: getColor(dataPoint.Value),
                         weight: 2,

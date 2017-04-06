@@ -22,7 +22,6 @@ http.listen(port, function () {
     console.log('listening on port', port);
 });
 
-//
 io.on('connection', function (socket) {
     socket.on('getGlobalGeoJSON', (data) => {
         var globalData = require('./geojsonFiles/global.geojson.json');
