@@ -1,9 +1,11 @@
 var express = require('express');
+var cov = require( 'compute-covariance' );
+var Correlation = require('node-correlation');
 var app = express();
 var http = require('http').createServer(app);
 var io = require('socket.io')(http);
 var port = process.env.PORT || 3000;
-var mongo = require('mongodb').MongoClient;
+
 
 var firebase = require('firebase');
 var firApp = firebase.initializeApp({
@@ -126,5 +128,9 @@ io.on('connection', function (socket) {
                 socket.emit('setProjectWithId', project);
             });
         }
+    });
+
+    socket.on('computeCovariance', (data) => {
+        console.log(Correlation.calc(data.set1, data.set2));
     });
 });

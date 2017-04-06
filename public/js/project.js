@@ -204,26 +204,58 @@ function setupProjectFromID(id, socket, userDatasets) {
         if (this.value === 'dataset1') {
             let dataset1id = $('#dataset1Select').val();
 
-            for (let dataset of projectDatasets) {
-                if (dataset1id === dataset.datasetid.datasetid){
-                    plotDataset(dataset.data.data);
+            if (dataset1id === "-1") {
+                clearPlotDataset();
+            } else {
+                for (let dataset of projectDatasets) {
+                    if (dataset1id === dataset.datasetid.datasetid) {
+                        plotDataset(dataset.data.data);
+                    }
                 }
             }
         }
         else if (this.value === 'dataset2') {
-            let dataset2id = $('#dataset2Select').val()
+            let dataset2id = $('#dataset2Select').val();
 
             if (dataset2id === "-1") {
                 clearPlotDataset();
             } else {
                 for (let dataset of projectDatasets) {
-                    if (dataset2id === dataset.datasetid.datasetid){
+                    if (dataset2id === dataset.datasetid.datasetid) {
                         plotDataset(dataset.data.data);
                     }
                 }
             }
         }
         else if (this.value === 'correlation') {
+            let dataset1id = $('#dataset1Select').val();
+            let dataset2id = $('#dataset2Select').val();
+
+            let ds1Values = [];
+            let ds2Values = [];
+
+            for (let dataset of projectDatasets) {
+                if (dataset1id === dataset.datasetid.datasetid) {
+                    console.log(dataset.data.data);
+
+                    for (let value of dataset.data.data){
+                        ds1Values.push(value.Value);
+                    }
+                }
+                if (dataset2id === dataset.datasetid.datasetid) {
+                    console.log(dataset.data.data);
+
+                    for (let value of dataset.data.data){
+                        ds2Values.push(value.Value);
+                    }
+                }
+            }
+
+            if (ds1Values.length > 0 && ds2Values.length > 0){
+                console.log(ds1Values, ds2Values);
+
+                socket.emit('computeCovariance', {set1: [89], set2: [23]});
+            }
 
         }
     });
@@ -249,8 +281,6 @@ function setupProjectFromID(id, socket, userDatasets) {
 
     function clearPlotDataset() {
         geojson.eachLayer(function (layer) {
-
-
             layer.setStyle({
                 fillColor: "#FFFFFF",
                 weight: 2,
@@ -259,8 +289,6 @@ function setupProjectFromID(id, socket, userDatasets) {
                 dashArray: '3',
                 fillOpacity: 0.0
             });
-
-
         });
     }
 }
