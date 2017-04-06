@@ -195,8 +195,36 @@ function setupProjectFromID(id, socket, userDatasets) {
         console.log(dataset);
         projectDatasets.push(dataset);
 
-        if (dataset.datasetid.datasetid === $('#dataset1Select').val()){
+        if (dataset.datasetid.datasetid === $('#dataset1Select').val()) {
             plotDataset(dataset.data.data);
+        }
+    });
+
+    $('input[type=radio][name=inlineRadioOptions]').change(function () {
+        if (this.value === 'dataset1') {
+            let dataset1id = $('#dataset1Select').val();
+
+            for (let dataset of projectDatasets) {
+                if (dataset1id === dataset.datasetid.datasetid){
+                    plotDataset(dataset.data.data);
+                }
+            }
+        }
+        else if (this.value === 'dataset2') {
+            let dataset2id = $('#dataset2Select').val()
+
+            if (dataset2id === "-1") {
+                clearPlotDataset();
+            } else {
+                for (let dataset of projectDatasets) {
+                    if (dataset2id === dataset.datasetid.datasetid){
+                        plotDataset(dataset.data.data);
+                    }
+                }
+            }
+        }
+        else if (this.value === 'correlation') {
+
         }
     });
 
@@ -219,30 +247,22 @@ function setupProjectFromID(id, socket, userDatasets) {
         });
     }
 
-    // Plot the dataset within the project onto the map
-    // socket.on('plotDataset', (dataset) => {
-    //     console.log(dataset);
-    //     console.log(geojson);
-    //
-    //     let data = dataset.data.data;
-    //
-    //     geojson.eachLayer(function (layer) {
-    //         let countryCode = layer.feature.properties.iso_a3;
-    //
-    //         for (let dataPoint of data) {
-    //             if (dataPoint.isoA3 === countryCode) {
-    //                 layer.setStyle({
-    //                     fillColor: getColor(dataPoint.Value),
-    //                     weight: 2,
-    //                     opacity: 1,
-    //                     color: 'white',
-    //                     dashArray: '3',
-    //                     fillOpacity: 0.7
-    //                 });
-    //             }
-    //         }
-    //     });
-    // });
+    function clearPlotDataset() {
+        geojson.eachLayer(function (layer) {
+
+
+            layer.setStyle({
+                fillColor: "#FFFFFF",
+                weight: 2,
+                opacity: 1,
+                color: 'white',
+                dashArray: '3',
+                fillOpacity: 0.0
+            });
+
+
+        });
+    }
 }
 
 
