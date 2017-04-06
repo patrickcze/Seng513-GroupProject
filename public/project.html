@@ -64,14 +64,46 @@
         </div>
     </div>
 
-    <!--<form id="uploadForm" enctype="multipart/form-data" action="/api/dataset" method="post" target="_blank">-->
-        <!--<input type="file" name="userDataset"/><input type="submit" value="Upload Image" name="submit">-->
-        <!--<input type=\'text\' id=\'random\' name=\'random\'><br><span id="status"></span>-->
-    <!--</form>-->
-
     <!--Display the map-->
     <div id="main-map-container" class="container-fluid hidden">
-        <div id="map" class="col-12"></div>
+        <div id="sidebar" class="col-3 col-lg-2">
+            <form id="projectOptionsForm">
+                <div class="form-check form-check-inline">
+                    <label class="form-check-label">
+                        <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="dataset1"> Dataset 1
+                    </label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <label class="form-check-label">
+                        <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="dataset2"> Dataset 2
+                    </label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <label class="form-check-label">
+                        <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio3" value="correlation"> Correlation
+                    </label>
+                </div>
+                <hr>
+                <div class="form-group">
+                    <label for="projectTitleField">Project Title</label>
+                    <input type="text" class="form-control" id="projectTitleField" placeholder="Project Title">
+                </div>
+                <hr/>
+                <div class="form-group">
+                    <label for="dataset1Select">Dataset 1</label>
+                    <select class="form-control" id="dataset1Select">
+
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="dataset2Select">Dataset 2</label>
+                    <select class="form-control" id="dataset2Select">
+                        <option value="0">None</option>
+                    </select>
+                </div>
+            </form>
+        </div>
+        <div id="map" class="col-9 col-lg-10"></div>
     </div>
 </div>
 

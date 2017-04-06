@@ -1,4 +1,6 @@
 $(function () {
+    let userDatasets = null;
+
     //Initialize Socket Connection
     var socket = io();
 
@@ -51,6 +53,8 @@ $(function () {
 
     // Get a list of the user data sets so that this information can be prefilled within the modal
     socket.on('listOfUserDatasets', (data) => {
+        userDatasets = data.dataset;
+        console.log(userDatasets);
         for (let dataset of data.dataset) {
             //Setup the options within the modal
             let option = '<option value="' + dataset.id + '">' + dataset.name + '</option>';
@@ -73,7 +77,7 @@ $(function () {
         $(".project-card").click(function () {
             console.log("Handler for .click() called.");
             console.log($(this).attr("projectid"));
-            setupProjectFromID($(this).attr("projectid"), socket);
+            setupProjectFromID($(this).attr("projectid"), socket, userDatasets);
         });
     });
 
@@ -110,7 +114,7 @@ $(function () {
         changeToProjectView();
         setupProjectInDatabase(firebase);
 
-        setupMapView();
+        setupMapView(userDatasets);
     });
 
     // Display modal to start creating a new project
@@ -122,27 +126,32 @@ $(function () {
         $('#newDatasetModalLabel').text("Upload your filled in template");
         $('#newDatasetModalBody').html('<form id="uploadForm" enctype="multipart/form-data" action="/api/dataset" method="post" target="_blank"><input type="file" name="userDataset"/><input type="submit" value="Upload Image" name="submit"><input type=\'text\' id=\'random\' name=\'random\'><br><span id="status"></span></form>');
 
-        // <form id="uploadForm"
-        // enctype="multipart/form-data"
-        // action="/api/dataset"
-        // method="post"
-        // target="_blank">
-        //     <input type="file" name="userDataset"/>
-        //     <input type="submit" value="Upload Image" name="submit">
-        //     <input type='text' id='random' name='random'><br>
-        //     <span id="status"></span>
-        //     </form>
     });
 });
 
 
-function setupProjectFromID(id, socket) {
+function setupProjectFromID(id, socket, userDatasets) {
     changeToProjectView();
 
     let project;
     let geojson;
 
+    let projectDatasets = [];
+
     $('#main-map-container').removeClass('hidden');
+
+    //Get all the fields setup for the project
+    for (let dataset of userDatasets) {
+        let option = '<option value="' + dataset.id + '">' + dataset.name + '</option>';
+        $('#dataset1Select').append(option);
+    }
+
+    for (let dataset of userDatasets) {
+        let option = '<option value="' + dataset.id + '">' + dataset.name + '</option>';
+        $('#dataset2Select').append(option);
+    }
+
+    $('#inlineRadio1').prop("checked", true);
 
     //Setup the Map
     let map = L.map('map').setView([46.938984, 2.373590], 4);
@@ -159,8 +168,15 @@ function setupProjectFromID(id, socket) {
     socket.on('setProjectWithId', (data) => {
         project = data;
 
+        $("#projectTitleField").val(project.title);
+
         // Ask for geojson data
         socket.emit('getGlobalGeoJSON');
+
+        for (i in project.datasetIDs) {
+            console.log(project.datasetIDs[i]);
+            socket.emit('getDatasetWithID', {datasetid: project.datasetIDs[i]});
+        }
     });
 
     // Draw the global geojson map
@@ -173,17 +189,18 @@ function setupProjectFromID(id, socket) {
                 opacity: 0
             }
         }).addTo(map);
-
-        socket.emit('getDatasetWithID', {datasetid: project.datasetIDs[0]});
     });
 
-    // Plot the dataset within the project onto the map
-    socket.on('plotDataset', (dataset) => {
+    socket.on('setDataset', (dataset) => {
         console.log(dataset);
-        console.log(geojson);
+        projectDatasets.push(dataset);
 
-        let data = dataset.data.data;
+        if (dataset.datasetid.datasetid === $('#dataset1Select').val()){
+            plotDataset(dataset.data.data);
+        }
+    });
 
+    function plotDataset(data) {
         geojson.eachLayer(function (layer) {
             let countryCode = layer.feature.properties.iso_a3;
 
@@ -200,8 +217,34 @@ function setupProjectFromID(id, socket) {
                 }
             }
         });
-    });
+    }
+
+    // Plot the dataset within the project onto the map
+    // socket.on('plotDataset', (dataset) => {
+    //     console.log(dataset);
+    //     console.log(geojson);
+    //
+    //     let data = dataset.data.data;
+    //
+    //     geojson.eachLayer(function (layer) {
+    //         let countryCode = layer.feature.properties.iso_a3;
+    //
+    //         for (let dataPoint of data) {
+    //             if (dataPoint.isoA3 === countryCode) {
+    //                 layer.setStyle({
+    //                     fillColor: getColor(dataPoint.Value),
+    //                     weight: 2,
+    //                     opacity: 1,
+    //                     color: 'white',
+    //                     dashArray: '3',
+    //                     fillOpacity: 0.7
+    //                 });
+    //             }
+    //         }
+    //     });
+    // });
 }
+
 
 function clearMap() {
     $('#main-map-container').html('<div id="map" class="col-12"></div>');
@@ -218,7 +261,7 @@ function getColor(d) {
                                 '#FFEDA0';
 }
 
-function setupMapView() {
+function setupMapView(userDatasets) {
     $('#main-map-container').removeClass('hidden');
 
     let map = L.map('map').setView([46.938984, 2.373590], 4);
@@ -229,6 +272,10 @@ function setupMapView() {
         maxBoundsViscosity: 1.0
     }).addTo(map);
 
+    for (dataset in userDatasets) {
+        let option = '<option value="' + dataset.id + '">' + dataset.name + '</option>';
+        $('#dataset1Select').append(option);
+    }
     //TODO: Need to load in the details of the map
 }
 

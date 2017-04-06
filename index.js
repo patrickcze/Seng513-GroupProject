@@ -108,7 +108,7 @@ io.on('connection', function (socket) {
             ref.ref('datasets/' + data.datasetid).once('value').then(function (snapshot) {
                 console.log(snapshot.val());
 
-                socket.emit('plotDataset', {datasetid: data, data: snapshot.val()});
+                socket.emit('setDataset', {datasetid: data, data: snapshot.val()});
             })
         }
     });

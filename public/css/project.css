@@ -33,3 +33,15 @@ html, body {
 .visible {
     display: inherit !important;
 }
+
+label {
+    color: #FFFFFF;
+}
+
+hr{
+    background-color: #FFFFFF;
+}
+
+#projectOptionsForm {
+    padding-top: 10px;
+}
