@@ -156,12 +156,15 @@ function setupProjectFromID(id, socket, userDatasets) {
     $('#inlineRadio1').prop("checked", true);
 
     //Setup the Map
-    let map = L.map('map').setView([46.938984, 2.373590], 4);
-    let CartoDB_DarkMatter = L.tileLayer('http://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="http://cartodb.com/attributions">CartoDB</a>',
-        subdomains: 'abcd',
-        maxZoom: 10,
-        maxBoundsViscosity: 1.0
+    let map = L.map('map', {
+        center: [46.938984, 2.373590],
+        zoom: 4,
+        preferCanvas: true
+    });
+
+    let OpenStreetMap_BlackAndWhite = L.tileLayer('http://{s}.tiles.wmflabs.org/bw-mapnik/{z}/{x}/{y}.png', {
+        maxZoom: 18,
+        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
     }).addTo(map);
 
     //Get the details of the project
@@ -281,6 +284,22 @@ function setupProjectFromID(id, socket, userDatasets) {
         console.log(projectData);
 
         socket.emit('saveProjectDetailsInDB', projectData);
+
+        // This code allows for the map to saved as a png
+        var c = document.querySelectorAll('.leaflet-overlay-pane .leaflet-zoom-animated')[0];
+
+        console.log(c.toDataURL("image/png"));
+
+        var img_dataurl = c.toDataURL("image/png");
+
+        var svg_img = document.createElementNS(
+            "http://www.w3.org/2000/svg", "image");
+
+        svg_img.setAttributeNS(
+            "http://www.w3.org/1999/xlink", "xlink:href", img_dataurl);
+
+        document.getElementById('images').appendChild(svg_img);
+        window.open(img_dataurl);
     });
 
     function plotDataset(data) {
