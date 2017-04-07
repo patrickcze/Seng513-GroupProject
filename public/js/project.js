@@ -127,6 +127,8 @@ $(function () {
         $('#newDatasetModalBody').html('<form id="uploadForm" enctype="multipart/form-data" action="/api/dataset" method="post" target="_blank"><input type="file" name="userDataset"/><input type="submit" value="Upload Image" name="submit"><input type=\'text\' id=\'random\' name=\'random\'><br><span id="status"></span></form>');
 
     });
+
+
 });
 
 
@@ -258,6 +260,27 @@ function setupProjectFromID(id, socket, userDatasets) {
             }
 
         }
+    });
+
+    $('#saveProjectChangesButton').on('click', () => {
+        let projectData = {
+            title: $('#projectTitleField').val(),
+            datasetIDs: [],
+            dataset1ID: $('#dataset1Select').val(),
+            dataset2ID: $('#dataset2Select').val(),
+            id: project.id
+        };
+
+        if (projectData.dataset1ID !== "-1") {
+            projectData.datasetIDs.push(project.dataset1ID);
+        }
+        if (projectData.dataset2ID !== "-1") {
+            projectData.datasetIDs.push(project.dataset1ID);
+        }
+
+        console.log(projectData);
+
+        socket.emit('saveProjectDetailsInDB', projectData);
     });
 
     function plotDataset(data) {
