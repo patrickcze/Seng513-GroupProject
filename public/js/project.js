@@ -176,6 +176,7 @@ function setupProjectFromID(id, socket, userDatasets) {
 
     socket.on('setProjectWithId', (data) => {
         project = data;
+        console.log('PROJECT:',data);
 
         $("#projectTitleField").val(project.title);
 
@@ -206,6 +207,13 @@ function setupProjectFromID(id, socket, userDatasets) {
 
         if (dataset.datasetid.datasetid === $('#dataset1Select').val()) {
             plotDataset(dataset.data.data);
+        }
+
+        if (dataset.datasetid.datasetid === project.dataset1ID) {
+            $('#dataset1Select').val(project.dataset1ID);
+        }
+        if (dataset.datasetid.datasetid === project.dataset2ID) {
+            $('#dataset2Select').val(project.dataset2ID);
         }
     });
 
@@ -340,8 +348,6 @@ function setupProjectFromID(id, socket, userDatasets) {
 
 
 function clearMap() {
-
-
     $('#main-map-container').html('<div id="sidebar" class="col-3 col-lg-2"> <form id="projectOptionsForm"> <label>Show</label> <br><div class="form-check form-check-inline"> <label class="form-check-label"> <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="dataset1"> Dataset 1 </label> </div><div class="form-check form-check-inline"> <label class="form-check-label"> <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="dataset2"> Dataset 2 </label> </div><div class="form-check form-check-inline" hidden> <label class="form-check-label"> <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio3" value="correlation"> Correlation </label> </div><hr> <div class="form-group"> <label for="projectTitleField">Project Title</label> <input type="text" class="form-control" id="projectTitleField" placeholder="Project Title"> </div><hr/> <div class="form-group"> <label for="dataset1Select">Dataset 1</label> <select class="form-control" id="dataset1Select"> </select> </div><div class="form-group"> <label for="dataset2Select">Dataset 2</label> <select class="form-control" id="dataset2Select"> <option value="-1">None</option> </select> </div><hr> <div class="form-group"> <button type="button" id="saveProjectChangesButton" class="btn btn-success col-12">Save Changes</button> </div><div class="form-group"> <button type="button" id="shareProjectButton" class="btn btn-info col-12">Share Project</button> </div></form> </div><div id="map" class="col-9 col-lg-10"></div>');
 }
 
