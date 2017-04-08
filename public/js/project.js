@@ -315,6 +315,25 @@ function setupProjectFromID(id, socket, userDatasets) {
         window.open(img_dataurl);
     });
 
+    $('#downloadMapAsJPG').on('click', () => {
+        // This code allows for the map to saved as a png
+        var c = document.querySelectorAll('.leaflet-overlay-pane .leaflet-zoom-animated')[0];
+
+        var img_dataurl = c.toDataURL("image/jpeg");
+
+        var svg_img = document.createElementNS(
+            "http://www.w3.org/2000/svg", "image");
+
+        svg_img.setAttributeNS(
+            "http://www.w3.org/1999/xlink", "xlink:href", img_dataurl);
+
+        window.open(img_dataurl);
+    });
+
+    $('#downloadMapAsSVG').on('click', () => {
+        //TODO: Need to get support for SVG some how
+    });
+
     function plotDataset(data) {
         geojson.eachLayer(function (layer) {
             let countryCode = layer.feature.properties.iso_a3;
