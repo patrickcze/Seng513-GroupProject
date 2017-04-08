@@ -3,55 +3,141 @@
 
 <head>
     <title>umapit.io</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.3/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css"
+          integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.3/dist/leaflet.css"/>
 
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
-    <nav class="navbar navbar-toggleable-md navbar-inverse fixed-top bg-inverse">
-        <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <a class="navbar-brand active" href="/">umap.io</a>
+<nav class="navbar navbar-toggleable-md navbar-inverse fixed-top bg-inverse">
+    <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse"
+            data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false"
+            aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <a class="navbar-brand active" href="/">umap.io</a>
 
-        <div class="collapse navbar-collapse" id="navbarsExampleDefault">
-            <ul class="navbar-nav mr-auto">
-                <li class="nav-item">
-                    <a class="nav-link disabled" href="#">Maps</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link disabled" href="#">Datasets</a>
-                </li>
-            </ul>
+    <div class="collapse navbar-collapse" id="navbarsExampleDefault">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item">
+                <a class="nav-link disabled" href="#">Maps</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link disabled" href="#">Datasets</a>
+            </li>
+        </ul>
 
-            <form class="form-inline my-2 my-lg-0" onsubmit="return false">
-                <input class="form-control mr-sm-2" type="email" id="emailField" placeholder="eMail">
-                <input class="form-control mr-sm-2" type="password" id="passField" placeholder="Password">
-                <button class="btn btn-outline-primary my-2 my-sm-0" id="registerUserBtn">Sign Up</button>
-                <button class="btn btn-outline-success my-2 my-sm-0" id="loginUserBtn">Login</button>
-            </form>
+        <button class="btn btn-outline-primary my-2 my-sm-0" id="signinBtn">Sign In</button>
+    </div>
+</nav>
+
+<!-- Login/Register Modal -->
+<div class="modal fade" id="signInModal" tabindex="-1" role="dialog" aria-labelledby="signInModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="signInModalLabel">umapit.io</h3>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div id="signInModalBody" class="modal-body">
+                <form onsubmit="return false">
+                    <div class="form-group">
+                        <input class="form-control mr-sm-2" type="email" id="emailField" placeholder="eMail">
+                    </div>
+                    <div class="form-group">
+                        <input class="form-control mr-sm-2" type="password" id="passField" placeholder="Password">
+                    </div>
+                    <button class="btn btn-outline-success col-12" id="loginUserBtn">Login</button>
+                    <button class="btn btn-outline-primary col-12" id="resetPasswordBtn">Reset Password?</button>
+                    <hr>
+                    <button class="btn btn-outline-primary col-12" id="createAccountBtn">Create an Account</button>
+                </form>
+            </div>
         </div>
-    </nav>
-
-    <div class="container-fluid main-container">
-        <div id="map" class="col-12"></div>
     </div>
+</div>
 
-    <div class="container">
-        <hr>
-        <footer>
-            <p>&copy; umapit.io 2017</p>
-        </footer>
+<!-- Crete Account Modal -->
+<div class="modal fade" id="createAccountModal" tabindex="-1" role="dialog" aria-labelledby="signInModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="createAccountModalLabel">Create an Account</h3>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div id="createAccountModalModalBody" class="modal-body">
+                <div class="form-group">
+                    <input class="form-control mr-sm-2" type="email" id="emailNewAccountField" placeholder="eMail">
+                </div>
+                <div class="form-group">
+                    <input class="form-control mr-sm-2" type="password" id="passwordlNewAccountField1"
+                           placeholder="Password">
+                </div>
+                <div class="form-group">
+                    <input class="form-control mr-sm-2" type="password" id="passwordlNewAccountField2"
+                           placeholder="Password">
+                    <small class="form-text text-muted">Your password must have at least 8 characters long and contain one
+                        uppercase letter, and one lowercase letter.
+                    </small>
+                </div>
+                <button class="btn btn-outline-primary col-12" id="createAccountSubmitBtn">Create an Account</button>
+            </div>
+        </div>
     </div>
+</div>
 
-    <script src="https://code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
-    <script src="/socket.io/socket.io.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/3.7.4/firebase.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
-    <script src="https://unpkg.com/leaflet@1.0.3/dist/leaflet.js"></script>
-    <script src="js/client.js"></script>
+<!-- Reset Password Modal -->
+<div class="modal fade" id="resetPasswordModal" tabindex="-1" role="dialog" aria-labelledby="signInModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="resetPasswordModalLabel">Reset Your Password</h3>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div id="resetPasswordModalBody" class="modal-body">
+                <form onsubmit="return false">
+                    <div class="form-group">
+                        <input class="form-control" type="email" id="emailResetField" placeholder="eMail">
+                    </div>
+                    <button class="btn btn-outline-primary col-12" id="resetPasswordSubmitBtn">Reset My Password
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid main-container">
+    <div id="map" class="col-12"></div>
+</div>
+
+<div class="container">
+    <hr>
+    <footer>
+        <p>&copy; umapit.io 2017</p>
+    </footer>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.1.1.min.js"
+        integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
+<script src="/socket.io/socket.io.js"></script>
+<script src="https://www.gstatic.com/firebasejs/3.7.4/firebase.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js"
+        integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn"
+        crossorigin="anonymous"></script>
+<script src="https://unpkg.com/leaflet@1.0.3/dist/leaflet.js"></script>
+<script src="js/client.js"></script>
 </body>
 
 </html>

@@ -25,6 +25,7 @@ $(function () {
             socket.emit('getListOfUserProjects', {uid: firebaseUser.uid});
         } else {
             console.log("not logged in");
+            window.location.replace('/');
         }
     });
 
