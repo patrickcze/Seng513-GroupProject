@@ -25,6 +25,7 @@ $(function () {
             socket.emit('getListOfUserProjects', {uid: firebaseUser.uid});
         } else {
             console.log("not logged in");
+            window.location.replace('/');
         }
     });
 
@@ -250,32 +251,11 @@ function setupProjectFromID(id, socket, userDatasets) {
             let dataset1id = $('#dataset1Select').val();
             let dataset2id = $('#dataset2Select').val();
 
-            let ds1Values = [];
-            let ds2Values = [];
-
-            for (let dataset of projectDatasets) {
-                if (dataset1id === dataset.datasetid.datasetid) {
-                    console.log(dataset.data.data);
-
-                    for (let value of dataset.data.data) {
-                        ds1Values.push(value.Value);
-                    }
-                }
-                if (dataset2id === dataset.datasetid.datasetid) {
-                    console.log(dataset.data.data);
-
-                    for (let value of dataset.data.data) {
-                        ds2Values.push(value.Value);
-                    }
-                }
-            }
-
-            if (ds1Values.length > 0 && ds2Values.length > 0) {
-                console.log(ds1Values, ds2Values);
-
-                socket.emit('computeCovariance', {set1: [89], set2: [23]});
-            }
-
+            socket.emit('computeDatasetRatio', {dataset1id:dataset1id, dataset2id:dataset2id});
+            socket.on('plotCorrelation', (data)=> {
+                console.log(data);
+                plotDataset(data);
+            });
         }
     });
 
@@ -341,7 +321,7 @@ function setupProjectFromID(id, socket, userDatasets) {
             for (let dataPoint of data) {
                 if (dataPoint.isoA3 === countryCode) {
                     layer.setStyle({
-                        fillColor: getColor(dataPoint.Value),
+                        fillColor: getColor(dataPoint.value),
                         weight: 2,
                         opacity: 1,
                         color: 'white',
