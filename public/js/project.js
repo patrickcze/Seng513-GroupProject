@@ -112,9 +112,11 @@ $(function () {
     $('#createNewProjectButton').on('click', () => {
         $('#newProjectModal').modal('hide');
         changeToProjectView();
-        setupProjectInDatabase(firebase);
+        let promiseandkey = setupProjectInDatabase(firebase);
 
-        setupMapView(userDatasets);
+        promiseandkey[0].then(()=>{
+            setupProjectFromID(promiseandkey[1],socket,userDatasets);
+        });
     });
 
     // Display modal to start creating a new project
@@ -362,24 +364,6 @@ function getColor(d) {
                                 '#FFEDA0';
 }
 
-function setupMapView(userDatasets) {
-    $('#main-map-container').removeClass('hidden');
-
-    let map = L.map('map').setView([46.938984, 2.373590], 4);
-    let CartoDB_DarkMatter = L.tileLayer('http://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="http://cartodb.com/attributions">CartoDB</a>',
-        subdomains: 'abcd',
-        maxZoom: 19,
-        maxBoundsViscosity: 1.0
-    }).addTo(map);
-
-    for (dataset in userDatasets) {
-        let option = '<option value="' + dataset.id + '">' + dataset.name + '</option>';
-        $('#dataset1Select').append(option);
-    }
-    //TODO: Need to load in the details of the map
-}
-
 function setupProjectInDatabase(firebase) {
     let projectTitle = $('#projectTitle').val();
     let datasetID = $('#projectModalDataSetSelection').val();
@@ -390,7 +374,9 @@ function setupProjectInDatabase(firebase) {
     // A project entry.
     var projectPost = {
         title: projectTitle,
-        datasetIDs: [datasetID]
+        datasetIDs: [datasetID],
+        dataset1ID: datasetID,
+        dataset2ID: "-1"
     };
 
     // Get a key for a new project.
@@ -401,7 +387,9 @@ function setupProjectInDatabase(firebase) {
     updates['/projects/' + newPostKey] = projectPost;
     updates['/users/' + currentUserID + '/projects/' + newPostKey] = true;
 
-    return firebase.database().ref().update(updates);
+
+
+    return [firebase.database().ref().update(updates), newPostKey];
 }
 
 function changeToProjectView() {
