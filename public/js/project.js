@@ -122,10 +122,14 @@ $(function () {
         $('#newDatasetModal').modal('show');
     });
 
+    // Display modal to start creating a new project
+    $('#shareProjectButton').on('click', () => {
+        $('#shareProjectModal').modal('show');
+    });
+
     $('#datasetNextStepButton').on('click', () => {
         $('#newDatasetModalLabel').text("Upload your filled in template");
         $('#newDatasetModalBody').html('<form id="uploadForm" enctype="multipart/form-data" action="/api/dataset" method="post" target="_blank"><input type="file" name="userDataset"/><input type="submit" value="Upload Image" name="submit"><input type=\'text\' id=\'random\' name=\'random\'><br><span id="status"></span></form>');
-
     });
 
 
@@ -243,20 +247,20 @@ function setupProjectFromID(id, socket, userDatasets) {
                 if (dataset1id === dataset.datasetid.datasetid) {
                     console.log(dataset.data.data);
 
-                    for (let value of dataset.data.data){
+                    for (let value of dataset.data.data) {
                         ds1Values.push(value.Value);
                     }
                 }
                 if (dataset2id === dataset.datasetid.datasetid) {
                     console.log(dataset.data.data);
 
-                    for (let value of dataset.data.data){
+                    for (let value of dataset.data.data) {
                         ds2Values.push(value.Value);
                     }
                 }
             }
 
-            if (ds1Values.length > 0 && ds2Values.length > 0){
+            if (ds1Values.length > 0 && ds2Values.length > 0) {
                 console.log(ds1Values, ds2Values);
 
                 socket.emit('computeCovariance', {set1: [89], set2: [23]});
@@ -284,7 +288,9 @@ function setupProjectFromID(id, socket, userDatasets) {
         console.log(projectData);
 
         socket.emit('saveProjectDetailsInDB', projectData);
+    });
 
+    $('#downloadMapAsPNG').on('click', () => {
         // This code allows for the map to saved as a png
         var c = document.querySelectorAll('.leaflet-overlay-pane .leaflet-zoom-animated')[0];
 
@@ -298,7 +304,6 @@ function setupProjectFromID(id, socket, userDatasets) {
         svg_img.setAttributeNS(
             "http://www.w3.org/1999/xlink", "xlink:href", img_dataurl);
 
-        document.getElementById('images').appendChild(svg_img);
         window.open(img_dataurl);
     });
 

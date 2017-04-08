@@ -107,6 +107,9 @@
                 <div class="form-group">
                     <button type="button" id="saveProjectChangesButton" class="btn btn-success col-12">Save Changes</button>
                 </div>
+                <div class="form-group">
+                    <button type="button" id="shareProjectButton" class="btn btn-info col-12">Share Project</button>
+                </div>
             </form>
             <div id="images"></div>
         </div>
@@ -172,6 +175,43 @@
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                 <button id="datasetNextStepButton" type="button" class="btn btn-info">Next Step</button>
                 <button id="createNewDatasetButton" type="button" class="btn btn-success hidden">Create Dataset</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Share Modal -->
+<div class="modal fade" id="shareProjectModal" tabindex="-1" role="dialog" aria-labelledby="shareProjectModalModal"
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="shareProjectModalLabel">Share and Export Project</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div id="shareProjectModalBody" class="modal-body">
+                <div class="">
+                    <div class="form-group">
+                        <label class="col-9">Public URL</label>
+                        <!-- Rounded switch -->
+                        <label class="switch col-3" style="float: right">
+                            <input type="checkbox">
+                            <div class="slider round"></div>
+                        </label>
+                        <input type="text" class="form-control col-12">
+                    </div>
+                    <hr>
+                    <div class="form-group">
+                        <label class="col-12">Save as</label>
+                        <div style="text-align: center">
+                            <button id="downloadMapAsPNG" class="btn btn-outline-primary col-3">PNG</button>
+                            <button class="btn btn-outline-primary col-3">JPG</button>
+                            <button class="btn btn-outline-primary col-3">SVG</button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
