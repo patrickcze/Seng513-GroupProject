@@ -131,16 +131,16 @@ $(function () {
         $('#newDatasetModalLabel').text("Upload your filled in template");
         $('#newDatasetModalBody').html('<form id="uploadForm" enctype="multipart/form-data" action="/api/dataset" method="post" target="_blank"><input type="file" name="userDataset"/><input type="submit" value="Upload Image" name="submit"><input type=\'text\' id=\'random\' name=\'random\'><br><span id="status"></span></form>');
     });
-
-
 });
 
 
 function setupProjectFromID(id, socket, userDatasets) {
     changeToProjectView();
 
-    let project;
-    let geojson;
+    console.log("setup project");
+
+    let project = null;
+    let geojson = null;
 
     let projectDatasets = [];
 
@@ -294,8 +294,6 @@ function setupProjectFromID(id, socket, userDatasets) {
         // This code allows for the map to saved as a png
         var c = document.querySelectorAll('.leaflet-overlay-pane .leaflet-zoom-animated')[0];
 
-        console.log(c.toDataURL("image/png"));
-
         var img_dataurl = c.toDataURL("image/png");
 
         var svg_img = document.createElementNS(
@@ -342,7 +340,9 @@ function setupProjectFromID(id, socket, userDatasets) {
 
 
 function clearMap() {
-    $('#main-map-container').html('<div id="map" class="col-12"></div>');
+
+
+    $('#main-map-container').html('<div id="sidebar" class="col-3 col-lg-2"> <form id="projectOptionsForm"> <label>Show</label> <br><div class="form-check form-check-inline"> <label class="form-check-label"> <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="dataset1"> Dataset 1 </label> </div><div class="form-check form-check-inline"> <label class="form-check-label"> <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="dataset2"> Dataset 2 </label> </div><div class="form-check form-check-inline" hidden> <label class="form-check-label"> <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio3" value="correlation"> Correlation </label> </div><hr> <div class="form-group"> <label for="projectTitleField">Project Title</label> <input type="text" class="form-control" id="projectTitleField" placeholder="Project Title"> </div><hr/> <div class="form-group"> <label for="dataset1Select">Dataset 1</label> <select class="form-control" id="dataset1Select"> </select> </div><div class="form-group"> <label for="dataset2Select">Dataset 2</label> <select class="form-control" id="dataset2Select"> <option value="-1">None</option> </select> </div><hr> <div class="form-group"> <button type="button" id="saveProjectChangesButton" class="btn btn-success col-12">Save Changes</button> </div><div class="form-group"> <button type="button" id="shareProjectButton" class="btn btn-info col-12">Share Project</button> </div></form> </div><div id="map" class="col-9 col-lg-10"></div>');
 }
 
 function getColor(d) {
