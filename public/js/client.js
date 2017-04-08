@@ -45,6 +45,11 @@ $(function () {
     });
 
     $('#resetPasswordBtn').on('click', function () {
+        let email = $('#emailField').val();
+        if (email.length > 0){
+            $('#emailResetField').val(email);
+        }
+
         $('#signInModal').modal('hide');
         $('#resetPasswordModal').modal('show');
     });
