@@ -106,9 +106,7 @@ io.on('connection', function (socket) {
         if (data) {
             let ref = firebase.database();
 
-            console.log(data);
             ref.ref('datasets/' + data.datasetid).once('value').then(function (snapshot) {
-                console.log(snapshot.val());
 
                 socket.emit('setDataset', {datasetid: data, data: snapshot.val()});
             })
@@ -136,8 +134,6 @@ io.on('connection', function (socket) {
 
             ref.ref('projects').once('value').then(function (snapshot) {
                 if (snapshot.hasChild(project.id)) {
-                    console.log("Hey we got a project");
-
                     let updates = {};
 
                     let projectPath = '/projects/' + project.id;
@@ -153,7 +149,53 @@ io.on('connection', function (socket) {
         }
     });
 
-    socket.on('computeCovariance', (data) => {
-        console.log(Correlation.calc(data.set1, data.set2));
+    socket.on('computeDatasetRatio', (data) => {
+        let ref = firebase.database();
+        let ds1 = null;
+        let ds2 = null;
+
+        ref.ref('datasets/'+data.dataset1id).once('value').then(function (snapshot1) {
+            ds1 = snapshot1.val().data;
+
+            if (ds1 && ds2){
+                let dsCombined = computeRatioSet(ds1,ds2);
+
+                socket.emit('plotCorrelation', dsCombined);
+            }
+        });
+
+        ref.ref('datasets/'+data.dataset2id).once('value').then(function (snapshot2) {
+            ds2 = snapshot2.val().data;
+
+            if (ds1 && ds2){
+                let dsCombined = computeRatioSet(ds1,ds2);
+
+                socket.emit('plotCorrelation', dsCombined);
+            }
+        });
     });
 });
+
+
+function computeRatioSet(ds1, ds2) {
+    let dsCombined = [];
+
+    let ds1Sum = 0.0;
+    let ds2Sum = 0.0;
+
+    for (i in ds1){
+        ds1Sum += ds1[i].value;
+    }
+    for (i in ds2){
+        ds2Sum += ds2[i].value;
+    }
+
+    for (i in ds1){
+        let newVal = Object.assign({}, ds1[i]);
+        newVal.value = ((ds1[i].value/ds1Sum).toPrecision(4)-(ds2[i].value/ds2Sum).toPrecision(4)).toPrecision(4);
+
+        dsCombined.push(newVal);
+    }
+
+    return dsCombined;
+}

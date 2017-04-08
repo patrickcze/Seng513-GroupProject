@@ -16,28 +16,99 @@ $(function () {
         loginUser();
     });
 
+    //Login the user if they hit enter on the password field
     $('#passField').keypress(function (e) {
         if (e.which == 13) {
             loginUser();
         }
     });
 
-    //Register the user when they click register
-    $("#registerUserBtn").on('click', function () {
-        const txtemail = $("#emailField").val();
-        const txtpassword = $("#passField").val();
+    // Show the sign in modal when the button is clicked in the top left corner
+    $('#signinBtn').on('click', function () {
+        $('#signInModal').modal('show');
+    });
+
+    // Show the reset password modal when the correct button is clicked
+    $('#resetPasswordBtn').on('click', function () {
+        let email = $('#emailField').val();
+        if (email.length > 0){
+            $('#emailResetField').val(email);
+        }
+
+        $('#signInModal').modal('hide');
+        $('#resetPasswordModal').modal('show');
+    });
+
+    // Reset the password when the button is clicked and display possible errors
+    $('#resetPasswordSubmitBtn').on('click', function () {
+        let auth = firebase.auth();
+        let emailAddress = $('#emailResetField').val();
+
+        auth.sendPasswordResetEmail(emailAddress).then(function() {
+            // Email sent.
+            let selector = $('#emailResetField');
+            selector.parent().addClass('has-success');
+            selector.addClass('form-control-success');
+            selector.parent().append('<div class="form-control-feedback">Success! We just sent you and email to reset your password!</div>');
+        }, function(error) {
+            // An error happened.
+            if (error.code === "auth/user-not-found"){
+                $('#emailResetField').parent().addClass('has-warning');
+                $('#emailResetField').addClass('form-control-warning');
+                $('#emailResetField').parent().append('<div class="form-control-feedback">Looks like we don\'t have an account for that email</div>');
+            } else if (error.code === "auth/invalid-email"){
+                $('#emailResetField').parent().addClass('has-danger');
+                $('#emailResetField').addClass('form-control-danger');
+                $('#emailResetField').parent().append('<div class="form-control-feedback">Something seems to be wrong with your email, maybe take a second to double check?</div>');
+            }
+        });
+    });
+
+    // Show the create account modal
+    $('#createAccountBtn').on('click', function () {
+        $('#signInModal').modal('hide');
+        $('#createAccountModal').modal('show');
+    });
+
+    // Show the create account submit button
+    $('#createAccountSubmitBtn').on('click', function () {
+        const txtemail = $("#emailNewAccountField").val();
+        const txtpassword1 = $("#passwordlNewAccountField1").val();
+        const txtpassword2 = $("#passwordlNewAccountField2").val();
         const auth = firebase.auth();
 
-        //Create the user
-        const promise = auth.createUserWithEmailAndPassword(txtemail,txtpassword);
+        let containsUpperCase = false;
+        let containsLowerCase = false;
 
-        //When the user is created add their details to the database
-        promise.then(function (user) {
-            firebase.database().ref('users/'+user.uid).set({
-                uid: user.uid,
-                email: user.email
-            });
-        }).catch(e => console.log(e.message));
+        if (txtpassword1 === txtpassword2 && txtpassword1.length >= 8){
+            for (char of txtpassword1) {
+                console.log(char);
+
+                if (char === char.toUpperCase()){
+                    containsUpperCase = true;
+                } else if (char === char.toLowerCase()){
+                    containsLowerCase = true;
+                }
+
+                if (containsUpperCase && containsLowerCase){
+                    break;
+                }
+            }
+
+            if (containsUpperCase && containsUpperCase) {
+                console.log("Password passes tests", txtpassword1);
+                //Create the user
+                const promise = auth.createUserWithEmailAndPassword(txtemail,txtpassword1);
+
+                //When the user is created add their details to the database
+                promise.then(function (user) {
+                    firebase.database().ref('users/'+user.uid).set({
+                        uid: user.uid,
+                        email: user.email
+                    });
+                }).catch(e => console.log(e.message));
+            }
+        }
     });
 
     //Monitor authentication state change
@@ -45,7 +116,10 @@ $(function () {
         if (firebaseUser) {
             console.log(firebaseUser);
             //Redirect to the maps page
-            window.location.replace('/project');
+            setTimeout(()=>{
+                window.location.replace('/project');
+            }, 1000);
+            //
         } else {
             console.log("not logged in");
         }
