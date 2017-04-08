@@ -16,34 +16,19 @@ $(function () {
         loginUser();
     });
 
+    //Login the user if they hit enter on the password field
     $('#passField').keypress(function (e) {
         if (e.which == 13) {
             loginUser();
         }
     });
 
+    // Show the sign in modal when the button is clicked in the top left corner
     $('#signinBtn').on('click', function () {
         $('#signInModal').modal('show');
     });
 
-    //Register the user when they click register
-    $("#registerUserBtn").on('click', function () {
-        const txtemail = $("#emailField").val();
-        const txtpassword = $("#passField").val();
-        const auth = firebase.auth();
-
-        //Create the user
-        const promise = auth.createUserWithEmailAndPassword(txtemail,txtpassword);
-
-        //When the user is created add their details to the database
-        promise.then(function (user) {
-            firebase.database().ref('users/'+user.uid).set({
-                uid: user.uid,
-                email: user.email
-            });
-        }).catch(e => console.log(e.message));
-    });
-
+    // Show the reset password modal when the correct button is clicked
     $('#resetPasswordBtn').on('click', function () {
         let email = $('#emailField').val();
         if (email.length > 0){
@@ -54,6 +39,7 @@ $(function () {
         $('#resetPasswordModal').modal('show');
     });
 
+    // Reset the password when the button is clicked and display possible errors
     $('#resetPasswordSubmitBtn').on('click', function () {
         let auth = firebase.auth();
         let emailAddress = $('#emailResetField').val();
@@ -78,11 +64,13 @@ $(function () {
         });
     });
 
+    // Show the create account modal
     $('#createAccountBtn').on('click', function () {
         $('#signInModal').modal('hide');
         $('#createAccountModal').modal('show');
     });
 
+    // Show the create account submit button
     $('#createAccountSubmitBtn').on('click', function () {
         const txtemail = $("#emailNewAccountField").val();
         const txtpassword1 = $("#passwordlNewAccountField1").val();
@@ -136,8 +124,6 @@ $(function () {
             console.log("not logged in");
         }
     });
-
-
 
     //Get the population density geojson as an example for the home page
     socket.emit('getGlobalGeoJSON', '');
