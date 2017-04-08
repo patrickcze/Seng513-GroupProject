@@ -1,9 +1,11 @@
 var express = require('express');
+var cov = require('compute-covariance');
+var Correlation = require('node-correlation');
 var app = express();
 var http = require('http').createServer(app);
 var io = require('socket.io')(http);
 var port = process.env.PORT || 3000;
-var mongo = require('mongodb').MongoClient;
+
 
 var firebase = require('firebase');
 var firApp = firebase.initializeApp({
@@ -22,7 +24,6 @@ http.listen(port, function () {
     console.log('listening on port', port);
 });
 
-//
 io.on('connection', function (socket) {
     socket.on('getGlobalGeoJSON', (data) => {
         var globalData = require('./geojsonFiles/global.geojson.json');
@@ -38,7 +39,7 @@ io.on('connection', function (socket) {
         if (uid) {
             let ref = firebase.database();
             let projectIDs = [];
-            let projects= [];
+            let projects = [];
 
             ref.ref('users/' + uid + '/projects').once('value').then(function (snapshot) {
                 let x = snapshot.val();
@@ -46,14 +47,14 @@ io.on('connection', function (socket) {
                     projectIDs.push(item);
                 }
             }).then(function () {
-                for (let projectID of projectIDs){
-                    ref.ref('projects/'+projectID).once('value').then((snapshot) => {
+                for (let projectID of projectIDs) {
+                    ref.ref('projects/' + projectID).once('value').then((snapshot) => {
                         let result = snapshot.val();
                         result['id'] = snapshot.key;
 
                         projects.push(result);
 
-                        if (projects.length === projectIDs.length){
+                        if (projects.length === projectIDs.length) {
                             socket.emit('listOfUserProjects', {projects: projects});
                         }
                     })
@@ -80,13 +81,13 @@ io.on('connection', function (socket) {
                 for (i in datasetIDs) {
                     let datasetID = datasetIDs[i];
 
-                    ref.ref('datasets-metadata/'+datasetID).once('value').then(function (snapshot) {
+                    ref.ref('datasets-metadata/' + datasetID).once('value').then(function (snapshot) {
                         let result = snapshot.val();
                         result["id"] = snapshot.key;
 
                         datasetDetials.push(result);
 
-                        if (datasetDetials.length === datasetIDs.length){
+                        if (datasetDetials.length === datasetIDs.length) {
                             socket.emit('listOfUserDatasets', {dataset: datasetDetials});
                         }
                     });
@@ -109,7 +110,7 @@ io.on('connection', function (socket) {
             ref.ref('datasets/' + data.datasetid).once('value').then(function (snapshot) {
                 console.log(snapshot.val());
 
-                socket.emit('plotDataset', {datasetid: data, data: snapshot.val()});
+                socket.emit('setDataset', {datasetid: data, data: snapshot.val()});
             })
         }
     });
@@ -127,5 +128,32 @@ io.on('connection', function (socket) {
                 socket.emit('setProjectWithId', project);
             });
         }
+    });
+
+    socket.on('saveProjectDetailsInDB', (project) => {
+        if (project) {
+            let ref = firebase.database();
+
+            ref.ref('projects').once('value').then(function (snapshot) {
+                if (snapshot.hasChild(project.id)) {
+                    console.log("Hey we got a project");
+
+                    let updates = {};
+
+                    let projectPath = '/projects/' + project.id;
+
+                    updates[projectPath + '/title'] = project.title;
+                    updates[projectPath + '/datasetIDs'] = project.datasetIDs;
+                    updates[projectPath + '/dataset1ID'] = project.dataset1ID;
+                    updates[projectPath + '/dataset2ID'] = project.dataset2ID;
+
+                    firebase.database().ref().update(updates);
+                }
+            });
+        }
+    });
+
+    socket.on('computeCovariance', (data) => {
+        console.log(Correlation.calc(data.set1, data.set2));
     });
 });

@@ -1,4 +1,6 @@
 $(function () {
+    let userDatasets = null;
+
     //Initialize Socket Connection
     var socket = io();
 
@@ -10,6 +12,7 @@ $(function () {
         storageBucket: "umapit-io.appspot.com",
         messagingSenderId: "349495637518"
     };
+
     firebase.initializeApp(config);
 
     // Setup the auth object to get user details for further use
@@ -50,6 +53,8 @@ $(function () {
 
     // Get a list of the user data sets so that this information can be prefilled within the modal
     socket.on('listOfUserDatasets', (data) => {
+        userDatasets = data.dataset;
+        console.log(userDatasets);
         for (let dataset of data.dataset) {
             //Setup the options within the modal
             let option = '<option value="' + dataset.id + '">' + dataset.name + '</option>';
@@ -72,7 +77,7 @@ $(function () {
         $(".project-card").click(function () {
             console.log("Handler for .click() called.");
             console.log($(this).attr("projectid"));
-            setupProjectFromID($(this).attr("projectid"), socket);
+            setupProjectFromID($(this).attr("projectid"), socket, userDatasets);
         });
     });
 
@@ -107,9 +112,11 @@ $(function () {
     $('#createNewProjectButton').on('click', () => {
         $('#newProjectModal').modal('hide');
         changeToProjectView();
-        setupProjectInDatabase(firebase);
+        let promiseandkey = setupProjectInDatabase(firebase);
 
-        setupMapView();
+        promiseandkey[0].then(()=>{
+            setupProjectFromID(promiseandkey[1],socket,userDatasets);
+        });
     });
 
     // Display modal to start creating a new project
@@ -117,38 +124,53 @@ $(function () {
         $('#newDatasetModal').modal('show');
     });
 
+    // Display modal to start creating a new project
+    $('#shareProjectButton').on('click', () => {
+        $('#shareProjectModal').modal('show');
+    });
+
     $('#datasetNextStepButton').on('click', () => {
         $('#newDatasetModalLabel').text("Upload your filled in template");
         $('#newDatasetModalBody').html('<form id="uploadForm" enctype="multipart/form-data" action="/api/dataset" method="post" target="_blank"><input type="file" name="userDataset"/><input type="submit" value="Upload Image" name="submit"><input type=\'text\' id=\'random\' name=\'random\'><br><span id="status"></span></form>');
-
-        // <form id="uploadForm"
-        // enctype="multipart/form-data"
-        // action="/api/dataset"
-        // method="post"
-        // target="_blank">
-        //     <input type="file" name="userDataset"/>
-        //     <input type="submit" value="Upload Image" name="submit">
-        //     <input type='text' id='random' name='random'><br>
-        //     <span id="status"></span>
-        //     </form>
     });
 });
 
-function setupProjectFromID(id, socket) {
+
+function setupProjectFromID(id, socket, userDatasets) {
     changeToProjectView();
 
-    let project;
-    let geojson;
+    console.log("setup project");
+
+    let project = null;
+    let geojson = null;
+
+    let projectDatasets = [];
 
     $('#main-map-container').removeClass('hidden');
 
+    //Get all the fields setup for the project
+    for (let dataset of userDatasets) {
+        let option = '<option value="' + dataset.id + '">' + dataset.name + '</option>';
+        $('#dataset1Select').append(option);
+    }
+
+    for (let dataset of userDatasets) {
+        let option = '<option value="' + dataset.id + '">' + dataset.name + '</option>';
+        $('#dataset2Select').append(option);
+    }
+
+    $('#inlineRadio1').prop("checked", true);
+
     //Setup the Map
-    let map = L.map('map').setView([46.938984, 2.373590], 4);
-    let CartoDB_DarkMatter = L.tileLayer('http://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="http://cartodb.com/attributions">CartoDB</a>',
-        subdomains: 'abcd',
-        maxZoom: 10,
-        maxBoundsViscosity: 1.0
+    let map = L.map('map', {
+        center: [46.938984, 2.373590],
+        zoom: 4,
+        preferCanvas: true
+    });
+
+    let OpenStreetMap_BlackAndWhite = L.tileLayer('http://{s}.tiles.wmflabs.org/bw-mapnik/{z}/{x}/{y}.png', {
+        maxZoom: 18,
+        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
     }).addTo(map);
 
     //Get the details of the project
@@ -156,9 +178,17 @@ function setupProjectFromID(id, socket) {
 
     socket.on('setProjectWithId', (data) => {
         project = data;
+        console.log('PROJECT:',data);
+
+        $("#projectTitleField").val(project.title);
 
         // Ask for geojson data
         socket.emit('getGlobalGeoJSON');
+
+        for (i in project.datasetIDs) {
+            console.log(project.datasetIDs[i]);
+            socket.emit('getDatasetWithID', {datasetid: project.datasetIDs[i]});
+        }
     });
 
     // Draw the global geojson map
@@ -171,17 +201,140 @@ function setupProjectFromID(id, socket) {
                 opacity: 0
             }
         }).addTo(map);
-
-        socket.emit('getDatasetWithID', {datasetid: project.datasetIDs[0]});
     });
 
-    // Plot the dataset within the project onto the map
-    socket.on('plotDataset', (dataset) => {
+    socket.on('setDataset', (dataset) => {
         console.log(dataset);
-        console.log(geojson);
+        projectDatasets.push(dataset);
 
-        let data = dataset.data.data;
+        if (dataset.datasetid.datasetid === $('#dataset1Select').val()) {
+            plotDataset(dataset.data.data);
+        }
 
+        if (dataset.datasetid.datasetid === project.dataset1ID) {
+            $('#dataset1Select').val(project.dataset1ID);
+        }
+        if (dataset.datasetid.datasetid === project.dataset2ID) {
+            $('#dataset2Select').val(project.dataset2ID);
+        }
+    });
+
+    $('input[type=radio][name=inlineRadioOptions]').change(function () {
+        if (this.value === 'dataset1') {
+            let dataset1id = $('#dataset1Select').val();
+
+            if (dataset1id === "-1") {
+                clearPlotDataset();
+            } else {
+                for (let dataset of projectDatasets) {
+                    if (dataset1id === dataset.datasetid.datasetid) {
+                        plotDataset(dataset.data.data);
+                    }
+                }
+            }
+        }
+        else if (this.value === 'dataset2') {
+            let dataset2id = $('#dataset2Select').val();
+
+            if (dataset2id === "-1") {
+                clearPlotDataset();
+            } else {
+                for (let dataset of projectDatasets) {
+                    if (dataset2id === dataset.datasetid.datasetid) {
+                        plotDataset(dataset.data.data);
+                    }
+                }
+            }
+        }
+        else if (this.value === 'correlation') {
+            let dataset1id = $('#dataset1Select').val();
+            let dataset2id = $('#dataset2Select').val();
+
+            let ds1Values = [];
+            let ds2Values = [];
+
+            for (let dataset of projectDatasets) {
+                if (dataset1id === dataset.datasetid.datasetid) {
+                    console.log(dataset.data.data);
+
+                    for (let value of dataset.data.data) {
+                        ds1Values.push(value.Value);
+                    }
+                }
+                if (dataset2id === dataset.datasetid.datasetid) {
+                    console.log(dataset.data.data);
+
+                    for (let value of dataset.data.data) {
+                        ds2Values.push(value.Value);
+                    }
+                }
+            }
+
+            if (ds1Values.length > 0 && ds2Values.length > 0) {
+                console.log(ds1Values, ds2Values);
+
+                socket.emit('computeCovariance', {set1: [89], set2: [23]});
+            }
+
+        }
+    });
+
+    $('#saveProjectChangesButton').on('click', () => {
+        let projectData = {
+            title: $('#projectTitleField').val(),
+            datasetIDs: [],
+            dataset1ID: $('#dataset1Select').val(),
+            dataset2ID: $('#dataset2Select').val(),
+            id: project.id
+        };
+
+        if (projectData.dataset1ID !== "-1") {
+            projectData.datasetIDs.push(project.dataset1ID);
+        }
+        if (projectData.dataset2ID !== "-1") {
+            projectData.datasetIDs.push(project.dataset1ID);
+        }
+
+        console.log(projectData);
+
+        socket.emit('saveProjectDetailsInDB', projectData);
+    });
+
+    $('#downloadMapAsPNG').on('click', () => {
+        // This code allows for the map to saved as a png
+        var c = document.querySelectorAll('.leaflet-overlay-pane .leaflet-zoom-animated')[0];
+
+        var img_dataurl = c.toDataURL("image/png");
+
+        var svg_img = document.createElementNS(
+            "http://www.w3.org/2000/svg", "image");
+
+        svg_img.setAttributeNS(
+            "http://www.w3.org/1999/xlink", "xlink:href", img_dataurl);
+
+        window.open(img_dataurl);
+    });
+
+    $('#downloadMapAsJPG').on('click', () => {
+        // This code allows for the map to saved as a png
+        var c = document.querySelectorAll('.leaflet-overlay-pane .leaflet-zoom-animated')[0];
+
+        var img_dataurl = c.toDataURL("image/jpeg");
+
+        var svg_img = document.createElementNS(
+            "http://www.w3.org/2000/svg", "image");
+
+        svg_img.setAttributeNS(
+            "http://www.w3.org/1999/xlink", "xlink:href", img_dataurl);
+
+        window.open(img_dataurl);
+    });
+
+    $('#downloadMapAsSVG').on('click', () => {
+        //TODO: Need to get support for SVG some how
+    });
+
+    function plotDataset(data) {
         geojson.eachLayer(function (layer) {
             let countryCode = layer.feature.properties.iso_a3;
 
@@ -198,11 +351,25 @@ function setupProjectFromID(id, socket) {
                 }
             }
         });
-    });
+    }
+
+    function clearPlotDataset() {
+        geojson.eachLayer(function (layer) {
+            layer.setStyle({
+                fillColor: "#FFFFFF",
+                weight: 2,
+                opacity: 1,
+                color: 'white',
+                dashArray: '3',
+                fillOpacity: 0.0
+            });
+        });
+    }
 }
 
+
 function clearMap() {
-    $('#main-map-container').html('<div id="map" class="col-12"></div>');
+    $('#main-map-container').html('<div id="sidebar" class="col-3 col-lg-2"> <form id="projectOptionsForm"> <label>Show</label> <br><div class="form-check form-check-inline"> <label class="form-check-label"> <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="dataset1"> Dataset 1 </label> </div><div class="form-check form-check-inline"> <label class="form-check-label"> <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="dataset2"> Dataset 2 </label> </div><div class="form-check form-check-inline" hidden> <label class="form-check-label"> <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio3" value="correlation"> Correlation </label> </div><hr> <div class="form-group"> <label for="projectTitleField">Project Title</label> <input type="text" class="form-control" id="projectTitleField" placeholder="Project Title"> </div><hr/> <div class="form-group"> <label for="dataset1Select">Dataset 1</label> <select class="form-control" id="dataset1Select"> </select> </div><div class="form-group"> <label for="dataset2Select">Dataset 2</label> <select class="form-control" id="dataset2Select"> <option value="-1">None</option> </select> </div><hr> <div class="form-group"> <button type="button" id="saveProjectChangesButton" class="btn btn-success col-12">Save Changes</button> </div><div class="form-group"> <button type="button" id="shareProjectButton" class="btn btn-info col-12">Share Project</button> </div></form> </div><div id="map" class="col-9 col-lg-10"></div>');
 }
 
 function getColor(d) {
@@ -216,20 +383,6 @@ function getColor(d) {
                                 '#FFEDA0';
 }
 
-function setupMapView() {
-    $('#main-map-container').removeClass('hidden');
-
-    let map = L.map('map').setView([46.938984, 2.373590], 4);
-    let CartoDB_DarkMatter = L.tileLayer('http://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="http://cartodb.com/attributions">CartoDB</a>',
-        subdomains: 'abcd',
-        maxZoom: 19,
-        maxBoundsViscosity: 1.0
-    }).addTo(map);
-
-    //TODO: Need to load in the details of the map
-}
-
 function setupProjectInDatabase(firebase) {
     let projectTitle = $('#projectTitle').val();
     let datasetID = $('#projectModalDataSetSelection').val();
@@ -240,7 +393,9 @@ function setupProjectInDatabase(firebase) {
     // A project entry.
     var projectPost = {
         title: projectTitle,
-        datasetIDs: [datasetID]
+        datasetIDs: [datasetID],
+        dataset1ID: datasetID,
+        dataset2ID: "-1"
     };
 
     // Get a key for a new project.
@@ -251,7 +406,9 @@ function setupProjectInDatabase(firebase) {
     updates['/projects/' + newPostKey] = projectPost;
     updates['/users/' + currentUserID + '/projects/' + newPostKey] = true;
 
-    return firebase.database().ref().update(updates);
+
+
+    return [firebase.database().ref().update(updates), newPostKey];
 }
 
 function changeToProjectView() {

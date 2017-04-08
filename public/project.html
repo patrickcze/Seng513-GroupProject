@@ -64,14 +64,55 @@
         </div>
     </div>
 
-    <form id="uploadForm" enctype="multipart/form-data" action="/api/dataset" method="post" target="_blank">
-        <input type="file" name="userDataset"/><input type="submit" value="Upload Image" name="submit">
-        <input type=\'text\' id=\'random\' name=\'random\'><br><span id="status"></span>
-    </form>
-
     <!--Display the map-->
     <div id="main-map-container" class="container-fluid hidden">
-        <div id="map" class="col-12"></div>
+        <div id="sidebar" class="col-3 col-lg-2">
+            <form id="projectOptionsForm">
+                <label>Show</label>
+                <br>
+                <div class="form-check form-check-inline">
+                    <label class="form-check-label">
+                        <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="dataset1"> Dataset 1
+                    </label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <label class="form-check-label">
+                        <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="dataset2"> Dataset 2
+                    </label>
+                </div>
+                <div class="form-check form-check-inline" hidden>
+                    <label class="form-check-label">
+                        <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio3" value="correlation"> Correlation
+                    </label>
+                </div>
+                <hr>
+                <div class="form-group">
+                    <label for="projectTitleField">Project Title</label>
+                    <input type="text" class="form-control" id="projectTitleField" placeholder="Project Title">
+                </div>
+                <hr/>
+                <div class="form-group">
+                    <label for="dataset1Select">Dataset 1</label>
+                    <select class="form-control" id="dataset1Select">
+
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="dataset2Select">Dataset 2</label>
+                    <select class="form-control" id="dataset2Select">
+                        <option value="-1">None</option>
+                    </select>
+                </div>
+                <hr>
+                <div class="form-group">
+                    <button type="button" id="saveProjectChangesButton" class="btn btn-success col-12">Save Changes</button>
+                </div>
+                <div class="form-group">
+                    <button type="button" id="shareProjectButton" class="btn btn-info col-12">Share Project</button>
+                </div>
+            </form>
+        </div>
+        <div id="map" class="col-9 col-lg-10"></div>
     </div>
 </div>
 
@@ -137,6 +178,43 @@
     </div>
 </div>
 
+<!-- Share Modal -->
+<div class="modal fade" id="shareProjectModal" tabindex="-1" role="dialog" aria-labelledby="shareProjectModalModal"
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="shareProjectModalLabel">Share and Export Project</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div id="shareProjectModalBody" class="modal-body">
+                <div class="">
+                    <div class="form-group">
+                        <label class="col-9">Public URL</label>
+                        <!-- Rounded switch -->
+                        <label class="switch col-3" style="float: right">
+                            <input type="checkbox">
+                            <div class="slider round"></div>
+                        </label>
+                        <input type="text" class="form-control col-12">
+                    </div>
+                    <hr>
+                    <div class="form-group">
+                        <label class="col-12">Save as</label>
+                        <div style="text-align: center">
+                            <button id="downloadMapAsPNG" class="btn btn-outline-primary col-3">PNG</button>
+                            <button id="downloadMapAsJPG" class="btn btn-outline-primary col-3">JPG</button>
+                            <button id="downloadMapAsSVG" class="btn btn-outline-primary col-3">SVG</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!--Needed Scripts-->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
 <script src="/socket.io/socket.io.js"></script>
@@ -146,6 +224,7 @@
         integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn"
         crossorigin="anonymous"></script>
 <script src="https://unpkg.com/leaflet@1.0.3/dist/leaflet.js"></script>
+<script src='http://xn--dahlstrm-t4a.net/svg/libraries/canvas-svg/canvas-getsvg.js'></script>
 <script src="js/project.js"></script>
 
 </body>
