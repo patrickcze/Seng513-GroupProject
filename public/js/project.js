@@ -416,7 +416,8 @@ function setupProjectFromID(id, socket, userDatasets) {
             dataset1ID: $('#dataset1Select').val(),
             dataset2ID: $('#dataset2Select').val(),
             id: project.id,
-            isPublic: $('#publicCheckbox').prop('checked')
+            isPublic: $('#publicCheckbox').prop('checked'),
+            visibleDataset: $('input[type=radio][name=inlineRadioOptions]:checked').val()
         };
 
         if (projectData.dataset1ID !== "-1") {

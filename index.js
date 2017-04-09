@@ -146,6 +146,7 @@ io.on('connection', function (socket) {
                     updates[projectPath + '/dataset1ID'] = project.dataset1ID;
                     updates[projectPath + '/dataset2ID'] = project.dataset2ID;
                     updates[projectPath + '/isPublic'] = project.isPublic;
+                    updates[projectPath + '/visibleDataset'] = project.visibleDataset;
 
                     firebase.database().ref().update(updates);
                 }
