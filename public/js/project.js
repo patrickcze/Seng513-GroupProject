@@ -34,18 +34,16 @@ $(function () {
 
     // Setup the auth object to get user details for further use
     firebase.auth().onAuthStateChanged(function (firebaseUser) {
-        if (firebaseUser) {
+        if (urlParams.projectid) {
+            setupViewOnlyProject(urlParams.projectid, socket);
+        } else if (firebaseUser) {
             console.log(firebaseUser);
             //Redirect to the maps page
 
             socket.emit('getListOfUserDatasets', {uid: firebaseUser.uid});
             socket.emit('getListOfUserProjects', {uid: firebaseUser.uid});
         } else {
-            if (urlParams.projectid) {
-                setupViewOnlyProject(urlParams.projectid, socket);
-            } else {
-                window.location.replace('/');
-            }
+            window.location.replace('/');
         }
     });
 
@@ -179,7 +177,7 @@ function setupViewOnlyProject(id, socket) {
     socket.on('setProjectWithId', (data) => {
         project = data;
 
-        if (!project.isPublic) {
+        if (!project || !project.isPublic) {
             window.location.replace('/');
         }
 

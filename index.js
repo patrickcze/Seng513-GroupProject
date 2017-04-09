@@ -124,9 +124,15 @@ io.on('connection', function (socket) {
 
             ref.ref('projects/' + id).once('value').then(function (snapshot) {
                 let project = snapshot.val();
-                project["id"] = id;
+
+                if (project){
+                    project["id"] = id;
+                }
 
                 socket.emit('setProjectWithId', project);
+            }, function (error) {
+                // An error happened.
+                console.log("ERROR");
             });
         }
     });
