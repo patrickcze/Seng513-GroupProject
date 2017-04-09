@@ -4,10 +4,12 @@ $(function () {
     var urlParams;
     (window.onpopstate = function () {
         var match,
-            pl     = /\+/g,  // Regex for replacing addition symbol with a space
+            pl = /\+/g,  // Regex for replacing addition symbol with a space
             search = /([^&=]+)=?([^&]*)/g,
-            decode = function (s) { return decodeURIComponent(s.replace(pl, " ")); },
-            query  = window.location.search.substring(1);
+            decode = function (s) {
+                return decodeURIComponent(s.replace(pl, " "));
+            },
+            query = window.location.search.substring(1);
 
         urlParams = {};
         while (match = search.exec(query))
@@ -39,7 +41,7 @@ $(function () {
             socket.emit('getListOfUserDatasets', {uid: firebaseUser.uid});
             socket.emit('getListOfUserProjects', {uid: firebaseUser.uid});
         } else {
-            if (urlParams.projectid){
+            if (urlParams.projectid) {
                 setupViewOnlyProject(urlParams.projectid, socket);
             } else {
                 window.location.replace('/');
@@ -133,8 +135,8 @@ $(function () {
         changeToProjectView();
         let promiseandkey = setupProjectInDatabase(firebase);
 
-        promiseandkey[0].then(()=>{
-            setupProjectFromID(promiseandkey[1],socket,userDatasets);
+        promiseandkey[0].then(() => {
+            setupProjectFromID(promiseandkey[1], socket, userDatasets);
         });
     });
 
@@ -162,13 +164,14 @@ function setupViewOnlyProject(id, socket) {
     let project = null;
     let geojson = null;
     let map = null;
+    let datasetToDisplay = null;
 
     let projectDatasets = [];
 
     $('#logoutUserBtn').addClass('collapse');
     $('#mapsLink').addClass('hidden');
     $('#datasetsLink').addClass('hidden');
-    $('#map').attr( "class", "col-12");
+    $('#map').attr("class", "col-12");
 
     //Get the details of the project
     socket.emit('getProjectWithId', id);
@@ -176,11 +179,25 @@ function setupViewOnlyProject(id, socket) {
     socket.on('setProjectWithId', (data) => {
         project = data;
 
-        if (!project.isPublic){
+        if (!project.isPublic) {
             window.location.replace('/');
         }
 
-        console.log('PROJECT:',data);
+        switch (project.visibleDataset) {
+            case "dataset1":
+                datasetToDisplay = project.dataset1ID;
+                break;
+            case "dataset2":
+                datasetToDisplay = project.dataset2ID;
+                break;
+            case "correlation":
+                datasetToDisplay = "correlation";
+                break;
+        }
+
+        console.log(datasetToDisplay);
+
+        console.log('PROJECT:', data);
 
         $("#projectTitleField").val(project.title);
         $('#main-map-container').removeClass('hidden');
@@ -200,9 +217,17 @@ function setupViewOnlyProject(id, socket) {
         // Ask for geojson data
         socket.emit('getGlobalGeoJSON');
 
-        for (i in project.datasetIDs) {
-            console.log(project.datasetIDs[i]);
-            socket.emit('getDatasetWithID', {datasetid: project.datasetIDs[i], viewOnly:true});
+        if (datasetToDisplay === "correlation") {
+            socket.emit('computeDatasetRatio', {dataset1id: project.dataset1ID, dataset2id: project.dataset2ID});
+            socket.on('plotCorrelation', (data) => {
+                console.log(data);
+                plotDataset(data, geojson);
+            });
+        } else {
+            for (i in project.datasetIDs) {
+                console.log(project.datasetIDs[i]);
+                socket.emit('getDatasetWithID', {datasetid: project.datasetIDs[i], viewOnly: true});
+            }
         }
     });
 
@@ -222,7 +247,7 @@ function setupViewOnlyProject(id, socket) {
         console.log(dataset);
         projectDatasets.push(dataset);
 
-        if (dataset.datasetid.datasetid === project.dataset1ID) {
+        if (dataset.datasetid.datasetid === datasetToDisplay) {
             plotDataset(dataset.data.data, geojson);
         }
     });
@@ -247,7 +272,6 @@ function setupViewOnlyProject(id, socket) {
         });
     }
 }
-
 
 function setupProjectFromID(id, socket, userDatasets) {
     changeToProjectView();
@@ -291,13 +315,13 @@ function setupProjectFromID(id, socket, userDatasets) {
 
     socket.on('setProjectWithId', (data) => {
         project = data;
-        console.log('PROJECT:',data);
+        console.log('PROJECT:', data);
 
         $("#projectTitleField").val(project.title);
 
-        if(project.isPublic){
+        if (project.isPublic) {
             $('#publicCheckbox').prop('checked', true);
-            $('#publicURL').val('http://127.0.0.1:3000/project?projectid='+project.id);
+            $('#publicURL').val('http://127.0.0.1:3000/project?projectid=' + project.id);
         }
 
         // Ask for geojson data
@@ -309,9 +333,10 @@ function setupProjectFromID(id, socket, userDatasets) {
         }
     });
 
+    // Change the textbox
     $('#publicCheckbox').change(function () {
-        if ($('#publicCheckbox').prop('checked')){
-            $('#publicURL').val('http://127.0.0.1:3000/project?projectid='+project.id);
+        if ($('#publicCheckbox').prop('checked')) {
+            $('#publicURL').val('http://127.0.0.1:3000/project?projectid=' + project.id);
         } else {
             $('#publicURL').val('');
         }
@@ -376,8 +401,8 @@ function setupProjectFromID(id, socket, userDatasets) {
             let dataset1id = $('#dataset1Select').val();
             let dataset2id = $('#dataset2Select').val();
 
-            socket.emit('computeDatasetRatio', {dataset1id:dataset1id, dataset2id:dataset2id});
-            socket.on('plotCorrelation', (data)=> {
+            socket.emit('computeDatasetRatio', {dataset1id: dataset1id, dataset2id: dataset2id});
+            socket.on('plotCorrelation', (data) => {
                 console.log(data);
                 plotDataset(data);
             });
@@ -474,8 +499,6 @@ function setupProjectFromID(id, socket, userDatasets) {
 }
 
 
-
-
 function clearMap() {
     $('#main-map-container').html('<div id="sidebar" class="col-3 col-lg-2"> <form id="projectOptionsForm"> <label>Show</label> <br><div class="form-check form-check-inline"> <label class="form-check-label"> <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="dataset1"> Dataset 1 </label> </div><div class="form-check form-check-inline"> <label class="form-check-label"> <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="dataset2"> Dataset 2 </label> </div><div class="form-check form-check-inline" hidden> <label class="form-check-label"> <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio3" value="correlation"> Correlation </label> </div><hr> <div class="form-group"> <label for="projectTitleField">Project Title</label> <input type="text" class="form-control" id="projectTitleField" placeholder="Project Title"> </div><hr/> <div class="form-group"> <label for="dataset1Select">Dataset 1</label> <select class="form-control" id="dataset1Select"> </select> </div><div class="form-group"> <label for="dataset2Select">Dataset 2</label> <select class="form-control" id="dataset2Select"> <option value="-1">None</option> </select> </div><hr> <div class="form-group"> <button type="button" id="saveProjectChangesButton" class="btn btn-success col-12">Save Changes</button> </div><div class="form-group"> <button type="button" id="shareProjectButton" class="btn btn-info col-12">Share Project</button> </div></form> </div><div id="map" class="col-9 col-lg-10"></div>');
 }
@@ -513,7 +536,6 @@ function setupProjectInDatabase(firebase) {
     var updates = {};
     updates['/projects/' + newPostKey] = projectPost;
     updates['/users/' + currentUserID + '/projects/' + newPostKey] = true;
-
 
 
     return [firebase.database().ref().update(updates), newPostKey];
