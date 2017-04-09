@@ -1,6 +1,21 @@
 $(function () {
     let userDatasets = null;
 
+    var urlParams;
+    (window.onpopstate = function () {
+        var match,
+            pl     = /\+/g,  // Regex for replacing addition symbol with a space
+            search = /([^&=]+)=?([^&]*)/g,
+            decode = function (s) { return decodeURIComponent(s.replace(pl, " ")); },
+            query  = window.location.search.substring(1);
+
+        urlParams = {};
+        while (match = search.exec(query))
+            urlParams[decode(match[1])] = decode(match[2]);
+    })();
+
+    console.log(urlParams);
+
     //Initialize Socket Connection
     var socket = io();
 
@@ -24,8 +39,11 @@ $(function () {
             socket.emit('getListOfUserDatasets', {uid: firebaseUser.uid});
             socket.emit('getListOfUserProjects', {uid: firebaseUser.uid});
         } else {
-            console.log("not logged in");
-            window.location.replace('/');
+            if (urlParams.projectid){
+                setupViewOnlyProject(urlParams.projectid, socket);
+            } else {
+                window.location.replace('/');
+            }
         }
     });
 
@@ -136,6 +154,100 @@ $(function () {
     });
 });
 
+function setupViewOnlyProject(id, socket) {
+    changeToProjectView();
+
+    $('#sidebar').addClass('collapse');
+
+    let project = null;
+    let geojson = null;
+    let map = null;
+
+    let projectDatasets = [];
+
+    $('#logoutUserBtn').addClass('collapse');
+    $('#mapsLink').addClass('hidden');
+    $('#datasetsLink').addClass('hidden');
+    $('#map').attr( "class", "col-12");
+
+    //Get the details of the project
+    socket.emit('getProjectWithId', id);
+
+    socket.on('setProjectWithId', (data) => {
+        project = data;
+
+        if (!project.isPublic){
+            window.location.replace('/');
+        }
+
+        console.log('PROJECT:',data);
+
+        $("#projectTitleField").val(project.title);
+        $('#main-map-container').removeClass('hidden');
+
+        //Setup the Map
+        map = L.map('map', {
+            center: [46.938984, 2.373590],
+            zoom: 4,
+            preferCanvas: true
+        });
+
+        let OpenStreetMap_BlackAndWhite = L.tileLayer('http://{s}.tiles.wmflabs.org/bw-mapnik/{z}/{x}/{y}.png', {
+            maxZoom: 18,
+            attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        }).addTo(map);
+
+        // Ask for geojson data
+        socket.emit('getGlobalGeoJSON');
+
+        for (i in project.datasetIDs) {
+            console.log(project.datasetIDs[i]);
+            socket.emit('getDatasetWithID', {datasetid: project.datasetIDs[i], viewOnly:true});
+        }
+    });
+
+    // Draw the global geojson map
+    socket.on('globalGeoJSON', (globaljson) => {
+        console.log(globaljson);
+
+        geojson = L.geoJson(globaljson, {
+            style: {
+                fillColor: "#FFFFFF",
+                opacity: 0.0
+            }
+        }).addTo(map);
+    });
+
+    socket.on('setDatasetViewOnly', (dataset) => {
+        console.log(dataset);
+        projectDatasets.push(dataset);
+
+        if (dataset.datasetid.datasetid === project.dataset1ID) {
+            plotDataset(dataset.data.data, geojson);
+        }
+    });
+
+    function plotDataset(data, geojson) {
+        console.log(data);
+        geojson.eachLayer(function (layer) {
+            let countryCode = layer.feature.properties.iso_a3;
+
+            for (let dataPoint of data) {
+                if (dataPoint.isoA3 === countryCode) {
+                    layer.setStyle({
+                        fillColor: getColor(dataPoint.value),
+                        weight: 2,
+                        opacity: 1,
+                        color: 'white',
+                        dashArray: '3',
+                        fillOpacity: 0.7
+                    });
+                }
+            }
+        });
+    }
+}
+
 
 function setupProjectFromID(id, socket, userDatasets) {
     changeToProjectView();
@@ -188,7 +300,7 @@ function setupProjectFromID(id, socket, userDatasets) {
 
         for (i in project.datasetIDs) {
             console.log(project.datasetIDs[i]);
-            socket.emit('getDatasetWithID', {datasetid: project.datasetIDs[i]});
+            socket.emit('getDatasetWithID', {datasetid: project.datasetIDs[i], viewOnly: false});
         }
     });
 
@@ -346,6 +458,8 @@ function setupProjectFromID(id, socket, userDatasets) {
         });
     }
 }
+
+
 
 
 function clearMap() {

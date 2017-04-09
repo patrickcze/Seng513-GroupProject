@@ -107,9 +107,12 @@ io.on('connection', function (socket) {
             let ref = firebase.database();
 
             ref.ref('datasets/' + data.datasetid).once('value').then(function (snapshot) {
-
-                socket.emit('setDataset', {datasetid: data, data: snapshot.val()});
-            })
+                if (data.viewOnly){
+                    socket.emit('setDatasetViewOnly', {datasetid: data, data: snapshot.val()});
+                } else {
+                    socket.emit('setDataset', {datasetid: data, data: snapshot.val()});
+                }
+            });
         }
     });
 
