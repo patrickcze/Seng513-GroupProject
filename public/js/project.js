@@ -295,12 +295,25 @@ function setupProjectFromID(id, socket, userDatasets) {
 
         $("#projectTitleField").val(project.title);
 
+        if(project.isPublic){
+            $('#publicCheckbox').prop('checked', true);
+            $('#publicURL').val('http://127.0.0.1:3000/project?projectid='+project.id);
+        }
+
         // Ask for geojson data
         socket.emit('getGlobalGeoJSON');
 
         for (i in project.datasetIDs) {
             console.log(project.datasetIDs[i]);
             socket.emit('getDatasetWithID', {datasetid: project.datasetIDs[i], viewOnly: false});
+        }
+    });
+
+    $('#publicCheckbox').change(function () {
+        if ($('#publicCheckbox').prop('checked')){
+            $('#publicURL').val('http://127.0.0.1:3000/project?projectid='+project.id);
+        } else {
+            $('#publicURL').val('');
         }
     });
 
@@ -377,14 +390,15 @@ function setupProjectFromID(id, socket, userDatasets) {
             datasetIDs: [],
             dataset1ID: $('#dataset1Select').val(),
             dataset2ID: $('#dataset2Select').val(),
-            id: project.id
+            id: project.id,
+            isPublic: $('#publicCheckbox').prop('checked')
         };
 
         if (projectData.dataset1ID !== "-1") {
             projectData.datasetIDs.push(project.dataset1ID);
         }
         if (projectData.dataset2ID !== "-1") {
-            projectData.datasetIDs.push(project.dataset1ID);
+            projectData.datasetIDs.push(project.dataset2ID);
         }
 
         console.log(projectData);
