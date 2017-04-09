@@ -525,7 +525,9 @@ function setupProjectInDatabase(firebase) {
         title: projectTitle,
         datasetIDs: [datasetID],
         dataset1ID: datasetID,
-        dataset2ID: "-1"
+        dataset2ID: "-1",
+        isPublic: false,
+        visibleDataset: "dataset1"
     };
 
     // Get a key for a new project.
