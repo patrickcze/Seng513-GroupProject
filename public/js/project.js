@@ -1,4 +1,5 @@
 $(function () {
+
     let userDatasets = null;
 
     //Initialize Socket Connection
@@ -60,9 +61,8 @@ $(function () {
             //Setup the options within the modal
             let option = '<option value="' + dataset.id + '">' + dataset.name + '</option>';
             $("#projectModalDataSetSelection").append(option);
-
             //Setup the cards within the datasetCardArea
-            let card = '<div class="card" style="width: 20rem;"><div class="card-block"> <h4 class="card-title">' + dataset.name + '</h4> <p class="card-text">332 Entries</p> </div> </div>';
+            let card = '<div class="card project-card" style="width: 20rem; height: 15rem;" projectid="' + project.id + '"> <div class="card-block"><div class="dropdown"><button class="btn moreoptions dropdown-toggle" type="button" id="moreMenu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true"></button><ul class="dropdown-menu dropdown-menu-right" aria-labelledby="moreMenu"><li><a href="#" class="standardMenuOption">Rename</a></li><li><a href="#" class="deleteMenuOption">Delete</a></li></ul></div></p></div><h6 class="card-title">' + project.title + '</h6></div>';
             $('#datasetCardArea').append(card);
         }
     });
@@ -71,11 +71,24 @@ $(function () {
     //Get a list of the users projects
     socket.on('listOfUserProjects', (data) => {
         for (let project of data.projects) {
-            let card = '<div class="card project-card" style="width: 20rem;" projectid="' + project.id + '"><div class="card-block"><h4 class="card-title">' + project.title + '</h4> <p class="card-text"></p> </div> </div>';
+            
+            let card = '<div class="card project-card" style="width: 20rem; height: 15rem;" projectid="' + project.id + '"> <img class="card-img-top" src="northamerica.png" alt="Card image" style="height:12rem; width:19.9rem; position:absolute;"><div class="card-block"><div class="dropdown"><button class="btn moreoptions dropdown-toggle" type="button" id="moreMenu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true"></button><ul class="dropdown-menu dropdown-menu-right" aria-labelledby="moreMenu"><li><a href="#" class="standardMenuOption">Rename</a></li><li><a href="#" class="deleteMenuOption">Delete</a></li></ul></div></p></div><h6 class="card-title">' + project.title + '</h6></div>';
             $('#mapCardArea').append(card);
         }
+        
+        // from http://stackoverflow.com/questions/12115833/adding-a-slide-effect-to-bootstrap-dropdown
+        $('.dropdown').on('show.bs.dropdown', function() {
+            $(this).find('.dropdown-menu').first().stop(true, true).slideDown();
+        });
 
-        $(".project-card").click(function () {
+        // Add slideUp animation to Bootstrap dropdown when collapsing.
+        $('.dropdown').on('hide.bs.dropdown', function() {
+            $(this).find('.dropdown-menu').first().stop(true, true).slideUp();
+        });
+        
+        
+
+        $(".project-card img").click(function () {
             console.log("Handler for .click() called.");
             console.log($(this).attr("projectid"));
             setupProjectFromID($(this).attr("projectid"), socket, userDatasets);
