@@ -67,6 +67,9 @@
     <div id="main-map-container" class="container-fluid hidden">
         <div id="sidebar" class="col-3 col-lg-2">
             <form id="projectOptionsForm">
+                <div class="form-group">
+                    <input type="text" class="form-control" id="projectTitleField" placeholder="Project Title">
+                </div>                
                 <label>Show</label>
                 <br>
                 <div class="form-check form-check-inline">
@@ -84,12 +87,6 @@
                         <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio3" value="correlation"> Correlation
                     </label>
                 </div>
-                <hr>
-                <div class="form-group">
-                    <label for="projectTitleField">Project Title</label>
-                    <input type="text" class="form-control" id="projectTitleField" placeholder="Project Title">
-                </div>
-                <hr/>
                 <div class="form-group">
                     <label for="dataset1Select">Dataset 1</label>
                     <select class="form-control" id="dataset1Select">
@@ -162,11 +159,11 @@
             </div>
             <div id="newDatasetModalBody" class="modal-body">
                 <a href="/downloadGlobalTemplate" target="_blank">
-                    <button class="btn btn-info col-12">Global Countries Template</button>
+                    <button class="btn btn-info col-3">Global Countries Template</button>
                 </a>
-                <button class="btn btn-info col-12">USA & Canada Template</button>
-                <button class="btn btn-info col-12">USA Template</button>
-                <button class="btn btn-info col-12">Canada Template</button>
+                <button class="btn btn-info col-3">USA & Canada Template</button>
+                <button class="btn btn-info col-3">USA Template</button>
+                <button class="btn btn-info col-3">Canada Template</button>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>

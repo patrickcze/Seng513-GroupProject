@@ -144,8 +144,8 @@ $(function () {
     });
 
     $('#datasetNextStepButton').on('click', () => {
-        $('#newDatasetModalLabel').text("Upload your filled in template");
-        $('#newDatasetModalBody').html('<form id="uploadForm" enctype="multipart/form-data" action="/api/dataset" method="post" target="_blank"><input type="file" name="userDataset"/><input type="submit" value="Upload Image" name="submit"><input type=\'text\' id=\'random\' name=\'random\'><br><span id="status"></span></form>');
+        $('#newDatasetModalLabel').text("Upload your filled in template data");
+        $('#newDatasetModalBody').html('<form id="uploadForm" enctype="multipart/form-data" action="/api/dataset" method="post" target="_blank"><input type="file" name="userDataset"/><input type="submit" value="Upload Dataset" name="submit"><input type=\'text\' id=\'random\' name=\'random\'><br><span id="status"></span></form>');
     });
 });
 
@@ -403,6 +403,7 @@ function setupProjectInDatabase(firebase) {
 
     return [firebase.database().ref().update(updates), newPostKey];
 }
+
 
 function changeToProjectView() {
     $('#datasetsLink').removeClass('active');
