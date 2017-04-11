@@ -1,5 +1,10 @@
 $(function () {
 
+    
+    // Allow popovers in bootstrap
+    $('[data-toggle="popover"]').popover()
+
+    
     let userDatasets = null;
 
     //Initialize Socket Connection
