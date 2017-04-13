@@ -1,0 +1,17 @@
+US 2013 Population Census Data
+http://www.enchantedlearning.com/usa/states/population.shtml
+
+US 2015 U.S. GDP Data
+https://en.wikipedia.org/wiki/List_of_U.S._states_by_Gross_State_Product_(GSP)
+
+2015 World Population
+https://esa.un.org/unpd/wpp/Download/Standard/Population/
+
+2015 Internet Users
+http://data.worldbank.org/indicator/IT.NET.USER.P2?view=map
+
+2017 Q1 Canada Population Estimates
+http://www5.statcan.gc.ca/cansim/a26?lang=eng&retrLang=eng&id=0510005&&pattern=&stByVal=1&p1=1&p2=31&tabMode=dataTable&csid=
+
+2014-2015 Canada Convictions
+http://www5.statcan.gc.ca/subject-sujet/result-resultat?pid=2693&id=2102&lang=eng&type=CST&pageNum=1&more=0
