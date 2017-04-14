@@ -462,7 +462,7 @@ function setupProjectFromID(id, socket, userDatasets) {
         storageRef.putString(img_dataurl, 'data_url').then(function(snapshot) {
             console.log('Uploaded a data_url string!');
 
-            projectData.projectScreenshotURL = snapshot.downloadURL;
+        projectData.projectScreenshotURL = snapshot.downloadURL;
             console.log(projectData);
 
             socket.emit('saveProjectDetailsInDB', projectData);

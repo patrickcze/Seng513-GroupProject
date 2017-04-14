@@ -343,6 +343,7 @@ input:checked + .slider:before {
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 .circlebutton {
   width: 20px;
@@ -437,6 +438,8 @@ input:checked + .slider:before {
 }
 
 
+=======
+>>>>>>> Develop
 /**/
 .cs-loader-inner {
     transform: translateY(-50%);
@@ -535,10 +538,10 @@ input:checked + .slider:before {
     text-align: center;
 }
 
-
 #loading-image {
     position: absolute;
     top: 100px;
     left: 240px;
     z-index: 100;
 }
+
