@@ -429,6 +429,8 @@ function setupProjectFromID(id, socket, userDatasets) {
     });
 
     $('#saveProjectChangesButton').on('click', () => {
+        $('#loading').show();
+
         let projectData = {
             title: $('#projectTitleField').val(),
             datasetIDs: [],
@@ -459,6 +461,7 @@ function setupProjectFromID(id, socket, userDatasets) {
             console.log(projectData);
 
             socket.emit('saveProjectDetailsInDB', projectData);
+            $('#loading').hide();
         });
     });
 
