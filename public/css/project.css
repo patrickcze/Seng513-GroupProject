@@ -46,6 +46,49 @@ hr{
     color: #ffffff;
 }
 
+/*Changing the color of the modals*/
+.modal-header, .modal-body, .modal-footer {
+    background-color: #111111;
+}
+
+.modal-header, .modal-footer {
+    border-color: #555555;
+}
+
+label{
+    color: #FFFFFF;
+}
+
+.modal-title, .close {
+    color: #FFFFFF;
+}
+
+input {
+    color: #777777 !important;
+    background-color: #111111 !important;
+    border-bottom: 1px solid #FFFFFF !important;
+    border-radius: 0px !important;
+}
+
+input:focus {
+    border-left: 0px solid #FFFFFF !important;
+    border-right: 0px solid #FFFFFF !important;
+    border-top: 0px solid #FFFFFF !important;
+}
+
+select {
+    color: #777777 !important;
+    background-color: #111111 !important;
+    border-bottom: 1px solid #FFFFFF !important;
+    border-bottom-left-radius: 0px !important;
+    border-bottom-right-radius: 0px !important;
+}
+
+select:focus {
+    border-left: 0px solid #FFFFFF !important;
+    border-right: 0px solid #FFFFFF !important;
+    border-top: 0px solid #FFFFFF !important;
+}
 
 /* The switch - the box around the slider */
 .switch {
@@ -84,11 +127,11 @@ hr{
 }
 
 input:checked + .slider {
-    background-color: #2196F3;
+    background-color: #5cb85c;
 }
 
 input:focus + .slider {
-    box-shadow: 0 0 1px #2196F3;
+    box-shadow: 0 0 1px #5cb85c;
 }
 
 input:checked + .slider:before {
