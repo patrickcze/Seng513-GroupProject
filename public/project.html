@@ -67,6 +67,9 @@
     <div id="main-map-container" class="container-fluid hidden">
         <div id="sidebar" class="col-3 col-lg-2">
             <form id="projectOptionsForm">
+                <div class="form-group">
+                    <input type="text" class="form-control" id="projectTitleField" placeholder="Project Title">
+                </div>    
                 <div class="form-check">
                     <label class="form-check-label">
                         <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="dataset1"> Dataset 1
@@ -82,9 +85,7 @@
                         <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio3" value="correlation"> Correlation
                     </label>
                 </div>
-                <hr/>
-                
-                
+                <hr/>            
                 <div class="form-group">
                     <label for="dataset1Select">Dataset 1</label>
                     <button type="button" class="btn btn-secondary pull-right circlebutton" data-container="body" data-toggle="popover" data-placement="right" data-content="<div><button type='button' id='color1' class='circlebutton'></button><button type='button' id='color2' class='circlebutton'></button><button type='button' id='color3' class='circlebutton'></button></div><div><button type='button' id='color4' class='circlebutton'></button><button type='button' id='color5' class='circlebutton'></button><button type='button' id='color6' class='circlebutton'></button></div><div><button type='button' id='color7' class='circlebutton'></button><button type='button' id='color8' class='circlebutton'></button><button type='button' id='color9' class='circlebutton'></button></div>" data-html='true'></button>
