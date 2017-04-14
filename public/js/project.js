@@ -41,6 +41,8 @@ $(function () {
             console.log(firebaseUser);
             //Redirect to the maps page
 
+            $('#loading').show();
+
             socket.emit('getListOfUserDatasets', {uid: firebaseUser.uid});
             socket.emit('getListOfUserProjects', {uid: firebaseUser.uid});
         } else {
@@ -89,8 +91,12 @@ $(function () {
     //Get a list of the users projects
     socket.on('listOfUserProjects', (data) => {
         for (let project of data.projects) {
-            
-            let card = '<div class="card project-card" style="width: 20rem; height: 15rem;" projectid="' + project.id + '"> <img class="card-img-top" src="northamerica.png" alt="Card image" style="height:12rem; width:19.9rem; position:absolute;"><div class="card-block"><div class="dropdown"><button class="btn moreoptions dropdown-toggle" type="button" id="moreMenu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true"></button><ul class="dropdown-menu dropdown-menu-right" aria-labelledby="moreMenu"><li><a href="#" class="standardMenuOption">Rename</a></li><li><a href="#" class="deleteMenuOption">Delete</a></li></ul></div></p></div><h6 class="card-title">' + project.title + '</h6></div>';
+            let screenShotURL = "northamerica.png";
+            if (project.projectScreenshotURL) {
+                screenShotURL = project.projectScreenshotURL;
+            }
+
+            let card = '<div class="card project-card" style="width: 20rem; height: 15rem;" projectid="' + project.id + '"> <img class="card-img-top" src="'+screenShotURL+'" alt="Card image" style="height:12rem; width:19.9rem; position:absolute;"><div class="card-block"><div class="dropdown"><button class="btn moreoptions dropdown-toggle" type="button" id="moreMenu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true"></button><ul class="dropdown-menu dropdown-menu-right" aria-labelledby="moreMenu"><li><a href="#" class="standardMenuOption">Rename</a></li><li><a href="#" class="deleteMenuOption">Delete</a></li></ul></div></p></div><h6 class="card-title">' + project.title + '</h6></div>';
             $('#mapCardArea').append(card);
         }
         
@@ -103,10 +109,10 @@ $(function () {
         $('.dropdown').on('hide.bs.dropdown', function() {
             $(this).find('.dropdown-menu').first().stop(true, true).slideUp();
         });
-        
-        
 
-        $(".project-card img").click(function () {
+        $('#loading').hide();
+
+        $(".project-card").click(function () {
             console.log("Handler for .click() called.");
             console.log($(this).attr("projectid"));
             setupProjectFromID($(this).attr("projectid"), socket, userDatasets);
@@ -220,9 +226,8 @@ function setupViewOnlyProject(id, socket) {
             preferCanvas: true
         });
 
-        let OpenStreetMap_BlackAndWhite = L.tileLayer('http://{s}.tiles.wmflabs.org/bw-mapnik/{z}/{x}/{y}.png', {
-            maxZoom: 18,
-            attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        L.tileLayer('http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png',{
+            attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="http://cartodb.com/attributions">CartoDB</a>'
         }).addTo(map);
 
         // Ask for geojson data
@@ -287,6 +292,8 @@ function setupViewOnlyProject(id, socket) {
 function setupProjectFromID(id, socket, userDatasets) {
     changeToProjectView();
 
+    $('#loading').show();
+
     console.log("setup project");
 
     let project = null;
@@ -316,9 +323,8 @@ function setupProjectFromID(id, socket, userDatasets) {
         preferCanvas: true
     });
 
-    let OpenStreetMap_BlackAndWhite = L.tileLayer('http://{s}.tiles.wmflabs.org/bw-mapnik/{z}/{x}/{y}.png', {
-        maxZoom: 18,
-        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    L.tileLayer('http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png',{
+        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="http://cartodb.com/attributions">CartoDB</a>'
     }).addTo(map);
 
     //Get the details of the project
@@ -379,6 +385,8 @@ function setupProjectFromID(id, socket, userDatasets) {
         if (dataset.datasetid.datasetid === project.dataset2ID) {
             $('#dataset2Select').val(project.dataset2ID);
         }
+
+        $('#loading').hide();
     });
 
     $('input[type=radio][name=inlineRadioOptions]').change(function () {
@@ -421,6 +429,8 @@ function setupProjectFromID(id, socket, userDatasets) {
     });
 
     $('#saveProjectChangesButton').on('click', () => {
+        $('#loading').show();
+
         let projectData = {
             title: $('#projectTitleField').val(),
             datasetIDs: [],
@@ -438,9 +448,21 @@ function setupProjectFromID(id, socket, userDatasets) {
             projectData.datasetIDs.push(project.dataset2ID);
         }
 
-        console.log(projectData);
+        let storageRef = firebase.storage().ref().child("/projectScreenShots/"+projectData.id);
 
-        socket.emit('saveProjectDetailsInDB', projectData);
+        //Get image data url
+        let c = document.querySelectorAll('.leaflet-overlay-pane .leaflet-zoom-animated')[0];
+        let img_dataurl = c.toDataURL("image/png");
+
+        storageRef.putString(img_dataurl, 'data_url').then(function(snapshot) {
+            console.log('Uploaded a data_url string!');
+
+            projectData.projectScreenshotURL = snapshot.downloadURL;
+            console.log(projectData);
+
+            socket.emit('saveProjectDetailsInDB', projectData);
+            $('#loading').hide();
+        });
     });
 
     $('#downloadMapAsPNG').on('click', () => {
