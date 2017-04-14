@@ -59,6 +59,7 @@ io.on('connection', function (socket) {
                         }
                     })
                 }
+                socket.emit('listOfUserProjects', {projects: projects});
             });
         }
     });
