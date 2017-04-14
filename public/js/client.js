@@ -165,7 +165,11 @@ $(function () {
 
         
         function getColor(d) {
-            return approximateColor1ToColor2ByPercent(selectedColor1, selectedColor2, d/dataMaxVal);
+            
+            // Using theory from http://stackoverflow.com/questions/17862105/how-to-calculate-value-percentage-value-between-two-points
+            var percentage = (d - dataMinVal)/(dataMaxVal - dataMinVal)
+            
+            return approximateColor1ToColor2ByPercent(selectedColor1, selectedColor2, percentage);
         }
 
         // from http://stackoverflow.com/questions/28016890/how-to-make-a-color-similar-to-another-color-by-percentage-in-javascript

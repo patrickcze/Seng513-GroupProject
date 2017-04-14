@@ -481,6 +481,50 @@ function setupProjectFromID(id, socket, userDatasets) {
     $('#downloadMapAsSVG').on('click', () => {
         //TODO: Need to get support for SVG some how
     });
+    
+    // When Data Set 1's color is being set
+    $('#dataset1SelectButton').on('click', function() {
+        
+        if(document.getElementById('colorpicker2Popover')){
+            $('#dataset2SelectButton').trigger('click');
+        }else{
+                
+        };
+        
+        console.log("color 1 is being changed!");
+    });
+    
+    // When Data Set 2's color is being set
+    $('#dataset2SelectButton').on('click', function() {
+        
+        if(document.getElementById('colorpicker1Popover')){
+            $('#dataset1SelectButton').trigger('click');
+        }else{
+                // 
+        };
+        
+        console.log("color 2 is being changed!");
+    });
+
+    // When a color is being changed
+    $(document).on('click', '#color1, #color2, #color3, #color4, #color5, #color6, #color7, #color8, #color9', function(event) {
+        
+        
+        $('#color1, #color2, #color3, #color4, #color5, #color6, #color7, #color8, #color9').css("border-color", "#141414");
+        var color = $( this ).css( "background-color" );
+        $( this ).css("border-color", "white");
+        console.log(color);
+        
+        
+        // Do this if we're changing the first color, else second color
+        if(document.getElementById('colorpicker1Popover')){
+            $('#dataset1SelectButton').css("background-color", color);
+        }else{
+            $('#dataset2SelectButton').css("background-color", color);
+        };
+        
+        
+    });
 
     function plotDataset(data) {
         geojson.eachLayer(function (layer) {

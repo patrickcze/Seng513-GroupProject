@@ -308,7 +308,7 @@ input:checked + .slider:before {
   margin: 1px;
   font-size: 12px;
   border-radius: 15px;
-  border-color: white;
+  border-color: #141414;
   border-width: medium;
   border-bottom-style:solid;
   border-top-style:solid;
@@ -323,46 +323,75 @@ input:checked + .slider:before {
 }
 
 #color1{
-      background-color: red;
+      background-color: #00A3FF;
 
 }
 
 #color2{
-      background-color: orange;
+      background-color: #A200FF;
 
 }
 
 #color3{
-      background-color: yellow;
+      background-color: #FF0097;
 
 }
 
 #color4{
-      background-color: green;
+      background-color: #00FFF2;
 
 }
 
 #color5{
-      background-color: turquoise;
+      background-color: #00FF96;
 
 }
 
 #color6{
-      background-color: blue;
+      background-color: #8EFF00;
 
 }
 
 #color7{
-      background-color: purple;
+      background-color: #FFAE00;
 
 }
 
 #color8{
-      background-color: pink;
+      background-color: #FF6100;
 
 }
 
 #color9{
-      background-color: gray;
+      background-color: #FF2E00;
 
 }
+
+.popover{
+        background: #141414;
+
+}
+
+.popover-title{
+        background: #141414;
+}
+
+.popover-content{
+        background: #141414;
+
+}
+
+.popover-header{
+        background: #141414;
+}
+
+.popover.bs-tether-element-attached-left::after {
+    border-right-color: #141414;
+}
+.popover.left .arrow::before {
+    border-right-color: #141414;
+}
+
+
+
+
