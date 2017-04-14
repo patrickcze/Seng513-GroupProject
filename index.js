@@ -107,9 +107,12 @@ io.on('connection', function (socket) {
             let ref = firebase.database();
 
             ref.ref('datasets/' + data.datasetid).once('value').then(function (snapshot) {
-
-                socket.emit('setDataset', {datasetid: data, data: snapshot.val()});
-            })
+                if (data.viewOnly){
+                    socket.emit('setDatasetViewOnly', {datasetid: data, data: snapshot.val()});
+                } else {
+                    socket.emit('setDataset', {datasetid: data, data: snapshot.val()});
+                }
+            });
         }
     });
 
@@ -121,9 +124,15 @@ io.on('connection', function (socket) {
 
             ref.ref('projects/' + id).once('value').then(function (snapshot) {
                 let project = snapshot.val();
-                project["id"] = id;
+
+                if (project){
+                    project["id"] = id;
+                }
 
                 socket.emit('setProjectWithId', project);
+            }, function (error) {
+                // An error happened.
+                console.log("ERROR");
             });
         }
     });
@@ -142,6 +151,8 @@ io.on('connection', function (socket) {
                     updates[projectPath + '/datasetIDs'] = project.datasetIDs;
                     updates[projectPath + '/dataset1ID'] = project.dataset1ID;
                     updates[projectPath + '/dataset2ID'] = project.dataset2ID;
+                    updates[projectPath + '/isPublic'] = project.isPublic;
+                    updates[projectPath + '/visibleDataset'] = project.visibleDataset;
 
                     firebase.database().ref().update(updates);
                 }
