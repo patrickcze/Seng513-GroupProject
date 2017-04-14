@@ -41,6 +41,8 @@ $(function () {
             console.log(firebaseUser);
             //Redirect to the maps page
 
+            $('#loading').show();
+
             socket.emit('getListOfUserDatasets', {uid: firebaseUser.uid});
             socket.emit('getListOfUserProjects', {uid: firebaseUser.uid});
         } else {
@@ -107,6 +109,8 @@ $(function () {
         $('.dropdown').on('hide.bs.dropdown', function() {
             $(this).find('.dropdown-menu').first().stop(true, true).slideUp();
         });
+
+        $('#loading').hide();
 
         $(".project-card").click(function () {
             console.log("Handler for .click() called.");
@@ -288,6 +292,8 @@ function setupViewOnlyProject(id, socket) {
 function setupProjectFromID(id, socket, userDatasets) {
     changeToProjectView();
 
+    $('#loading').show();
+
     console.log("setup project");
 
     let project = null;
@@ -379,6 +385,8 @@ function setupProjectFromID(id, socket, userDatasets) {
         if (dataset.datasetid.datasetid === project.dataset2ID) {
             $('#dataset2Select').val(project.dataset2ID);
         }
+
+        $('#loading').hide();
     });
 
     $('input[type=radio][name=inlineRadioOptions]').change(function () {
