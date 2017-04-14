@@ -190,7 +190,15 @@ io.on('connection', function (socket) {
             if (ds1 && ds2){
                 let dsCombined = computeRatioSet(ds1,ds2);
 
-                socket.emit('plotCorrelation', dsCombined);
+                let dataToSend = {
+                    data: {
+                        data: dsCombined,
+                        minVal: -1.0,
+                        maxVal: 1.0
+                    }
+                }
+
+                socket.emit('plotCorrelation', dataToSend);
             }
         });
 
@@ -200,7 +208,15 @@ io.on('connection', function (socket) {
             if (ds1 && ds2){
                 let dsCombined = computeRatioSet(ds1,ds2);
 
-                socket.emit('plotCorrelation', dsCombined);
+                let dataToSend = {
+                    data: {
+                        data: dsCombined,
+                        minVal: -1.0,
+                        maxVal: 1.0
+                    }
+                }
+
+                socket.emit('plotCorrelation', dataToSend);
             }
         });
     });

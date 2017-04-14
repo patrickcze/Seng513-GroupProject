@@ -2,11 +2,11 @@ let map = null;
 
 $(function () {
 
-    
+
     // Allow popovers in bootstrap
     $('[data-toggle="popover"]').popover()
 
-    
+
     let userDatasets = null;
 
     var urlParams;
@@ -103,17 +103,17 @@ $(function () {
                 screenShotURL = project.projectScreenshotURL;
             }
 
-            let card = '<div class="card project-card" style="width: 20rem; height: 15rem;" projectid="' + project.id + '"> <img class="card-img-top" src="'+screenShotURL+'" alt="Card image" style="height:12rem; width:19.9rem; position:absolute;"><div class="card-block"><div class="dropdown"><button class="btn moreoptions dropdown-toggle" type="button" id="moreMenu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true"></button><ul class="dropdown-menu dropdown-menu-right" aria-labelledby="moreMenu"><li><a href="#" class="standardMenuOption">Rename</a></li><li><a href="#" class="deleteMenuOption">Delete</a></li></ul></div></p></div><h6 class="card-title">' + project.title + '</h6></div>';
+            let card = '<div class="card project-card" style="width: 20rem; height: 15rem;" projectid="' + project.id + '"> <img class="card-img-top" src="' + screenShotURL + '" alt="Card image" style="height:12rem; width:19.9rem; position:absolute;"><div class="card-block"><div class="dropdown"><button class="btn moreoptions dropdown-toggle" type="button" id="moreMenu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true"></button><ul class="dropdown-menu dropdown-menu-right" aria-labelledby="moreMenu"><li><a href="#" class="standardMenuOption">Rename</a></li><li><a href="#" class="deleteMenuOption">Delete</a></li></ul></div></p></div><h6 class="card-title">' + project.title + '</h6></div>';
             $('#mapCardArea').append(card);
         }
-        
+
         // from http://stackoverflow.com/questions/12115833/adding-a-slide-effect-to-bootstrap-dropdown
-        $('.dropdown').on('show.bs.dropdown', function() {
+        $('.dropdown').on('show.bs.dropdown', function () {
             $(this).find('.dropdown-menu').first().stop(true, true).slideDown();
         });
 
         // Add slideUp animation to Bootstrap dropdown when collapsing.
-        $('.dropdown').on('hide.bs.dropdown', function() {
+        $('.dropdown').on('hide.bs.dropdown', function () {
             $(this).find('.dropdown-menu').first().stop(true, true).slideUp();
         });
 
@@ -232,7 +232,7 @@ function setupViewOnlyProject(id, socket) {
             preferCanvas: true
         });
 
-        L.tileLayer('http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png',{
+        L.tileLayer('http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="http://cartodb.com/attributions">CartoDB</a>'
         }).addTo(map);
 
@@ -275,7 +275,7 @@ function setupViewOnlyProject(id, socket) {
     });
 
     //Do something when a color is selected for a given dataset
-    $('.circlebutton').on('click',()=>{
+    $('.circlebutton').on('click', () => {
         console.log("click");
     });
 
@@ -309,6 +309,8 @@ function setupProjectFromID(id, socket, userDatasets) {
 
     let project = null;
     let geojson = null;
+    let ds1Color = null;
+    let ds2Color = null;
 
     let projectDatasets = [];
 
@@ -334,7 +336,7 @@ function setupProjectFromID(id, socket, userDatasets) {
         preferCanvas: true
     });
 
-    L.tileLayer('http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png',{
+    L.tileLayer('http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="http://cartodb.com/attributions">CartoDB</a>'
     }).addTo(map);
 
@@ -409,7 +411,8 @@ function setupProjectFromID(id, socket, userDatasets) {
             } else {
                 for (let dataset of projectDatasets) {
                     if (dataset1id === dataset.datasetid.datasetid) {
-                        plotDataset(dataset.data.data);
+                        // plotDataset(dataset.data.data);
+                        colorDataset(dataset, "#FFFFFF", ds1Color);
                     }
                 }
             }
@@ -422,7 +425,9 @@ function setupProjectFromID(id, socket, userDatasets) {
             } else {
                 for (let dataset of projectDatasets) {
                     if (dataset2id === dataset.datasetid.datasetid) {
-                        plotDataset(dataset.data.data);
+                        // plotDataset(dataset.data.data);
+                        colorDataset(dataset, "#FFFFFF", ds2Color);
+                        console.log(dataset);
                     }
                 }
             }
@@ -434,7 +439,8 @@ function setupProjectFromID(id, socket, userDatasets) {
             socket.emit('computeDatasetRatio', {dataset1id: dataset1id, dataset2id: dataset2id});
             socket.on('plotCorrelation', (data) => {
                 console.log(data);
-                plotDataset(data);
+                // plotDataset(data);
+                colorDataset(data, ds1Color, ds2Color);
             });
         }
     });
@@ -459,16 +465,16 @@ function setupProjectFromID(id, socket, userDatasets) {
             projectData.datasetIDs.push(project.dataset2ID);
         }
 
-        let storageRef = firebase.storage().ref().child("/projectScreenShots/"+projectData.id);
+        let storageRef = firebase.storage().ref().child("/projectScreenShots/" + projectData.id);
 
         //Get image data url
         let c = document.querySelectorAll('.leaflet-overlay-pane .leaflet-zoom-animated')[0];
         let img_dataurl = c.toDataURL("image/png");
 
-        storageRef.putString(img_dataurl, 'data_url').then(function(snapshot) {
+        storageRef.putString(img_dataurl, 'data_url').then(function (snapshot) {
             console.log('Uploaded a data_url string!');
 
-        projectData.projectScreenshotURL = snapshot.downloadURL;
+            projectData.projectScreenshotURL = snapshot.downloadURL;
             console.log(projectData);
 
             socket.emit('saveProjectDetailsInDB', projectData);
@@ -509,61 +515,57 @@ function setupProjectFromID(id, socket, userDatasets) {
     $('#downloadMapAsSVG').on('click', () => {
         //TODO: Need to get support for SVG some how
     });
-    
+
     // When Data Set 1's color is being set
-    $('#dataset1SelectButton').on('click', function() {
-        
-        if(document.getElementById('colorpicker2Popover')){
+    $('#dataset1SelectButton').on('click', function () {
+
+        if (document.getElementById('colorpicker2Popover')) {
             $('#dataset2SelectButton').trigger('click');
-        }else{
-                
-        };
-        
+        } else {
+
+        }
+        ;
+
         console.log("color 1 is being changed!");
     });
-    
+
     // When Data Set 2's color is being set
-    $('#dataset2SelectButton').on('click', function() {
-        
-        if(document.getElementById('colorpicker1Popover')){
+    $('#dataset2SelectButton').on('click', function () {
+
+        if (document.getElementById('colorpicker1Popover')) {
             $('#dataset1SelectButton').trigger('click');
-        }else{
-                // 
-        };
-        
+        } else {
+            //
+        }
+        ;
+
         console.log("color 2 is being changed!");
     });
 
     // When a color is being changed
-    $(document).on('click', '#color1, #color2, #color3, #color4, #color5, #color6, #color7, #color8, #color9', function(event) {
+    $(document).on('click', '#color1, #color2, #color3, #color4, #color5, #color6, #color7, #color8, #color9', function (event) {
         $('#color1, #color2, #color3, #color4, #color5, #color6, #color7, #color8, #color9').css("border-color", "#141414");
 
-        let color = $( this ).css( "background-color" );
-        $( this ).css("border-color", "white");
+        let color = $(this).css("background-color");
+        $(this).css("border-color", "white");
         console.log(color);
 
         // Do this if we're changing the first color, else second color
-        if(document.getElementById('colorpicker1Popover')){
+        if (document.getElementById('colorpicker1Popover')) {
             $('#dataset1SelectButton').css("background-color", color);
-
-            let selectedDatasetID = $('#dataset1Select').val();
-            for (dataset of projectDatasets){
-                if (dataset.datasetid.datasetid === selectedDatasetID){
-                    colorDataset(dataset, color);
-                }
-            }
-
-        }else{
+            ds1Color = color;
+        } else {
             $('#dataset2SelectButton').css("background-color", color);
+            ds2Color = color;
         }
     });
 
-    function colorDataset(datasetToPlot, startColor) {
+    function colorDataset(datasetToPlot, startColor, endColor) {
         //plot the new color gradient
-        let numberOfItems = 4;
+        let numberOfItems = 10;
         let rainbow = new Rainbow();
         rainbow.setNumberRange(1, numberOfItems);
-        rainbow.setSpectrum("#ffffff", startColor);
+        rainbow.setSpectrum(startColor, endColor);
 
         let colors = [];
         let cutPoints = [];
@@ -571,17 +573,17 @@ function setupProjectFromID(id, socket, userDatasets) {
         for (let i = 1; i <= numberOfItems; i++) {
             colors.push('#' + rainbow.colourAt(i));
         }
-        console.log(colors);
 
         //Get the correct dataset to color
         let dataset = datasetToPlot.data.data;
         let minVal = datasetToPlot.data.minVal;
-        let maxVal =  datasetToPlot.data.maxVal;
-        let dif = (maxVal - minVal)/3;
+        let maxVal = datasetToPlot.data.maxVal;
+        let dif = (maxVal - minVal) / (numberOfItems - 1);
 
-        // Determine the cut points within the dataset
+        //Determine cut points within the data
         for (var i = 1; i < numberOfItems; i++) {
-            cutPoints.push(dif*i);
+            let val = minVal + (i * dif);
+            cutPoints.push(val);
         }
 
         //Go through each item and color it appropriately
@@ -593,15 +595,14 @@ function setupProjectFromID(id, socket, userDatasets) {
                     let color = "#FFFFFF";
                     let num = dataPoint.value;
 
-                    for (let i = 0; i < cutPoints.length; i++){
-                        let plusOne = i+1;
+                    for (let i = 0; i < cutPoints.length; i++) {
+                        let plusOne = i + 1;
 
-                        if (num > cutPoints[cutPoints.length-1]) {
-                            console.log("Big number", num);
-                            color = colors[colors.length-1];
+                        if (num > cutPoints[cutPoints.length - 1]) {
+                            color = colors[colors.length - 1];
                         } else if (num <= cutPoints[0]) {
                             color = colors[0];
-                        } else if (num > cutPoints[i] && num <= cutPoints[plusOne]){
+                        } else if (num > cutPoints[i] && num <= cutPoints[plusOne]) {
                             color = colors[plusOne];
                         }
                     }
@@ -709,7 +710,7 @@ function changeToProjectView() {
 // Awesome fix to get hex instead of RGB back from css background color
 // http://stackoverflow.com/questions/6177454/can-i-force-jquery-cssbackgroundcolor-returns-on-hexadecimal-format
 $.cssHooks.backgroundColor = {
-    get: function(elem) {
+    get: function (elem) {
         if (elem.currentStyle)
             var bg = elem.currentStyle["backgroundColor"];
         else if (window.getComputedStyle)
@@ -722,6 +723,7 @@ $.cssHooks.backgroundColor = {
             function hex(x) {
                 return ("0" + parseInt(x).toString(16)).slice(-2);
             }
+
             return "#" + hex(bg[1]) + hex(bg[2]) + hex(bg[3]);
         }
     }
