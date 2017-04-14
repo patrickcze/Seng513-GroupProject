@@ -157,16 +157,17 @@ $(function () {
         });
     });
 
-    // Display modal to start creating a new project
+    // Display modal to add new dataset
     $('#createNewDatasetCard').on('click', () => {
         $('#newDatasetModal').modal('show');
     });
 
-    // Display modal to start creating a new project
+    // Display share modal
     $('#shareProjectButton').on('click', () => {
         $('#shareProjectModal').modal('show');
     });
 
+    //after the template download display next step on dataset upload
     $('#datasetNextStepButton').on('click', () => {
         $('#newDatasetModalLabel').text("Upload your filled in template");
         $('#newDatasetModalBody').html('<form id="uploadForm" enctype="multipart/form-data" action="/api/dataset" method="post" target="_blank"><input type="file" name="userDataset"/><input type="submit" value="Upload Image" name="submit"><input type=\'text\' id=\'random\' name=\'random\'><br><span id="status"></span></form>');
