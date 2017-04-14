@@ -36,4 +36,16 @@ router.get('/downloadGlobalTemplate', function (req, res) {
     res.download(path.join(__dirname, '../templates/GlobalCountiresTemplate.csv'));
 });
 
+router.get('/downloadUSCANTemplate', function (req, res) {
+    res.download(path.join(__dirname, '../templates/UnitedStatesCanadaTemplate.csv'));
+});
+
+router.get('/downloadUSATemplate', function (req, res) {
+    res.download(path.join(__dirname, '../templates/UnitedStatesTemplate.csv'));
+});
+
+router.get('/downloadCANTemplate', function (req, res) {
+    res.download(path.join(__dirname, '../templates/CanadaTemplate.csv'));
+});
+
 module.exports = router;
