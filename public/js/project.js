@@ -1,3 +1,5 @@
+let map = null;
+
 $(function () {
 
     
@@ -185,7 +187,6 @@ function setupViewOnlyProject(id, socket) {
 
     let project = null;
     let geojson = null;
-    let map = null;
     let datasetToDisplay = null;
 
     let projectDatasets = [];
@@ -273,6 +274,11 @@ function setupViewOnlyProject(id, socket) {
         }
     });
 
+    //Do something when a color is selected for a given dataset
+    $('.circlebutton').on('click',()=>{
+        console.log("click");
+    });
+
     function plotDataset(data, geojson) {
         console.log(data);
         geojson.eachLayer(function (layer) {
@@ -322,7 +328,7 @@ function setupProjectFromID(id, socket, userDatasets) {
     $('#inlineRadio1').prop("checked", true);
 
     //Setup the Map
-    let map = L.map('map', {
+    map = L.map('map', {
         center: [46.938984, 2.373590],
         zoom: 4,
         preferCanvas: true
@@ -530,23 +536,88 @@ function setupProjectFromID(id, socket, userDatasets) {
 
     // When a color is being changed
     $(document).on('click', '#color1, #color2, #color3, #color4, #color5, #color6, #color7, #color8, #color9', function(event) {
-        
-        
         $('#color1, #color2, #color3, #color4, #color5, #color6, #color7, #color8, #color9').css("border-color", "#141414");
-        var color = $( this ).css( "background-color" );
+
+        let color = $( this ).css( "background-color" );
         $( this ).css("border-color", "white");
         console.log(color);
-        
-        
+
         // Do this if we're changing the first color, else second color
         if(document.getElementById('colorpicker1Popover')){
             $('#dataset1SelectButton').css("background-color", color);
+
+            let selectedDatasetID = $('#dataset1Select').val();
+            for (dataset of projectDatasets){
+                if (dataset.datasetid.datasetid === selectedDatasetID){
+                    colorDataset(dataset, color);
+                }
+            }
+
         }else{
             $('#dataset2SelectButton').css("background-color", color);
-        };
-        
-        
+        }
     });
+
+    function colorDataset(datasetToPlot, startColor) {
+        //plot the new color gradient
+        let numberOfItems = 4;
+        let rainbow = new Rainbow();
+        rainbow.setNumberRange(1, numberOfItems);
+        rainbow.setSpectrum("#ffffff", startColor);
+
+        let colors = [];
+        let cutPoints = [];
+
+        for (let i = 1; i <= numberOfItems; i++) {
+            colors.push('#' + rainbow.colourAt(i));
+        }
+        console.log(colors);
+
+        //Get the correct dataset to color
+        let dataset = datasetToPlot.data.data;
+        let minVal = datasetToPlot.data.minVal;
+        let maxVal =  datasetToPlot.data.maxVal;
+        let dif = (maxVal - minVal)/3;
+
+        // Determine the cut points within the dataset
+        for (var i = 1; i < numberOfItems; i++) {
+            cutPoints.push(dif*i);
+        }
+
+        //Go through each item and color it appropriately
+        geojson.eachLayer(function (layer) {
+            let countryCode = layer.feature.properties.iso_a3;
+
+            for (dataPoint of dataset) {
+                if (dataPoint.isoA3 === countryCode) {
+                    let color = "#FFFFFF";
+                    let num = dataPoint.value;
+
+                    for (let i = 0; i < cutPoints.length; i++){
+                        let plusOne = i+1;
+
+                        if (num > cutPoints[cutPoints.length-1]) {
+                            console.log("Big number", num);
+                            color = colors[colors.length-1];
+                        } else if (num <= cutPoints[0]) {
+                            color = colors[0];
+                        } else if (num > cutPoints[i] && num <= cutPoints[plusOne]){
+                            color = colors[plusOne];
+                        }
+                    }
+
+                    layer.setStyle({
+                        fillColor: color,
+                        weight: 2,
+                        opacity: 1,
+                        color: 'white',
+                        dashArray: '3',
+                        fillOpacity: 0.7
+                    });
+                }
+            }
+        });
+    }
 
     function plotDataset(data) {
         geojson.eachLayer(function (layer) {
@@ -633,4 +704,25 @@ function changeToProjectView() {
 
     $('#datasetCardArea').addClass('collapse');
     $('#mapCardArea').addClass('collapse');
+}
+
+// Awesome fix to get hex instead of RGB back from css background color
+// http://stackoverflow.com/questions/6177454/can-i-force-jquery-cssbackgroundcolor-returns-on-hexadecimal-format
+$.cssHooks.backgroundColor = {
+    get: function(elem) {
+        if (elem.currentStyle)
+            var bg = elem.currentStyle["backgroundColor"];
+        else if (window.getComputedStyle)
+            var bg = document.defaultView.getComputedStyle(elem,
+                null).getPropertyValue("background-color");
+        if (bg.search("rgb") == -1)
+            return bg;
+        else {
+            bg = bg.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);
+            function hex(x) {
+                return ("0" + parseInt(x).toString(16)).slice(-2);
+            }
+            return "#" + hex(bg[1]) + hex(bg[2]) + hex(bg[3]);
+        }
+    }
 }

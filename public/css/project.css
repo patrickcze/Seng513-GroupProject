@@ -342,9 +342,6 @@ input:checked + .slider:before {
   }
 }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-
 .circlebutton {
   width: 20px;
   height: 20px;
@@ -437,9 +434,6 @@ input:checked + .slider:before {
     border-right-color: #141414;
 }
 
-
-=======
->>>>>>> Develop
 /**/
 .cs-loader-inner {
     transform: translateY(-50%);

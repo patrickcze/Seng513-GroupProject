@@ -108,10 +108,27 @@ io.on('connection', function (socket) {
             let ref = firebase.database();
 
             ref.ref('datasets/' + data.datasetid).once('value').then(function (snapshot) {
+                let dataset = snapshot.val();
+
+                let maxVal = dataset.data[0].value;
+                let minVal = dataset.data[0].value;
+
+                for (item of dataset.data){
+                    if (item.value < minVal){
+                        minVal = item.value;
+                    }
+                    if (item.value > maxVal){
+                        maxVal = item.value;
+                    }
+                }
+
+                dataset.minVal = minVal;
+                dataset.maxVal = maxVal;
+
                 if (data.viewOnly){
-                    socket.emit('setDatasetViewOnly', {datasetid: data, data: snapshot.val()});
+                    socket.emit('setDatasetViewOnly', {datasetid: data, data: dataset});
                 } else {
-                    socket.emit('setDataset', {datasetid: data, data: snapshot.val()});
+                    socket.emit('setDataset', {datasetid: data, data: dataset});
                 }
             });
         }
