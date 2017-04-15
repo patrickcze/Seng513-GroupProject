@@ -284,10 +284,10 @@ function setupViewOnlyProject(id, socket) {
     }
 
     function plotDataset(datasetid) {
-        if (project.visibleDataset === "dataset1"){
+        if (project.visibleDataset === "dataset1") {
             color = project.ds1Color;
         } else {
-            color= project.ds2Color;
+            color = project.ds2Color;
         }
 
         if (datasetid === "-1") {
@@ -420,18 +420,18 @@ function setupProjectFromID(id, socket, userDatasets) {
             $('#publicURL').val('http://127.0.0.1:3000/project?projectid=' + project.id);
         }
 
-        if (project.ds1Color){
+        if (project.ds1Color) {
             ds1Color = project.ds1Color;
             $('#dataset1SelectButton').css("background-color", ds1Color);
         }
 
-        if (project.ds2Color){
+        if (project.ds2Color) {
             ds2Color = project.ds2Color;
             $('#dataset2SelectButton').css("background-color", ds2Color);
         }
 
-        if (project.visibleDataset){
-            switch (project.visibleDataset){
+        if (project.visibleDataset) {
+            switch (project.visibleDataset) {
                 case "dataset1":
                     $("#inlineRadio1").prop("checked", true);
                     break;
@@ -482,28 +482,28 @@ function setupProjectFromID(id, socket, userDatasets) {
         if (dataset.datasetid.datasetid === project.dataset1ID) {
             $('#dataset1Select').val(project.dataset1ID);
 
-            if ($('#inlineRadio1').prop("checked")){
+            if ($('#inlineRadio1').prop("checked")) {
                 plotDataset('#dataset1Select');
             }
         }
         if (dataset.datasetid.datasetid === project.dataset2ID) {
             $('#dataset2Select').val(project.dataset2ID);
-            if ($('#inlineRadio2').prop("checked")){
+            if ($('#inlineRadio2').prop("checked")) {
                 plotDataset('#dataset2Select');
             }
         }
 
-        if ($('#inlineRadio3').prop("checked")){
-            for (dataset of projectDatasets){
+        if ($('#inlineRadio3').prop("checked")) {
+            for (dataset of projectDatasets) {
                 console.log(dataset);
-                if (dataset.datasetid.datasetid === $("#dataset1Select").val()){
+                if (dataset.datasetid.datasetid === $("#dataset1Select").val()) {
                     ds1present = true;
-                } else if (dataset.datasetid.datasetid === $("#dataset2Select").val()){
+                } else if (dataset.datasetid.datasetid === $("#dataset2Select").val()) {
                     ds2present = true;
                 }
             }
 
-            if (ds1present && ds2present){
+            if (ds1present && ds2present) {
                 plotCorrelation();
             }
         }
@@ -523,6 +523,21 @@ function setupProjectFromID(id, socket, userDatasets) {
         }
     });
 
+    $('#dataset1Select').on('change', function() {
+        if ($("#inlineRadio1").prop("checked")){
+            plotDataset('#dataset1Select');
+        } else if ($("#inlineRadio3").prop("checked")){
+            plotCorrelation()
+        }
+    });
+    $('#dataset2Select').on('change', function() {
+        if ($("#inlineRadio2").prop("checked")){
+            plotDataset('#dataset2Select');
+        } else if ($("#inlineRadio3").prop("checked")){
+            plotCorrelation()
+        }
+    });
+
     function plotCorrelation() {
         let dataset1id = $('#dataset1Select').val();
         let dataset2id = $('#dataset2Select').val();
@@ -532,18 +547,18 @@ function setupProjectFromID(id, socket, userDatasets) {
             colorDataset(data, ds1Color, ds2Color);
         });
     }
-    
+
     function plotDataset(datasetSelector) {
         let datasetid = $(datasetSelector).val();
-        if (datasetSelector === "#dataset1Select"){
+        if (datasetSelector === "#dataset1Select") {
             color = ds1Color;
         } else {
-            color= ds2Color;
+            color = ds2Color;
         }
 
-        if (color === null){
+        if (color === null) {
             alert('Hey, looks like your trying to plot without choosing a color first!');
-            if (datasetSelector === "#dataset1Select"){
+            if (datasetSelector === "#dataset1Select") {
                 $('#dataset1SelectButton').popover('show');
             } else {
                 $('#dataset2SelectButton').popover('show');
@@ -633,10 +648,6 @@ function setupProjectFromID(id, socket, userDatasets) {
         window.open(img_dataurl);
     });
 
-    $('#downloadMapAsSVG').on('click', () => {
-        //TODO: Need to get support for SVG some how
-    });
-
     // When Data Set 1's color is being set
     $('#dataset1SelectButton').on('click', function () {
 
@@ -645,7 +656,6 @@ function setupProjectFromID(id, socket, userDatasets) {
         } else {
 
         }
-
         console.log("color 1 is being changed!");
     });
 
@@ -657,8 +667,6 @@ function setupProjectFromID(id, socket, userDatasets) {
         } else {
             //
         }
-
-
         console.log("color 2 is being changed!");
     });
 
@@ -677,13 +685,13 @@ function setupProjectFromID(id, socket, userDatasets) {
         if (document.getElementById('colorpicker1Popover')) {
             $('#dataset1SelectButton').css("background-color", color);
             ds1Color = color;
-            if ($('#inlineRadio1').prop("checked")){
+            if ($('#inlineRadio1').prop("checked")) {
                 plotDataset('#dataset1Select');
             }
         } else {
             $('#dataset2SelectButton').css("background-color", color);
             ds2Color = color;
-            if ($('#inlineRadio2').prop("checked")){
+            if ($('#inlineRadio2').prop("checked")) {
                 plotDataset('#dataset2Select');
             }
         }
