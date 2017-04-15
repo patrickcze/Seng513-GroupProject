@@ -114,7 +114,7 @@ $(function () {
     //Monitor authentication state change
     firebase.auth().onAuthStateChanged(function (firebaseUser) {
         if (firebaseUser) {
-            console.log(firebaseUser);
+            console.log(firebaseUser)
             //Redirect to the maps page
             setTimeout(()=>{
                 window.location.replace('/project');
@@ -138,7 +138,15 @@ $(function () {
         const auth = firebase.auth();
 
         const promise = auth.signInWithEmailAndPassword(txtemail,txtpassword);
-        promise.catch(e => console.log(e.message));
+        promise.then(()=>{
+            let alert = '<div class="alert alert-success" role="alert"><strong>Great success!</strong> We are getting you logged in right away!</div>';
+            $('#signinAlertArea').html(alert);
+        });
+        promise.catch(e => {
+            console.log(e.message);
+            let alert = '<div class="alert alert-danger" role="alert"> <strong>Oh snap!</strong>Looks like thats not a valid email and password combination. Maybe give it another try!</div>';
+            $('#signinAlertArea').html(alert);
+        });
     }
 
     function setupBasicFrontPageMap(data) {
