@@ -404,18 +404,7 @@ function setupProjectFromID(id, socket, userDatasets) {
 
     $('input[type=radio][name=inlineRadioOptions]').change(function () {
         if (this.value === 'dataset1') {
-            let dataset1id = $('#dataset1Select').val();
-
-            if (dataset1id === "-1") {
-                clearPlotDataset();
-            } else {
-                for (let dataset of projectDatasets) {
-                    if (dataset1id === dataset.datasetid.datasetid) {
-                        // plotDataset(dataset.data.data);
-                        colorDataset(dataset, "#FFFFFF", ds1Color);
-                    }
-                }
-            }
+            plotDataset('#dataset1Select');
         }
         else if (this.value === 'dataset2') {
             let dataset2id = $('#dataset2Select').val();
@@ -444,6 +433,25 @@ function setupProjectFromID(id, socket, userDatasets) {
             });
         }
     });
+    
+    function plotDataset(datasetSelector) {
+        let datasetid = $(datasetSelector).val();
+        if (datasetSelector === "#dataset1Select"){
+            color = ds1Color;
+        } else {
+            color= ds2Color;
+        }
+
+        if (datasetid === "-1") {
+            clearPlotDataset();
+        } else {
+            for (let dataset of projectDatasets) {
+                if (datasetid === dataset.datasetid.datasetid) {
+                    colorDataset(dataset, "#FFFFFF", color);
+                }
+            }
+        }
+    }
 
     $('#saveProjectChangesButton').on('click', () => {
         $('#loading').show();
@@ -524,7 +532,6 @@ function setupProjectFromID(id, socket, userDatasets) {
         } else {
 
         }
-        ;
 
         console.log("color 1 is being changed!");
     });
@@ -537,7 +544,7 @@ function setupProjectFromID(id, socket, userDatasets) {
         } else {
             //
         }
-        ;
+
 
         console.log("color 2 is being changed!");
     });
@@ -557,9 +564,15 @@ function setupProjectFromID(id, socket, userDatasets) {
         if (document.getElementById('colorpicker1Popover')) {
             $('#dataset1SelectButton').css("background-color", color);
             ds1Color = color;
+            if ($('#inlineRadio1').prop("checked")){
+                plotDataset('#dataset1Select');
+            }
         } else {
             $('#dataset2SelectButton').css("background-color", color);
             ds2Color = color;
+            if ($('#inlineRadio2').prop("checked")){
+                plotDataset('#dataset2Select');
+            }
         }
     });
 
@@ -623,24 +636,24 @@ function setupProjectFromID(id, socket, userDatasets) {
         });
     }
 
-    function plotDataset(data) {
-        geojson.eachLayer(function (layer) {
-            let countryCode = layer.feature.properties.iso_a3;
-
-            for (let dataPoint of data) {
-                if (dataPoint.isoA3 === countryCode) {
-                    layer.setStyle({
-                        fillColor: getColor(dataPoint.value),
-                        weight: 2,
-                        opacity: 1,
-                        color: 'white',
-                        dashArray: '3',
-                        fillOpacity: 0.7
-                    });
-                }
-            }
-        });
-    }
+    // function plotDataset(data) {
+    //     geojson.eachLayer(function (layer) {
+    //         let countryCode = layer.feature.properties.iso_a3;
+    //
+    //         for (let dataPoint of data) {
+    //             if (dataPoint.isoA3 === countryCode) {
+    //                 layer.setStyle({
+    //                     fillColor: getColor(dataPoint.value),
+    //                     weight: 2,
+    //                     opacity: 1,
+    //                     color: 'white',
+    //                     dashArray: '3',
+    //                     fillOpacity: 0.7
+    //                 });
+    //             }
+    //         }
+    //     });
+    // }
 
     function clearPlotDataset() {
         geojson.eachLayer(function (layer) {
