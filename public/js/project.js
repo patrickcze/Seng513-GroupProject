@@ -1,4 +1,8 @@
+let map = null;
+
 $(function () {
+    // Allow popovers in bootstrap
+    $('[data-toggle="popover"]').popover()
 
     let userDatasets = null;
 
@@ -96,17 +100,17 @@ $(function () {
                 screenShotURL = project.projectScreenshotURL;
             }
 
-            let card = '<div class="card project-card" style="width: 20rem; height: 15rem;" projectid="' + project.id + '"> <img class="card-img-top" src="'+screenShotURL+'" alt="Card image" style="height:12rem; width:19.9rem; position:absolute;"><div class="card-block"><div class="dropdown"><button class="btn moreoptions dropdown-toggle" type="button" id="moreMenu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true"></button><ul class="dropdown-menu dropdown-menu-right" aria-labelledby="moreMenu"><li><a href="#" class="standardMenuOption">Rename</a></li><li><a href="#" class="deleteMenuOption">Delete</a></li></ul></div></p></div><h6 class="card-title">' + project.title + '</h6></div>';
+            let card = '<div class="card project-card" style="width: 20rem; height: 15rem;" projectid="' + project.id + '"> <img class="card-img-top" src="' + screenShotURL + '" alt="Card image" style="height:12rem; width:19.9rem; position:absolute;"><div class="card-block"><div class="dropdown"><button class="btn moreoptions dropdown-toggle" type="button" id="moreMenu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true"></button><ul class="dropdown-menu dropdown-menu-right" aria-labelledby="moreMenu"><li><a href="#" class="standardMenuOption">Rename</a></li><li><a href="#" class="deleteMenuOption">Delete</a></li></ul></div></p></div><h6 class="card-title">' + project.title + '</h6></div>';
             $('#mapCardArea').append(card);
         }
-        
+
         // from http://stackoverflow.com/questions/12115833/adding-a-slide-effect-to-bootstrap-dropdown
-        $('.dropdown').on('show.bs.dropdown', function() {
+        $('.dropdown').on('show.bs.dropdown', function () {
             $(this).find('.dropdown-menu').first().stop(true, true).slideDown();
         });
 
         // Add slideUp animation to Bootstrap dropdown when collapsing.
-        $('.dropdown').on('hide.bs.dropdown', function() {
+        $('.dropdown').on('hide.bs.dropdown', function () {
             $(this).find('.dropdown-menu').first().stop(true, true).slideUp();
         });
 
@@ -154,6 +158,7 @@ $(function () {
 
         promiseandkey[0].then(() => {
             setupProjectFromID(promiseandkey[1], socket, userDatasets);
+            $('#loading').hide();
         });
     });
 
@@ -168,11 +173,12 @@ $(function () {
     });
 
     $('#datasetNextStepButton').on('click', () => {
-        $('#newDatasetModalLabel').text("Upload your filled in template");
-        $('#newDatasetModalBody').html('<form id="uploadForm" enctype="multipart/form-data" action="/api/dataset" method="post" target="_blank"><input type="file" name="userDataset"/><input type="submit" value="Upload Image" name="submit"><input type=\'text\' id=\'random\' name=\'random\'><br><span id="status"></span></form>');
+        $('#newDatasetModalLabel').text("Upload your filled in template data");
+        $('#newDatasetModalBody').html('<form id="uploadForm" enctype="multipart/form-data" action="/api/dataset" method="post" target="_blank"><input type="file" name="userDataset"/><input type="submit" value="Upload Dataset" name="submit"><input type=\'text\' id=\'random\' name=\'random\'><br><span id="status"></span></form>');
     });
 });
 
+//Setup the project when a user shares their project url with others
 function setupViewOnlyProject(id, socket) {
     changeToProjectView();
 
@@ -180,7 +186,6 @@ function setupViewOnlyProject(id, socket) {
 
     let project = null;
     let geojson = null;
-    let map = null;
     let datasetToDisplay = null;
 
     let projectDatasets = [];
@@ -193,6 +198,7 @@ function setupViewOnlyProject(id, socket) {
     //Get the details of the project
     socket.emit('getProjectWithId', id);
 
+    //Deal with incoming project data
     socket.on('setProjectWithId', (data) => {
         project = data;
 
@@ -226,19 +232,16 @@ function setupViewOnlyProject(id, socket) {
             preferCanvas: true
         });
 
-        L.tileLayer('http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png',{
+        L.tileLayer('http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="http://cartodb.com/attributions">CartoDB</a>'
         }).addTo(map);
 
         // Ask for geojson data
         socket.emit('getGlobalGeoJSON');
 
+        //Display correlation or the color the user selected
         if (datasetToDisplay === "correlation") {
-            socket.emit('computeDatasetRatio', {dataset1id: project.dataset1ID, dataset2id: project.dataset2ID});
-            socket.on('plotCorrelation', (data) => {
-                console.log(data);
-                plotDataset(data, geojson);
-            });
+            plotCorrelation();
         } else {
             for (i in project.datasetIDs) {
                 console.log(project.datasetIDs[i]);
@@ -264,19 +267,96 @@ function setupViewOnlyProject(id, socket) {
         projectDatasets.push(dataset);
 
         if (dataset.datasetid.datasetid === datasetToDisplay) {
-            plotDataset(dataset.data.data, geojson);
+            plotDataset(datasetToDisplay);
         }
     });
 
-    function plotDataset(data, geojson) {
-        console.log(data);
+    //Do something when a color is selected for a given dataset
+    $('.circlebutton').on('click', () => {
+        console.log("click");
+    });
+
+    function plotCorrelation() {
+        let dataset1id = project.dataset1ID;
+        let dataset2id = project.dataset2ID;
+
+        socket.emit('computeDatasetRatio', {dataset1id: dataset1id, dataset2id: dataset2id});
+        socket.on('plotCorrelation', (data) => {
+            colorDataset(data, project.ds1Color, project.ds2Color);
+            $('#loading').hide();
+        });
+    }
+
+    //Plot the data using the correct color
+    function plotDataset(datasetid) {
+        if (project.visibleDataset === "dataset1") {
+            color = project.ds1Color;
+        } else {
+            color = project.ds2Color;
+        }
+
+        if (datasetid === "-1") {
+            clearPlotDataset();
+        } else {
+            for (let dataset of projectDatasets) {
+                if (datasetid === dataset.datasetid.datasetid) {
+                    colorDataset(dataset, "#FFFFFF", color);
+                    $('#loading').hide();
+                }
+            }
+        }
+    }
+
+    //Perform map coloring based on dataset values
+    function colorDataset(datasetToPlot, startColor, endColor) {
+        //plot the new color gradient
+        let numberOfItems = 10;
+        let rainbow = new Rainbow();
+        rainbow.setNumberRange(1, numberOfItems);
+        rainbow.setSpectrum(startColor, endColor);
+
+        let colors = [];
+        let cutPoints = [];
+
+        for (let i = 1; i <= numberOfItems; i++) {
+            colors.push('#' + rainbow.colourAt(i));
+        }
+
+        //Get the correct dataset to color
+        let dataset = datasetToPlot.data.data;
+        let minVal = datasetToPlot.data.minVal;
+        let maxVal = datasetToPlot.data.maxVal;
+        let dif = (maxVal - minVal) / (numberOfItems - 1);
+
+        //Determine cut points within the data
+        for (var i = 1; i < numberOfItems; i++) {
+            let val = minVal + (i * dif);
+            cutPoints.push(val);
+        }
+
+        //Go through each item and color it appropriately
         geojson.eachLayer(function (layer) {
             let countryCode = layer.feature.properties.iso_a3;
 
-            for (let dataPoint of data) {
+            for (dataPoint of dataset) {
                 if (dataPoint.isoA3 === countryCode) {
+                    let color = "#FFFFFF";
+                    let num = dataPoint.value;
+
+                    for (let i = 0; i < cutPoints.length; i++) {
+                        let plusOne = i + 1;
+
+                        if (num > cutPoints[cutPoints.length - 1]) {
+                            color = colors[colors.length - 1];
+                        } else if (num <= cutPoints[0]) {
+                            color = colors[0];
+                        } else if (num > cutPoints[i] && num <= cutPoints[plusOne]) {
+                            color = colors[plusOne];
+                        }
+                    }
+
                     layer.setStyle({
-                        fillColor: getColor(dataPoint.value),
+                        fillColor: color,
                         weight: 2,
                         opacity: 1,
                         color: 'white',
@@ -289,15 +369,19 @@ function setupViewOnlyProject(id, socket) {
     }
 }
 
+// Setup the project from a id in editing mode
 function setupProjectFromID(id, socket, userDatasets) {
     changeToProjectView();
 
     $('#loading').show();
 
-    console.log("setup project");
-
     let project = null;
     let geojson = null;
+    let ds1Color = null;
+    let ds2Color = null;
+
+    let ds1present = false;
+    let ds2present = false;
 
     let projectDatasets = [];
 
@@ -317,13 +401,13 @@ function setupProjectFromID(id, socket, userDatasets) {
     $('#inlineRadio1').prop("checked", true);
 
     //Setup the Map
-    let map = L.map('map', {
+    map = L.map('map', {
         center: [46.938984, 2.373590],
         zoom: 4,
         preferCanvas: true
     });
 
-    L.tileLayer('http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png',{
+    L.tileLayer('http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="http://cartodb.com/attributions">CartoDB</a>'
     }).addTo(map);
 
@@ -339,6 +423,31 @@ function setupProjectFromID(id, socket, userDatasets) {
         if (project.isPublic) {
             $('#publicCheckbox').prop('checked', true);
             $('#publicURL').val('http://127.0.0.1:3000/project?projectid=' + project.id);
+        }
+
+        if (project.ds1Color) {
+            ds1Color = project.ds1Color;
+            $('#dataset1SelectButton').css("background-color", ds1Color);
+        }
+
+        if (project.ds2Color) {
+            ds2Color = project.ds2Color;
+            $('#dataset2SelectButton').css("background-color", ds2Color);
+        }
+
+        if (project.visibleDataset) {
+            switch (project.visibleDataset) {
+                case "dataset1":
+                    $("#inlineRadio1").prop("checked", true);
+                    break;
+                case "dataset2":
+                    $("#inlineRadio2").prop("checked", true);
+                    break;
+                case "correlation":
+                    $("#inlineRadio3").prop("checked", true);
+                default:
+                    console.log();
+            }
         }
 
         // Ask for geojson data
@@ -371,64 +480,114 @@ function setupProjectFromID(id, socket, userDatasets) {
         }).addTo(map);
     });
 
+    // Deal with incoming dataset data
     socket.on('setDataset', (dataset) => {
         console.log(dataset);
         projectDatasets.push(dataset);
 
-        if (dataset.datasetid.datasetid === $('#dataset1Select').val()) {
-            plotDataset(dataset.data.data);
-        }
-
         if (dataset.datasetid.datasetid === project.dataset1ID) {
             $('#dataset1Select').val(project.dataset1ID);
+
+            if ($('#inlineRadio1').prop("checked")) {
+                plotDataset('#dataset1Select');
+            }
         }
         if (dataset.datasetid.datasetid === project.dataset2ID) {
             $('#dataset2Select').val(project.dataset2ID);
+            if ($('#inlineRadio2').prop("checked")) {
+                plotDataset('#dataset2Select');
+            }
+        }
+
+        if ($('#inlineRadio3').prop("checked")) {
+            for (dataset of projectDatasets) {
+                console.log(dataset);
+                if (dataset.datasetid.datasetid === $("#dataset1Select").val()) {
+                    ds1present = true;
+                } else if (dataset.datasetid.datasetid === $("#dataset2Select").val()) {
+                    ds2present = true;
+                }
+            }
+
+            if (ds1present && ds2present) {
+                plotCorrelation();
+            }
         }
 
         $('#loading').hide();
     });
 
+    // plot data when changing the selected radio button
     $('input[type=radio][name=inlineRadioOptions]').change(function () {
         if (this.value === 'dataset1') {
-            let dataset1id = $('#dataset1Select').val();
-
-            if (dataset1id === "-1") {
-                clearPlotDataset();
-            } else {
-                for (let dataset of projectDatasets) {
-                    if (dataset1id === dataset.datasetid.datasetid) {
-                        plotDataset(dataset.data.data);
-                    }
-                }
-            }
+            plotDataset('#dataset1Select');
         }
         else if (this.value === 'dataset2') {
-            let dataset2id = $('#dataset2Select').val();
-
-            if (dataset2id === "-1") {
-                clearPlotDataset();
-            } else {
-                for (let dataset of projectDatasets) {
-                    if (dataset2id === dataset.datasetid.datasetid) {
-                        plotDataset(dataset.data.data);
-                    }
-                }
-            }
+            plotDataset('#dataset2Select');
         }
         else if (this.value === 'correlation') {
-            let dataset1id = $('#dataset1Select').val();
-            let dataset2id = $('#dataset2Select').val();
-
-            socket.emit('computeDatasetRatio', {dataset1id: dataset1id, dataset2id: dataset2id});
-            socket.on('plotCorrelation', (data) => {
-                console.log(data);
-                plotDataset(data);
-            });
+            plotCorrelation();
         }
     });
 
+    $('#dataset1Select').on('change', function() {
+        if ($("#inlineRadio1").prop("checked")){
+            plotDataset('#dataset1Select');
+        } else if ($("#inlineRadio3").prop("checked")){
+            plotCorrelation()
+        }
+    });
+
+    $('#dataset2Select').on('change', function() {
+        if ($("#inlineRadio2").prop("checked")){
+            plotDataset('#dataset2Select');
+        } else if ($("#inlineRadio3").prop("checked")){
+            plotCorrelation()
+        }
+    });
+
+    //plot dataset correlation 
+    function plotCorrelation() {
+        let dataset1id = $('#dataset1Select').val();
+        let dataset2id = $('#dataset2Select').val();
+
+        socket.emit('computeDatasetRatio', {dataset1id: dataset1id, dataset2id: dataset2id});
+        socket.on('plotCorrelation', (data) => {
+            colorDataset(data, ds1Color, ds2Color);
+        });
+    }
+
+    function plotDataset(datasetSelector) {
+        let datasetid = $(datasetSelector).val();
+        if (datasetSelector === "#dataset1Select") {
+            color = ds1Color;
+        } else {
+            color = ds2Color;
+        }
+
+        if (color === null) {
+            alert('Hey, looks like your trying to plot without choosing a color first!');
+            if (datasetSelector === "#dataset1Select") {
+                $('#dataset1SelectButton').popover('show');
+            } else {
+                $('#dataset2SelectButton').popover('show');
+            }
+        }
+
+        if (datasetid === "-1") {
+            clearPlotDataset();
+        } else {
+            for (let dataset of projectDatasets) {
+                if (datasetid === dataset.datasetid.datasetid) {
+                    colorDataset(dataset, "#FFFFFF", color);
+                }
+            }
+        }
+    }
+
     $('#saveProjectChangesButton').on('click', () => {
+        $("#loadingTitle").text('Now sending data via carrier pigeon...');
+
         $('#loading').show();
 
         let projectData = {
@@ -438,7 +597,9 @@ function setupProjectFromID(id, socket, userDatasets) {
             dataset2ID: $('#dataset2Select').val(),
             id: project.id,
             isPublic: $('#publicCheckbox').prop('checked'),
-            visibleDataset: $('input[type=radio][name=inlineRadioOptions]:checked').val()
+            visibleDataset: $('input[type=radio][name=inlineRadioOptions]:checked').val(),
+            ds1Color: ds1Color,
+            ds2Color: ds2Color
         };
 
         if (projectData.dataset1ID !== "-1") {
@@ -448,13 +609,13 @@ function setupProjectFromID(id, socket, userDatasets) {
             projectData.datasetIDs.push(project.dataset2ID);
         }
 
-        let storageRef = firebase.storage().ref().child("/projectScreenShots/"+projectData.id);
+        let storageRef = firebase.storage().ref().child("/projectScreenShots/" + projectData.id);
 
         //Get image data url
         let c = document.querySelectorAll('.leaflet-overlay-pane .leaflet-zoom-animated')[0];
         let img_dataurl = c.toDataURL("image/png");
 
-        storageRef.putString(img_dataurl, 'data_url').then(function(snapshot) {
+        storageRef.putString(img_dataurl, 'data_url').then(function (snapshot) {
             console.log('Uploaded a data_url string!');
 
             projectData.projectScreenshotURL = snapshot.downloadURL;
@@ -462,6 +623,7 @@ function setupProjectFromID(id, socket, userDatasets) {
 
             socket.emit('saveProjectDetailsInDB', projectData);
             $('#loading').hide();
+            $("#loadingTitle").text('Now fetching data via carrier pigeon...');
         });
     });
 
@@ -495,27 +657,119 @@ function setupProjectFromID(id, socket, userDatasets) {
         window.open(img_dataurl);
     });
 
-    $('#downloadMapAsSVG').on('click', () => {
-        //TODO: Need to get support for SVG some how
+    // When Data Set 1's color is being set
+    $('#dataset1SelectButton').on('click', function () {
+
+        if (document.getElementById('colorpicker2Popover')) {
+            $('#dataset2SelectButton').trigger('click');
+        } else {
+
+        }
+        console.log("color 1 is being changed!");
     });
 
-    function plotDataset(data) {
-        geojson.eachLayer(function (layer) {
-            let countryCode = layer.feature.properties.iso_a3;
+    // When Data Set 2's color is being set
+    $('#dataset2SelectButton').on('click', function () {
 
-            for (let dataPoint of data) {
-                if (dataPoint.isoA3 === countryCode) {
-                    layer.setStyle({
-                        fillColor: getColor(dataPoint.value),
-                        weight: 2,
-                        opacity: 1,
-                        color: 'white',
-                        dashArray: '3',
-                        fillOpacity: 0.7
-                    });
-                }
+        if (document.getElementById('colorpicker1Popover')) {
+            $('#dataset1SelectButton').trigger('click');
+        } else {
+            //
+        }
+        console.log("color 2 is being changed!");
+    });
+
+    // When a color is being changed
+    $(document).on('click', '#color1, #color2, #color3, #color4, #color5, #color6, #color7, #color8, #color9', function (event) {
+        $('#color1, #color2, #color3, #color4, #color5, #color6, #color7, #color8, #color9').css("border-color", "#141414");
+
+        let color = $(this).css("background-color");
+        $(this).css("border-color", "white");
+        console.log(color);
+
+        $('#dataset1SelectButton').popover('hide');
+        $('#dataset2SelectButton').popover('hide');
+
+        // Do this if we're changing the first color, else second color
+        if (document.getElementById('colorpicker1Popover')) {
+            $('#dataset1SelectButton').css("background-color", color);
+            ds1Color = color;
+            if ($('#inlineRadio1').prop("checked")) {
+                plotDataset('#dataset1Select');
             }
-        });
+        } else {
+            $('#dataset2SelectButton').css("background-color", color);
+            ds2Color = color;
+            if ($('#inlineRadio2').prop("checked")) {
+                plotDataset('#dataset2Select');
+            }
+        }
+    });
+
+    function colorDataset(datasetToPlot, startColor, endColor) {
+        //plot the new color gradient
+        let numberOfItems = 10;
+        let rainbow = new Rainbow();
+        rainbow.setNumberRange(1, numberOfItems);
+
+        if (startColor && endColor) {
+
+            rainbow.setSpectrum(startColor, endColor);
+
+            let colors = [];
+            let cutPoints = [];
+
+            for (let i = 1; i <= numberOfItems; i++) {
+                colors.push('#' + rainbow.colourAt(i));
+            }
+
+            //Get the correct dataset to color
+            let dataset = datasetToPlot.data.data;
+            let minVal = datasetToPlot.data.minVal;
+            let maxVal = datasetToPlot.data.maxVal;
+            let dif = (maxVal - minVal) / (numberOfItems - 1);
+
+            //Determine cut points within the data
+            for (var i = 1; i < numberOfItems; i++) {
+                let val = minVal + (i * dif);
+                cutPoints.push(val);
+            }
+
+            //Go through each item and color it appropriately
+            geojson.eachLayer(function (layer) {
+                let countryCode = layer.feature.properties.iso_a3;
+
+                for (dataPoint of dataset) {
+                    if (dataPoint.isoA3 === countryCode) {
+                        let color = "#FFFFFF";
+                        let num = dataPoint.value;
+
+                        for (let i = 0; i < cutPoints.length; i++) {
+                            let plusOne = i + 1;
+
+                            if (num > cutPoints[cutPoints.length - 1]) {
+                                color = colors[colors.length - 1];
+                            } else if (num <= cutPoints[0]) {
+                                color = colors[0];
+                            } else if (num > cutPoints[i] && num <= cutPoints[plusOne]) {
+                                color = colors[plusOne];
+                            }
+                        }
+
+                        layer.setStyle({
+                            fillColor: color,
+                            weight: 2,
+                            opacity: 1,
+                            color: 'white',
+                            dashArray: '3',
+                            fillOpacity: 0.7
+                        });
+                    }
+                }
+            });
+        } else {
+            $('#loading').hide();
+        }
     }
 
     function clearPlotDataset() {
@@ -535,17 +789,6 @@ function setupProjectFromID(id, socket, userDatasets) {
 
 function clearMap() {
     $('#main-map-container').html('<div id="sidebar" class="col-3 col-lg-2"> <form id="projectOptionsForm"> <label>Show</label> <br><div class="form-check form-check-inline"> <label class="form-check-label"> <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="dataset1"> Dataset 1 </label> </div><div class="form-check form-check-inline"> <label class="form-check-label"> <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="dataset2"> Dataset 2 </label> </div><div class="form-check form-check-inline" hidden> <label class="form-check-label"> <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio3" value="correlation"> Correlation </label> </div><hr> <div class="form-group"> <label for="projectTitleField">Project Title</label> <input type="text" class="form-control" id="projectTitleField" placeholder="Project Title"> </div><hr/> <div class="form-group"> <label for="dataset1Select">Dataset 1</label> <select class="form-control" id="dataset1Select"> </select> </div><div class="form-group"> <label for="dataset2Select">Dataset 2</label> <select class="form-control" id="dataset2Select"> <option value="-1">None</option> </select> </div><hr> <div class="form-group"> <button type="button" id="saveProjectChangesButton" class="btn btn-success col-12">Save Changes</button> </div><div class="form-group"> <button type="button" id="shareProjectButton" class="btn btn-info col-12">Share Project</button> </div></form> </div><div id="map" class="col-9 col-lg-10"></div>');
-}
-
-function getColor(d) {
-    return d > 70 ? '#800026' :
-        d > 60 ? '#BD0026' :
-            d > 50 ? '#E31A1C' :
-                d > 40 ? '#FC4E2A' :
-                    d > 30 ? '#FD8D3C' :
-                        d > 20 ? '#FEB24C' :
-                            d > 10 ? '#FED976' :
-                                '#FFEDA0';
 }
 
 function setupProjectInDatabase(firebase) {
@@ -577,10 +820,33 @@ function setupProjectInDatabase(firebase) {
     return [firebase.database().ref().update(updates), newPostKey];
 }
 
+
 function changeToProjectView() {
     $('#datasetsLink').removeClass('active');
     $('#mapsLink').removeClass('active');
 
     $('#datasetCardArea').addClass('collapse');
     $('#mapCardArea').addClass('collapse');
+}
+
+// Awesome fix to get hex instead of RGB back from css background color
+// http://stackoverflow.com/questions/6177454/can-i-force-jquery-cssbackgroundcolor-returns-on-hexadecimal-format
+$.cssHooks.backgroundColor = {
+    get: function (elem) {
+        if (elem.currentStyle)
+            var bg = elem.currentStyle["backgroundColor"];
+        else if (window.getComputedStyle)
+            var bg = document.defaultView.getComputedStyle(elem,
+                null).getPropertyValue("background-color");
+        if (bg.search("rgb") == -1)
+            return bg;
+        else {
+            bg = bg.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);
+            function hex(x) {
+                return ("0" + parseInt(x).toString(16)).slice(-2);
+            }
+
+            return "#" + hex(bg[1]) + hex(bg[2]) + hex(bg[3]);
+        }
+    }
 }

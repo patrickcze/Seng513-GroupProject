@@ -154,17 +154,61 @@ $(function () {
             maxBoundsViscosity: 1.0
         }).addTo(map);
 
+        
+        // TODO: These values should be the max and min in the selected dataset. (hard coded for now)
+        var dataMinVal = 0
+        var dataMaxVal = 120
+        
+        // TODO: These values should be two selected colors from the side bar. (hard coded for now)
+        var selectedColor1 = "#FFAAEE"
+        var selectedColor2 = "#0022AA"
+
+        
         function getColor(d) {
-            return d > 100000000 ? '#800026' :
-                d > 50000000 ? '#BD0026' :
-                d > 20000000 ? '#E31A1C' :
-                d > 10000000 ? '#FC4E2A' :
-                d > 5000000 ? '#FD8D3C' :
-                d > 2000000 ? '#FEB24C' :
-                d > 100000 ? '#FED976' :
-                '#FFEDA0';
+            
+            // Using theory from http://stackoverflow.com/questions/17862105/how-to-calculate-value-percentage-value-between-two-points
+            var percentage = (d - dataMinVal)/(dataMaxVal - dataMinVal)
+            
+            return approximateColor1ToColor2ByPercent(selectedColor1, selectedColor2, percentage);
         }
 
+        // from http://stackoverflow.com/questions/28016890/how-to-make-a-color-similar-to-another-color-by-percentage-in-javascript
+        function approximateColor1ToColor2ByPercent(color1, color2, percent) {
+          var red1 = parseInt(color1[1] + color1[2], 16);
+          var green1 = parseInt(color1[3] + color1[4], 16);
+          var blue1 = parseInt(color1[5] + color1[6], 16);
+
+          var red2 = parseInt(color2[1] + color2[2], 16);
+          var green2 = parseInt(color2[3] + color2[4], 16);
+          var blue2 = parseInt(color2[5] + color2[6], 16);
+
+          var red = Math.round(mix(red1, red2, percent));
+          var green = Math.round(mix(green1, green2, percent));
+          var blue = Math.round(mix(blue1, blue2, percent));
+
+          return generateHex(red, green, blue);
+        }
+        
+        // from http://stackoverflow.com/questions/28016890/how-to-make-a-color-similar-to-another-color-by-percentage-in-javascript
+        function generateHex(r, g, b) {
+          r = r.toString(16);
+          g = g.toString(16);
+          b = b.toString(16);
+
+          // to address problem mentioned by Alexis Wilke:
+          while (r.length < 2) { r = "0" + r; }
+          while (g.length < 2) { g = "0" + g; }
+          while (b.length < 2) { b = "0" + b; }
+
+          return "#" + r + g + b;
+        }
+        
+        // from http://stackoverflow.com/questions/28016890/how-to-make-a-color-similar-to-another-color-by-percentage-in-javascript
+        function mix(start, end, percent) {
+            return start + ((percent) * (end - start));
+        }
+        
+        
         function style(feature) {
             return {
                 fillColor: getColor(feature.properties.pop_est),

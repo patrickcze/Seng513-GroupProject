@@ -86,18 +86,19 @@
                 </div>
                 <hr>
                 <div class="form-group">
-                    <label for="projectTitleField">Project Title</label>
-                    <input type="text" class="form-control" id="projectTitleField" placeholder="Project Title">
+                    <label>Project Title</label>
+                    <input id="projectTitleField" type="text" class="col-12" />
                 </div>
-                <hr/>
+                <hr/>            
                 <div class="form-group">
                     <label for="dataset1Select">Dataset 1</label>
+                    <button type="button" id= "dataset1SelectButton" class="btn btn-secondary pull-right circlebutton" data-container="body" data-toggle="popover" data-placement="right" data-content="<div id ='colorpicker1Popover'><button type='button' id='color1' class='circlebutton'></button><button type='button' id='color2' class='circlebutton'></button><button type='button' id='color3' class='circlebutton'></button></div><div><button type='button' id='color4' class='circlebutton'></button><button type='button' id='color5' class='circlebutton'></button><button type='button' id='color6' class='circlebutton'></button></div><div><button type='button' id='color7' class='circlebutton'></button><button type='button' id='color8' class='circlebutton'></button><button type='button' id='color9' class='circlebutton'></button></div>" data-html='true'></button>
                     <select class="form-control" id="dataset1Select">
-
                     </select>
                 </div>
                 <div class="form-group">
                     <label for="dataset2Select">Dataset 2</label>
+                    <button type="button" id="dataset2SelectButton" class="btn btn-secondary pull-right circlebutton" style="align-items: flex" data-container="body" data-toggle="popover" data-placement="right" data-content="<div id ='colorpicker2Popover'><button type='button' id='color1' class='circlebutton'></button><button type='button' id='color2' class='circlebutton'></button><button type='button' id='color3' class='circlebutton'></button></div><div><button type='button' id='color4' class='circlebutton'></button><button type='button' id='color5' class='circlebutton'></button><button type='button' id='color6' class='circlebutton'></button></div><div><button type='button' id='color7' class='circlebutton'></button><button type='button' id='color8' class='circlebutton'></button><button type='button' id='color9' class='circlebutton'></button></div>" data-html='true'></button>
                     <select class="form-control" id="dataset2Select">
                         <option value="-1">None</option>
                     </select>
@@ -162,11 +163,11 @@
             </div>
             <div id="newDatasetModalBody" class="modal-body">
                 <a href="/downloadGlobalTemplate" target="_blank">
-                    <button class="btn btn-info col-12">Global Countries Template</button>
+                    <button class="btn btn-info col-3">Global Countries Template</button>
                 </a>
-                <button class="btn btn-info col-12">USA & Canada Template</button>
-                <button class="btn btn-info col-12">USA Template</button>
-                <button class="btn btn-info col-12">Canada Template</button>
+                <button class="btn btn-info col-3">USA & Canada Template</button>
+                <button class="btn btn-info col-3">USA Template</button>
+                <button class="btn btn-info col-3">Canada Template</button>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -203,9 +204,8 @@
                     <div class="form-group">
                         <label class="col-12">Save as</label>
                         <div style="text-align: center">
-                            <button id="downloadMapAsPNG" class="btn btn-outline-primary col-3">PNG</button>
-                            <button id="downloadMapAsJPG" class="btn btn-outline-primary col-3">JPG</button>
-                            <button id="downloadMapAsSVG" class="btn btn-outline-primary col-3">SVG</button>
+                            <button id="downloadMapAsPNG" class="btn btn-outline-primary col-5 col-offset-1">PNG</button>
+                            <button id="downloadMapAsJPG" class="btn btn-outline-primary col-5">JPG</button>
                         </div>
                     </div>
                 </div>
@@ -216,7 +216,9 @@
 
 <div id="loading" class="collapse" style="z-index: 9999">
     <div class="cs-loader">
+
         <div class="cs-loader-inner">
+            <h3 id="loadingTitle">Now fetching data via carrier pigeon...</h3>
             <label>	●</label>
             <label>	●</label>
             <label>	●</label>
@@ -237,6 +239,7 @@
         crossorigin="anonymous"></script>
 <script src="https://unpkg.com/leaflet@1.0.3/dist/leaflet.js"></script>
 <script src='http://xn--dahlstrm-t4a.net/svg/libraries/canvas-svg/canvas-getsvg.js'></script>
+<script src="js/rainbowvis.js"></script>
 <script src="js/project.js"></script>
 
 </body>
