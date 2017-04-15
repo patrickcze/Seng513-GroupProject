@@ -2,7 +2,7 @@ var map = null;
 
 $(function () {
     // Allow popovers in bootstrap
-    $('[data-toggle="popover"]').popover()
+    $('[data-toggle="popover"]').popover();
 
     let userDatasets = null;
 

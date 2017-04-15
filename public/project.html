@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>umapit.io</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css"
           integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
@@ -14,7 +15,7 @@
 <body>
 
 <!--Setup the nav bar-->
-<nav class="navbar navbar-toggleable-md navbar-default fixed-top">
+<nav class="navbar navbar-toggleable-md navbar-inverse fixed-top">
     <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse"
             data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false"
             aria-label="Toggle navigation">
@@ -42,7 +43,7 @@
     <!--This section will display the map cards-->
     <div class="container-fluid">
         <div id="mapCardArea" class="row">
-            <div id="createNewMapCard" class="card" style="width: 20rem; height: 15rem;">
+            <div id="createNewMapCard" class="card hidden-sm" style="width: 20rem; height: 15rem;">
                 <div class="card-block">
                     <img src="plus.png" style = "width: 5rem; padding-top:4rem;">
                 </div>
@@ -54,7 +55,7 @@
     <!--This section will display the dataset cards-->
     <div class="container-fluid">
         <div id="datasetCardArea" class="row collapse">
-            <div id="createNewDatasetCard" class="card" style="width: 20rem; height: 15rem;">
+            <div id="createNewDatasetCard" class="card hidden-sm" style="width: 20rem; height: 15rem;">
                 <div class="card-block">
                         <img src="plus.png" style = "width: 5rem; padding-top:4rem;">
                 </div>
@@ -65,7 +66,7 @@
 
     <!--Display the map-->
     <div id="main-map-container" class="container-fluid hidden">
-        <div id="sidebar" class="col-3 col-lg-2">
+        <div id="sidebar" class="col-lg-2 col-md-3 hidden-sm">
             <form id="projectOptionsForm">
                 <label>Show</label>
                 <br>
@@ -112,7 +113,7 @@
                 </div>
             </form>
         </div>
-        <div id="map" class="col-9 col-lg-10"></div>
+        <div id="map" class="col-lg-10"></div>
     </div>
 </div>
 

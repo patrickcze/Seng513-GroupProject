@@ -269,77 +269,79 @@ input:checked + .slider:before {
     align-content: center;
 }
 
-
+.navbar-collapse {
+    background-color: #000000;
+}
 
 /*https://work.smarchal.com/twbscolor/css/e74c3cc0392becf0f1ffbbbc0*/
 .navbar-default {
-  background-color: #000000;
-  border-color: #2d2d2d;
+    background-color: #000000;
+    border-color: #2d2d2d;
 }
 .navbar-default .navbar-brand {
-  color: #858585;
+    color: #858585;
 }
 .navbar-default .navbar-brand:hover,
 .navbar-default .navbar-brand:focus {
-  color: #ffffff;
+    color: #ffffff;
 }
 .navbar-default .navbar-text {
-  color: #858585;
+    color: #858585;
 }
 .navbar-default .navbar-nav > li > a {
-  color: #858585;
+    color: #858585;
 }
 .navbar-default .navbar-nav > li > a:hover,
 .navbar-default .navbar-nav > li > a:focus {
-  color: #ffffff;
+    color: #ffffff;
 }
 .navbar-default .navbar-nav > .active > a,
 .navbar-default .navbar-nav > .active > a:hover,
 .navbar-default .navbar-nav > .active > a:focus {
-  color: #ffffff;
-  background-color: #2d2d2d;
+    color: #ffffff;
+    background-color: #2d2d2d;
 }
 .navbar-default .navbar-nav > .open > a,
 .navbar-default .navbar-nav > .open > a:hover,
 .navbar-default .navbar-nav > .open > a:focus {
-  color: #ffffff;
-  background-color: #2d2d2d;
+    color: #ffffff;
+    background-color: #2d2d2d;
 }
 .navbar-default .navbar-toggle {
-  border-color: #2d2d2d;
+    border-color: #2d2d2d;
 }
 .navbar-default .navbar-toggle:hover,
 .navbar-default .navbar-toggle:focus {
-  background-color: #2d2d2d;
+    background-color: #2d2d2d;
 }
 .navbar-default .navbar-toggle .icon-bar {
-  background-color: #858585;
+    background-color: #858585;
 }
 .navbar-default .navbar-collapse,
 .navbar-default .navbar-form {
-  border-color: #858585;
+    border-color: #858585;
 }
 .navbar-default .navbar-link {
-  color: #858585;
+    color: #858585;
 }
 .navbar-default .navbar-link:hover {
-  color: #ffffff;
+    color: #ffffff;
 }
 
 @media (max-width: 767px) {
-  .navbar-default .navbar-nav .open .dropdown-menu > li > a {
-    color: #858585;
-  }
-  .navbar-default .navbar-nav .open .dropdown-menu > li > a:hover,
-  .navbar-default .navbar-nav .open .dropdown-menu > li > a:focus {
-    color: #ffffff;
-  }
-  .navbar-default .navbar-nav .open .dropdown-menu > .active > a,
-  .navbar-default .navbar-nav .open .dropdown-menu > .active > a:hover,
-  .navbar-default .navbar-nav .open .dropdown-menu > .active > a:focus {
-    color: #ffffff;
-    background-color: #2d2d2d;
-  }
+    .navbar-default .navbar-nav .open .dropdown-menu > li > a {
+        color: #858585;
+    }
+    .navbar-default .navbar-nav .open .dropdown-menu > li > a:hover,
+    .navbar-default .navbar-nav .open .dropdown-menu > li > a:focus {
+        color: #ffffff;
+    }
+    .navbar-default .navbar-nav .open .dropdown-menu > .active > a,
+    .navbar-default .navbar-nav .open .dropdown-menu > .active > a:hover,
+    .navbar-default .navbar-nav .open .dropdown-menu > .active > a:focus {
+        color: #ffffff;
+        background-color: #2d2d2d;
+    }
 }
 
 .circlebutton {
@@ -539,3 +541,9 @@ input:checked + .slider:before {
     z-index: 100;
 }
 
+@media (max-width: 768px) {
+    .hidden-sm {
+        background-color: #00A3FF;
+        display: none;
+    }
+}
