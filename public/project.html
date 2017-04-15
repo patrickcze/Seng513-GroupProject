@@ -21,7 +21,7 @@
             aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
     </button>
-    <a class="navbar-brand" href="/">umapit.io</a>
+    <a class="navbar-brand" href="/"><img src="umapit.png" style = "height: 1.5rem; margin-left: 2px;"></a>
 
     <div class="collapse navbar-collapse" id="navbarsExampleDefault">
         <ul class="navbar-nav mr-auto">
@@ -68,8 +68,9 @@
     <div id="main-map-container" class="container-fluid hidden">
         <div id="sidebar" class="col-lg-2 col-md-3 hidden-sm">
             <form id="projectOptionsForm">
-                <label>Show</label>
-                <br>
+                <div class="form-group">
+                    <input id="projectTitleField" type="text" class="col-12" />
+                </div>                
                 <div class="form-check">
                     <label class="form-check-label">
                         <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="dataset1"> Dataset 1
@@ -84,13 +85,8 @@
                     <label class="form-check-label">
                         <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio3" value="correlation"> Correlation
                     </label>
-                </div>
+                </div>    
                 <hr>
-                <div class="form-group">
-                    <label>Project Title</label>
-                    <input id="projectTitleField" type="text" class="col-12" />
-                </div>
-                <hr/>            
                 <div class="form-group">
                     <label for="dataset1Select">Dataset 1</label>
                     <button type="button" id= "dataset1SelectButton" class="btn btn-secondary pull-right circlebutton" data-container="body" data-toggle="popover" data-placement="right" data-content="<div id ='colorpicker1Popover'><button type='button' id='color1' class='circlebutton'></button><button type='button' id='color2' class='circlebutton'></button><button type='button' id='color3' class='circlebutton'></button></div><div><button type='button' id='color4' class='circlebutton'></button><button type='button' id='color5' class='circlebutton'></button><button type='button' id='color6' class='circlebutton'></button></div><div><button type='button' id='color7' class='circlebutton'></button><button type='button' id='color8' class='circlebutton'></button><button type='button' id='color9' class='circlebutton'></button></div>" data-html='true'></button>
@@ -113,7 +109,7 @@
                 </div>
             </form>
         </div>
-        <div id="map" class="col-lg-10"></div>
+        <div id="map" class="col-12 col-lg-12"></div>
     </div>
 </div>
 

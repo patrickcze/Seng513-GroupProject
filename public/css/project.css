@@ -23,7 +23,10 @@ html, body {
 #map {
     -webkit-flex: 1;
     flex: 1;
-    position: relative;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: #242426;
 }
 
 .hidden {
@@ -35,11 +38,22 @@ html, body {
 }
 
 hr{
-    background-color: #FFFFFF;
+    background-color: #252525;
 }
 
 #projectOptionsForm {
-    padding-top: 10px;
+    z-index: inherit;
+    margin: -15px;
+    height: 100%;
+    padding: 30px;
+    background-color: rgba(0,0,0,0.9);
+    
+}
+
+
+#sidebar{
+    
+    z-index: 1001;
 }
 
 #sidebar label {
@@ -66,20 +80,23 @@ label{
 input {
     color: #777777 !important;
     background-color: #111111 !important;
-    border-bottom: 1px solid #FFFFFF !important;
-    border-radius: 0px !important;
+    border: 0px solid #FFFFFF !important;
+    border-radius: 3px !important;
 }
 
 input:focus {
-    border-left: 0px solid #FFFFFF !important;
-    border-right: 0px solid #FFFFFF !important;
-    border-top: 0px solid #FFFFFF !important;
+    outline:none;    
+}
+
+#projectTitleField{
+        height: 30px;
+
 }
 
 select {
     color: #777777 !important;
     background-color: #111111 !important;
-    border-bottom: 1px solid #FFFFFF !important;
+    border-bottom: 0px solid #FFFFFF !important;
     border-bottom-left-radius: 0px !important;
     border-bottom-right-radius: 0px !important;
 }
@@ -441,7 +458,7 @@ input:checked + .slider:before {
     transform: translateY(-50%);
     top: 50%;
     position: absolute;
-    width: calc(100% - 200px);
+    width: 100%;
     color: #FFF;
     padding: 0 100px;
     text-align: center;
@@ -540,6 +557,26 @@ input:checked + .slider:before {
     left: 240px;
     z-index: 100;
 }
+
+
+#projectTitleField{
+    color: aqua;
+}
+
+
+/*
+input[type="radio"]:checked:before {
+    content: "";
+    display: block;
+    position: relative;
+    top: -1px;
+    left: -3px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: red;
+}
+*/
 
 @media (max-width: 768px) {
     .hidden-sm {

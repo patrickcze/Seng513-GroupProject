@@ -45,7 +45,7 @@ $(function () {
             console.log(firebaseUser);
             //Redirect to the maps page
 
-            $('#loading').show();
+            $('#loading').fadeIn('slow');
 
             socket.emit('getListOfUserDatasets', {uid: firebaseUser.uid});
             socket.emit('getListOfUserProjects', {uid: firebaseUser.uid});
@@ -119,7 +119,15 @@ $(function () {
         $(".project-card").click(function () {
             console.log("Handler for .click() called.");
             console.log($(this).attr("projectid"));
-            setupProjectFromID($(this).attr("projectid"), socket, userDatasets);
+            
+            var hoveringMoreMenu = $(this).find("#moreMenu:hover").length;
+            console.log(hoveringMoreMenu);
+
+            // Make sure user is not trying to select the more options button instead of opening a project
+            if(hoveringMoreMenu < 1){
+                setupProjectFromID($(this).attr("projectid"), socket, userDatasets);
+            }
+            
         });
     });
 
@@ -232,6 +240,10 @@ function setupViewOnlyProject(id, socket) {
             preferCanvas: true
         });
 
+        
+        map.zoomControl.setPosition('bottomright');
+
+        
         L.tileLayer('http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="http://cartodb.com/attributions">CartoDB</a>'
         }).addTo(map);
@@ -373,7 +385,7 @@ function setupViewOnlyProject(id, socket) {
 function setupProjectFromID(id, socket, userDatasets) {
     changeToProjectView();
 
-    $('#loading').show();
+    $('#loading').fadeIn('slow');
 
     let project = null;
     let geojson = null;
@@ -407,7 +419,11 @@ function setupProjectFromID(id, socket, userDatasets) {
         preferCanvas: true
     });
 
-    L.tileLayer('http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png', {
+        
+    map.zoomControl.setPosition('bottomright');
+    
+    
+    L.tileLayer('http://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="http://cartodb.com/attributions">CartoDB</a>'
     }).addTo(map);
 
@@ -588,7 +604,7 @@ function setupProjectFromID(id, socket, userDatasets) {
     $('#saveProjectChangesButton').on('click', () => {
         $("#loadingTitle").text('Now sending data via carrier pigeon...');
 
-        $('#loading').show();
+        $('#loading').fadeIn('slow');
 
         let projectData = {
             title: $('#projectTitleField').val(),
@@ -758,11 +774,11 @@ function setupProjectFromID(id, socket, userDatasets) {
 
                         layer.setStyle({
                             fillColor: color,
-                            weight: 2,
+                            weight: 0,
                             opacity: 1,
-                            color: 'white',
-                            dashArray: '3',
-                            fillOpacity: 0.7
+                            color: '#242426',
+                            dashArray: '0',
+                            fillOpacity: 0.66
                         });
                     }
                 }
