@@ -1,8 +1,8 @@
-let map = null;
+var map = null;
 
 $(function () {
     // Allow popovers in bootstrap
-    $('[data-toggle="popover"]').popover()
+    $('[data-toggle="popover"]').popover();
 
     let userDatasets = null;
 
@@ -562,7 +562,7 @@ function setupProjectFromID(id, socket, userDatasets) {
         }
     });
 
-    //plot dataset correlation 
+    //plot dataset correlation
     function plotCorrelation() {
         let dataset1id = $('#dataset1Select').val();
         let dataset2id = $('#dataset2Select').val();
