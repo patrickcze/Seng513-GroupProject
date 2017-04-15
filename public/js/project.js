@@ -243,7 +243,9 @@ function setupViewOnlyProject(id, socket) {
             socket.emit('computeDatasetRatio', {dataset1id: project.dataset1ID, dataset2id: project.dataset2ID});
             socket.on('plotCorrelation', (data) => {
                 console.log(data);
-                plotDataset(data, geojson);
+                // plotDataset(data, geojson);
+                plotCorrelation();
+
             });
         } else {
             for (i in project.datasetIDs) {
@@ -312,6 +314,9 @@ function setupProjectFromID(id, socket, userDatasets) {
     let ds1Color = null;
     let ds2Color = null;
 
+    let ds1present = false;
+    let ds2present = false;
+
     let projectDatasets = [];
 
     $('#main-map-container').removeClass('hidden');
@@ -354,6 +359,31 @@ function setupProjectFromID(id, socket, userDatasets) {
             $('#publicURL').val('http://127.0.0.1:3000/project?projectid=' + project.id);
         }
 
+        if (project.ds1Color){
+            ds1Color = project.ds1Color;
+            $('#dataset1SelectButton').css("background-color", ds1Color);
+        }
+
+        if (project.ds2Color){
+            ds2Color = project.ds2Color;
+            $('#dataset2SelectButton').css("background-color", ds2Color);
+        }
+
+        if (project.visibleDataset){
+            switch (project.visibleDataset){
+                case "dataset1":
+                    $("#inlineRadio1").prop("checked", true);
+                    break;
+                case "dataset2":
+                    $("#inlineRadio2").prop("checked", true);
+                    break;
+                case "correlation":
+                    $("#inlineRadio3").prop("checked", true);
+                default:
+                    console.log();
+            }
+        }
+
         // Ask for geojson data
         socket.emit('getGlobalGeoJSON');
 
@@ -388,15 +418,33 @@ function setupProjectFromID(id, socket, userDatasets) {
         console.log(dataset);
         projectDatasets.push(dataset);
 
-        if (dataset.datasetid.datasetid === $('#dataset1Select').val()) {
-            plotDataset(dataset.data.data);
-        }
-
         if (dataset.datasetid.datasetid === project.dataset1ID) {
             $('#dataset1Select').val(project.dataset1ID);
+
+            if ($('#inlineRadio1').prop("checked")){
+                plotDataset('#dataset1Select');
+            }
         }
         if (dataset.datasetid.datasetid === project.dataset2ID) {
             $('#dataset2Select').val(project.dataset2ID);
+            if ($('#inlineRadio2').prop("checked")){
+                plotDataset('#dataset2Select');
+            }
+        }
+
+        if ($('#inlineRadio3').prop("checked")){
+            for (dataset of projectDatasets){
+                console.log(dataset);
+                if (dataset.datasetid.datasetid === $("#dataset1Select").val()){
+                    ds1present = true;
+                } else if (dataset.datasetid.datasetid === $("#dataset2Select").val()){
+                    ds2present = true;
+                }
+            }
+
+            if (ds1present && ds2present){
+                plotCorrelation();
+            }
         }
 
         $('#loading').hide();
@@ -410,17 +458,19 @@ function setupProjectFromID(id, socket, userDatasets) {
             plotDataset('#dataset2Select');
         }
         else if (this.value === 'correlation') {
-            let dataset1id = $('#dataset1Select').val();
-            let dataset2id = $('#dataset2Select').val();
-
-            socket.emit('computeDatasetRatio', {dataset1id: dataset1id, dataset2id: dataset2id});
-            socket.on('plotCorrelation', (data) => {
-                console.log(data);
-                // plotDataset(data);
-                colorDataset(data, ds1Color, ds2Color);
-            });
+            plotCorrelation();
         }
     });
+
+    function plotCorrelation() {
+        let dataset1id = $('#dataset1Select').val();
+        let dataset2id = $('#dataset2Select').val();
+
+        socket.emit('computeDatasetRatio', {dataset1id: dataset1id, dataset2id: dataset2id});
+        socket.on('plotCorrelation', (data) => {
+            colorDataset(data, ds1Color, ds2Color);
+        });
+    }
     
     function plotDataset(datasetSelector) {
         let datasetid = $(datasetSelector).val();
@@ -451,6 +501,8 @@ function setupProjectFromID(id, socket, userDatasets) {
     }
 
     $('#saveProjectChangesButton').on('click', () => {
+        $("#loadingTitle").text('Now sending data via carrier pigeon...');
+
         $('#loading').show();
 
         let projectData = {
@@ -460,7 +512,9 @@ function setupProjectFromID(id, socket, userDatasets) {
             dataset2ID: $('#dataset2Select').val(),
             id: project.id,
             isPublic: $('#publicCheckbox').prop('checked'),
-            visibleDataset: $('input[type=radio][name=inlineRadioOptions]:checked').val()
+            visibleDataset: $('input[type=radio][name=inlineRadioOptions]:checked').val(),
+            ds1Color: ds1Color,
+            ds2Color: ds2Color
         };
 
         if (projectData.dataset1ID !== "-1") {
@@ -484,6 +538,7 @@ function setupProjectFromID(id, socket, userDatasets) {
 
             socket.emit('saveProjectDetailsInDB', projectData);
             $('#loading').hide();
+            $("#loadingTitle").text('Now fetching data via carrier pigeon...');
         });
     });
 
@@ -633,25 +688,6 @@ function setupProjectFromID(id, socket, userDatasets) {
         });
     }
 
-    // function plotDataset(data) {
-    //     geojson.eachLayer(function (layer) {
-    //         let countryCode = layer.feature.properties.iso_a3;
-    //
-    //         for (let dataPoint of data) {
-    //             if (dataPoint.isoA3 === countryCode) {
-    //                 layer.setStyle({
-    //                     fillColor: getColor(dataPoint.value),
-    //                     weight: 2,
-    //                     opacity: 1,
-    //                     color: 'white',
-    //                     dashArray: '3',
-    //                     fillOpacity: 0.7
-    //                 });
-    //             }
-    //         }
-    //     });
-    // }
-
     function clearPlotDataset() {
         geojson.eachLayer(function (layer) {
             layer.setStyle({
@@ -669,17 +705,6 @@ function setupProjectFromID(id, socket, userDatasets) {
 
 function clearMap() {
     $('#main-map-container').html('<div id="sidebar" class="col-3 col-lg-2"> <form id="projectOptionsForm"> <label>Show</label> <br><div class="form-check form-check-inline"> <label class="form-check-label"> <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="dataset1"> Dataset 1 </label> </div><div class="form-check form-check-inline"> <label class="form-check-label"> <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="dataset2"> Dataset 2 </label> </div><div class="form-check form-check-inline" hidden> <label class="form-check-label"> <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio3" value="correlation"> Correlation </label> </div><hr> <div class="form-group"> <label for="projectTitleField">Project Title</label> <input type="text" class="form-control" id="projectTitleField" placeholder="Project Title"> </div><hr/> <div class="form-group"> <label for="dataset1Select">Dataset 1</label> <select class="form-control" id="dataset1Select"> </select> </div><div class="form-group"> <label for="dataset2Select">Dataset 2</label> <select class="form-control" id="dataset2Select"> <option value="-1">None</option> </select> </div><hr> <div class="form-group"> <button type="button" id="saveProjectChangesButton" class="btn btn-success col-12">Save Changes</button> </div><div class="form-group"> <button type="button" id="shareProjectButton" class="btn btn-info col-12">Share Project</button> </div></form> </div><div id="map" class="col-9 col-lg-10"></div>');
-}
-
-function getColor(d) {
-    return d > 70 ? '#800026' :
-        d > 60 ? '#BD0026' :
-            d > 50 ? '#E31A1C' :
-                d > 40 ? '#FC4E2A' :
-                    d > 30 ? '#FD8D3C' :
-                        d > 20 ? '#FEB24C' :
-                            d > 10 ? '#FED976' :
-                                '#FFEDA0';
 }
 
 function setupProjectInDatabase(firebase) {

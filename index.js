@@ -172,6 +172,8 @@ io.on('connection', function (socket) {
                     updates[projectPath + '/isPublic'] = project.isPublic;
                     updates[projectPath + '/visibleDataset'] = project.visibleDataset;
                     updates[projectPath + '/projectScreenshotURL'] = project.projectScreenshotURL;
+                    updates[projectPath + '/ds1Color'] = project.ds1Color;
+                    updates[projectPath + '/ds2Color'] = project.ds2Color;
 
                     firebase.database().ref().update(updates);
                 }

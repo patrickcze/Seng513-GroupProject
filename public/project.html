@@ -84,6 +84,11 @@
                         <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio3" value="correlation"> Correlation
                     </label>
                 </div>
+                <hr>
+                <div class="form-group">
+                    <label>Project Title</label>
+                    <input id="projectTitleField" type="text" class="col-12" />
+                </div>
                 <hr/>            
                 <div class="form-group">
                     <label for="dataset1Select">Dataset 1</label>
@@ -212,7 +217,9 @@
 
 <div id="loading" class="collapse" style="z-index: 9999">
     <div class="cs-loader">
+
         <div class="cs-loader-inner">
+            <h3 id="loadingTitle">Now fetching data via carrier pigeon...</h3>
             <label>	●</label>
             <label>	●</label>
             <label>	●</label>
