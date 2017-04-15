@@ -1,11 +1,8 @@
 let map = null;
 
 $(function () {
-
-
     // Allow popovers in bootstrap
     $('[data-toggle="popover"]').popover()
-
 
     let userDatasets = null;
 
@@ -240,13 +237,7 @@ function setupViewOnlyProject(id, socket) {
         socket.emit('getGlobalGeoJSON');
 
         if (datasetToDisplay === "correlation") {
-            socket.emit('computeDatasetRatio', {dataset1id: project.dataset1ID, dataset2id: project.dataset2ID});
-            socket.on('plotCorrelation', (data) => {
-                console.log(data);
-                // plotDataset(data, geojson);
-                plotCorrelation();
-
-            });
+            plotCorrelation();
         } else {
             for (i in project.datasetIDs) {
                 console.log(project.datasetIDs[i]);
@@ -272,7 +263,7 @@ function setupViewOnlyProject(id, socket) {
         projectDatasets.push(dataset);
 
         if (dataset.datasetid.datasetid === datasetToDisplay) {
-            plotDataset(dataset.data.data, geojson);
+            plotDataset(datasetToDisplay);
         }
     });
 
@@ -281,15 +272,85 @@ function setupViewOnlyProject(id, socket) {
         console.log("click");
     });
 
-    function plotDataset(data, geojson) {
-        console.log(data);
+    function plotCorrelation() {
+        let dataset1id = project.dataset1ID;
+        let dataset2id = project.dataset2ID;
+
+        socket.emit('computeDatasetRatio', {dataset1id: dataset1id, dataset2id: dataset2id});
+        socket.on('plotCorrelation', (data) => {
+            colorDataset(data, project.ds1Color, project.ds2Color);
+            $('#loading').hide();
+        });
+    }
+
+    function plotDataset(datasetid) {
+        if (project.visibleDataset === "dataset1"){
+            color = project.ds1Color;
+        } else {
+            color= project.ds2Color;
+        }
+
+        if (datasetid === "-1") {
+            clearPlotDataset();
+        } else {
+            for (let dataset of projectDatasets) {
+                if (datasetid === dataset.datasetid.datasetid) {
+                    colorDataset(dataset, "#FFFFFF", color);
+                    $('#loading').hide();
+                }
+            }
+        }
+    }
+
+    function colorDataset(datasetToPlot, startColor, endColor) {
+        //plot the new color gradient
+        let numberOfItems = 10;
+        let rainbow = new Rainbow();
+        rainbow.setNumberRange(1, numberOfItems);
+        rainbow.setSpectrum(startColor, endColor);
+
+        let colors = [];
+        let cutPoints = [];
+
+        for (let i = 1; i <= numberOfItems; i++) {
+            colors.push('#' + rainbow.colourAt(i));
+        }
+
+        //Get the correct dataset to color
+        let dataset = datasetToPlot.data.data;
+        let minVal = datasetToPlot.data.minVal;
+        let maxVal = datasetToPlot.data.maxVal;
+        let dif = (maxVal - minVal) / (numberOfItems - 1);
+
+        //Determine cut points within the data
+        for (var i = 1; i < numberOfItems; i++) {
+            let val = minVal + (i * dif);
+            cutPoints.push(val);
+        }
+
+        //Go through each item and color it appropriately
         geojson.eachLayer(function (layer) {
             let countryCode = layer.feature.properties.iso_a3;
 
-            for (let dataPoint of data) {
+            for (dataPoint of dataset) {
                 if (dataPoint.isoA3 === countryCode) {
+                    let color = "#FFFFFF";
+                    let num = dataPoint.value;
+
+                    for (let i = 0; i < cutPoints.length; i++) {
+                        let plusOne = i + 1;
+
+                        if (num > cutPoints[cutPoints.length - 1]) {
+                            color = colors[colors.length - 1];
+                        } else if (num <= cutPoints[0]) {
+                            color = colors[0];
+                        } else if (num > cutPoints[i] && num <= cutPoints[plusOne]) {
+                            color = colors[plusOne];
+                        }
+                    }
+
                     layer.setStyle({
-                        fillColor: getColor(dataPoint.value),
+                        fillColor: color,
                         weight: 2,
                         opacity: 1,
                         color: 'white',
