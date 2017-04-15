@@ -158,6 +158,7 @@ $(function () {
 
         promiseandkey[0].then(() => {
             setupProjectFromID(promiseandkey[1], socket, userDatasets);
+            $('#loading').hide();
         });
     });
 
@@ -530,6 +531,7 @@ function setupProjectFromID(id, socket, userDatasets) {
             plotCorrelation()
         }
     });
+
     $('#dataset2Select').on('change', function() {
         if ($("#inlineRadio2").prop("checked")){
             plotDataset('#dataset2Select');
@@ -702,59 +704,65 @@ function setupProjectFromID(id, socket, userDatasets) {
         let numberOfItems = 10;
         let rainbow = new Rainbow();
         rainbow.setNumberRange(1, numberOfItems);
-        rainbow.setSpectrum(startColor, endColor);
 
-        let colors = [];
-        let cutPoints = [];
+        if (startColor && endColor) {
 
-        for (let i = 1; i <= numberOfItems; i++) {
-            colors.push('#' + rainbow.colourAt(i));
-        }
+            rainbow.setSpectrum(startColor, endColor);
 
-        //Get the correct dataset to color
-        let dataset = datasetToPlot.data.data;
-        let minVal = datasetToPlot.data.minVal;
-        let maxVal = datasetToPlot.data.maxVal;
-        let dif = (maxVal - minVal) / (numberOfItems - 1);
+            let colors = [];
+            let cutPoints = [];
 
-        //Determine cut points within the data
-        for (var i = 1; i < numberOfItems; i++) {
-            let val = minVal + (i * dif);
-            cutPoints.push(val);
-        }
-
-        //Go through each item and color it appropriately
-        geojson.eachLayer(function (layer) {
-            let countryCode = layer.feature.properties.iso_a3;
-
-            for (dataPoint of dataset) {
-                if (dataPoint.isoA3 === countryCode) {
-                    let color = "#FFFFFF";
-                    let num = dataPoint.value;
-
-                    for (let i = 0; i < cutPoints.length; i++) {
-                        let plusOne = i + 1;
-
-                        if (num > cutPoints[cutPoints.length - 1]) {
-                            color = colors[colors.length - 1];
-                        } else if (num <= cutPoints[0]) {
-                            color = colors[0];
-                        } else if (num > cutPoints[i] && num <= cutPoints[plusOne]) {
-                            color = colors[plusOne];
-                        }
-                    }
-
-                    layer.setStyle({
-                        fillColor: color,
-                        weight: 2,
-                        opacity: 1,
-                        color: 'white',
-                        dashArray: '3',
-                        fillOpacity: 0.7
-                    });
-                }
+            for (let i = 1; i <= numberOfItems; i++) {
+                colors.push('#' + rainbow.colourAt(i));
             }
-        });
+
+            //Get the correct dataset to color
+            let dataset = datasetToPlot.data.data;
+            let minVal = datasetToPlot.data.minVal;
+            let maxVal = datasetToPlot.data.maxVal;
+            let dif = (maxVal - minVal) / (numberOfItems - 1);
+
+            //Determine cut points within the data
+            for (var i = 1; i < numberOfItems; i++) {
+                let val = minVal + (i * dif);
+                cutPoints.push(val);
+            }
+
+            //Go through each item and color it appropriately
+            geojson.eachLayer(function (layer) {
+                let countryCode = layer.feature.properties.iso_a3;
+
+                for (dataPoint of dataset) {
+                    if (dataPoint.isoA3 === countryCode) {
+                        let color = "#FFFFFF";
+                        let num = dataPoint.value;
+
+                        for (let i = 0; i < cutPoints.length; i++) {
+                            let plusOne = i + 1;
+
+                            if (num > cutPoints[cutPoints.length - 1]) {
+                                color = colors[colors.length - 1];
+                            } else if (num <= cutPoints[0]) {
+                                color = colors[0];
+                            } else if (num > cutPoints[i] && num <= cutPoints[plusOne]) {
+                                color = colors[plusOne];
+                            }
+                        }
+
+                        layer.setStyle({
+                            fillColor: color,
+                            weight: 2,
+                            opacity: 1,
+                            color: 'white',
+                            dashArray: '3',
+                            fillOpacity: 0.7
+                        });
+                    }
+                }
+            });
+        } else {
+            $('#loading').hide();
+        }
     }
 
     function clearPlotDataset() {
