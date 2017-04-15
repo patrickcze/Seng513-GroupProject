@@ -178,6 +178,7 @@ $(function () {
     });
 });
 
+//Setup the project when a user shares their project url with others
 function setupViewOnlyProject(id, socket) {
     changeToProjectView();
 
@@ -197,6 +198,7 @@ function setupViewOnlyProject(id, socket) {
     //Get the details of the project
     socket.emit('getProjectWithId', id);
 
+    //Deal with incoming project data
     socket.on('setProjectWithId', (data) => {
         project = data;
 
@@ -237,6 +239,7 @@ function setupViewOnlyProject(id, socket) {
         // Ask for geojson data
         socket.emit('getGlobalGeoJSON');
 
+        //Display correlation or the color the user selected
         if (datasetToDisplay === "correlation") {
             plotCorrelation();
         } else {
@@ -284,6 +287,7 @@ function setupViewOnlyProject(id, socket) {
         });
     }
 
+    //Plot the data using the correct color
     function plotDataset(datasetid) {
         if (project.visibleDataset === "dataset1") {
             color = project.ds1Color;
@@ -303,6 +307,7 @@ function setupViewOnlyProject(id, socket) {
         }
     }
 
+    //Perform map coloring based on dataset values
     function colorDataset(datasetToPlot, startColor, endColor) {
         //plot the new color gradient
         let numberOfItems = 10;
@@ -364,12 +369,11 @@ function setupViewOnlyProject(id, socket) {
     }
 }
 
+// Setup the project from a id in editing mode
 function setupProjectFromID(id, socket, userDatasets) {
     changeToProjectView();
 
     $('#loading').show();
-
-    console.log("setup project");
 
     let project = null;
     let geojson = null;
@@ -476,6 +480,7 @@ function setupProjectFromID(id, socket, userDatasets) {
         }).addTo(map);
     });
 
+    // Deal with incoming dataset data
     socket.on('setDataset', (dataset) => {
         console.log(dataset);
         projectDatasets.push(dataset);
@@ -512,6 +517,7 @@ function setupProjectFromID(id, socket, userDatasets) {
         $('#loading').hide();
     });
 
+    // plot data when changing the selected radio button
     $('input[type=radio][name=inlineRadioOptions]').change(function () {
         if (this.value === 'dataset1') {
             plotDataset('#dataset1Select');
@@ -540,6 +546,7 @@ function setupProjectFromID(id, socket, userDatasets) {
         }
     });
 
+    //plot dataset correlation 
     function plotCorrelation() {
         let dataset1id = $('#dataset1Select').val();
         let dataset2id = $('#dataset2Select').val();
