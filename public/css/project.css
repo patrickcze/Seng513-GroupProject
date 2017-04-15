@@ -439,7 +439,7 @@ input:checked + .slider:before {
     transform: translateY(-50%);
     top: 50%;
     position: absolute;
-    width: calc(100% - 200px);
+    width: 100%;
     color: #FFF;
     padding: 0 100px;
     text-align: center;

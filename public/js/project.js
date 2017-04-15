@@ -119,7 +119,15 @@ $(function () {
         $(".project-card").click(function () {
             console.log("Handler for .click() called.");
             console.log($(this).attr("projectid"));
-            setupProjectFromID($(this).attr("projectid"), socket, userDatasets);
+            
+            var hoveringMoreMenu = $(this).find("#moreMenu:hover").length;
+            console.log(hoveringMoreMenu);
+
+            // Make sure user is not trying to select the more options button instead of opening a project
+            if(hoveringMoreMenu < 1){
+                setupProjectFromID($(this).attr("projectid"), socket, userDatasets);
+            }
+            
         });
     });
 
