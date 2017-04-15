@@ -167,7 +167,7 @@ input:checked + .slider:before {
 }
 
 .moreoptions{
-    background:url(3dot.png) no-repeat;
+    background:url(../img/3dot.png) no-repeat;
     cursor:pointer;
     width: 25px;
     height: 25px;
