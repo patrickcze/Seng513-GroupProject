@@ -407,19 +407,7 @@ function setupProjectFromID(id, socket, userDatasets) {
             plotDataset('#dataset1Select');
         }
         else if (this.value === 'dataset2') {
-            let dataset2id = $('#dataset2Select').val();
-
-            if (dataset2id === "-1") {
-                clearPlotDataset();
-            } else {
-                for (let dataset of projectDatasets) {
-                    if (dataset2id === dataset.datasetid.datasetid) {
-                        // plotDataset(dataset.data.data);
-                        colorDataset(dataset, "#FFFFFF", ds2Color);
-                        console.log(dataset);
-                    }
-                }
-            }
+            plotDataset('#dataset2Select');
         }
         else if (this.value === 'correlation') {
             let dataset1id = $('#dataset1Select').val();
@@ -440,6 +428,15 @@ function setupProjectFromID(id, socket, userDatasets) {
             color = ds1Color;
         } else {
             color= ds2Color;
+        }
+
+        if (color === null){
+            alert('Hey, looks like your trying to plot without choosing a color first!');
+            if (datasetSelector === "#dataset1Select"){
+                $('#dataset1SelectButton').popover('show');
+            } else {
+                $('#dataset2SelectButton').popover('show');
+            }
         }
 
         if (datasetid === "-1") {
