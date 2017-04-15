@@ -243,7 +243,7 @@ function setupViewOnlyProject(id, socket) {
         });
 
         
-        map.zoomControl.setPosition('topright');
+        map.zoomControl.setPosition('bottomright');
 
         
         L.tileLayer('http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png', {
@@ -419,14 +419,13 @@ function setupProjectFromID(id, socket, userDatasets) {
         center: [46.938984, 2.373590],
         zoom: 4,
         preferCanvas: true
-        
     });
 
         
-    map.zoomControl.setPosition('topright');
+    map.zoomControl.setPosition('bottomright');
     
     
-    L.tileLayer('http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png', {
+    L.tileLayer('http://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="http://cartodb.com/attributions">CartoDB</a>'
     }).addTo(map);
 
@@ -777,11 +776,11 @@ function setupProjectFromID(id, socket, userDatasets) {
 
                         layer.setStyle({
                             fillColor: color,
-                            weight: 2,
+                            weight: 0,
                             opacity: 1,
-                            color: 'white',
-                            dashArray: '3',
-                            fillOpacity: 0.7
+                            color: '#242426',
+                            dashArray: '0',
+                            fillOpacity: 0.66
                         });
                     }
                 }
