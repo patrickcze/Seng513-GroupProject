@@ -3,11 +3,13 @@
 
 <head>
     <title>umapit.io</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css"
           integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.3/dist/leaflet.css"/>
 
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="css/style.css">
 </head>
 
 <body>
@@ -17,7 +19,7 @@
             aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
     </button>
-    <a class="navbar-brand active" href="/">umap.io</a>
+    <a class="navbar-brand" href="/"><img src="img/umapit.png" style = "height: 1.5rem; margin-left: 2px;"></a>
 
     <div class="collapse navbar-collapse" id="navbarsExampleDefault">
         <ul class="navbar-nav mr-auto">
@@ -45,6 +47,7 @@
                 </button>
             </div>
             <div id="signInModalBody" class="modal-body">
+                <div id="signinAlertArea" class="col-12"></div>
                 <form onsubmit="return false">
                     <div class="form-group">
                         <input class="form-control mr-sm-2" type="email" id="emailField" placeholder="eMail">
@@ -133,10 +136,12 @@
         integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
 <script src="/socket.io/socket.io.js"></script>
 <script src="https://www.gstatic.com/firebasejs/3.7.4/firebase.js"></script>
+<script src="https://npmcdn.com/tether@1.2.4/dist/js/tether.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js"
         integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn"
         crossorigin="anonymous"></script>
 <script src="https://unpkg.com/leaflet@1.0.3/dist/leaflet.js"></script>
+<script src="js/rainbowvis.js"></script>
 <script src="js/client.js"></script>
 </body>
 

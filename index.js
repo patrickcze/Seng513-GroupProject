@@ -108,10 +108,27 @@ io.on('connection', function (socket) {
             let ref = firebase.database();
 
             ref.ref('datasets/' + data.datasetid).once('value').then(function (snapshot) {
+                let dataset = snapshot.val();
+
+                let maxVal = dataset.data[0].value;
+                let minVal = dataset.data[0].value;
+
+                for (item of dataset.data){
+                    if (item.value < minVal){
+                        minVal = item.value;
+                    }
+                    if (item.value > maxVal){
+                        maxVal = item.value;
+                    }
+                }
+
+                dataset.minVal = minVal;
+                dataset.maxVal = maxVal;
+
                 if (data.viewOnly){
-                    socket.emit('setDatasetViewOnly', {datasetid: data, data: snapshot.val()});
+                    socket.emit('setDatasetViewOnly', {datasetid: data, data: dataset});
                 } else {
-                    socket.emit('setDataset', {datasetid: data, data: snapshot.val()});
+                    socket.emit('setDataset', {datasetid: data, data: dataset});
                 }
             });
         }
@@ -155,6 +172,8 @@ io.on('connection', function (socket) {
                     updates[projectPath + '/isPublic'] = project.isPublic;
                     updates[projectPath + '/visibleDataset'] = project.visibleDataset;
                     updates[projectPath + '/projectScreenshotURL'] = project.projectScreenshotURL;
+                    updates[projectPath + '/ds1Color'] = project.ds1Color;
+                    updates[projectPath + '/ds2Color'] = project.ds2Color;
 
                     firebase.database().ref().update(updates);
                 }
@@ -173,7 +192,15 @@ io.on('connection', function (socket) {
             if (ds1 && ds2){
                 let dsCombined = computeRatioSet(ds1,ds2);
 
-                socket.emit('plotCorrelation', dsCombined);
+                let dataToSend = {
+                    data: {
+                        data: dsCombined,
+                        minVal: -1.0,
+                        maxVal: 1.0
+                    }
+                }
+
+                socket.emit('plotCorrelation', dataToSend);
             }
         });
 
@@ -183,7 +210,15 @@ io.on('connection', function (socket) {
             if (ds1 && ds2){
                 let dsCombined = computeRatioSet(ds1,ds2);
 
-                socket.emit('plotCorrelation', dsCombined);
+                let dataToSend = {
+                    data: {
+                        data: dsCombined,
+                        minVal: -1.0,
+                        maxVal: 1.0
+                    }
+                }
+
+                socket.emit('plotCorrelation', dataToSend);
             }
         });
     });

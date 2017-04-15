@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>umapit.io</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css"
           integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
@@ -14,13 +15,13 @@
 <body>
 
 <!--Setup the nav bar-->
-<nav class="navbar navbar-toggleable-md navbar-default fixed-top">
+<nav class="navbar navbar-toggleable-md navbar-inverse fixed-top">
     <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse"
             data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false"
             aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
     </button>
-    <a class="navbar-brand" href="/">umapit.io</a>
+    <a class="navbar-brand" href="/"><img src="img/umapit.png" style = "height: 1.5rem; margin-left: 2px;"></a>
 
     <div class="collapse navbar-collapse" id="navbarsExampleDefault">
         <ul class="navbar-nav mr-auto">
@@ -42,9 +43,9 @@
     <!--This section will display the map cards-->
     <div class="container-fluid">
         <div id="mapCardArea" class="row">
-            <div id="createNewMapCard" class="card" style="width: 20rem; height: 15rem;">
+            <div id="createNewMapCard" class="card hidden-sm" style="width: 20rem; height: 15rem;">
                 <div class="card-block">
-                    <img src="plus.png" style = "width: 5rem; padding-top:4rem;">
+                    <img src="img/plus.png" style = "width: 5rem; padding-top:4rem;">
                 </div>
                 <h6 class="card-title"> New Map </h6>
             </div>
@@ -54,9 +55,9 @@
     <!--This section will display the dataset cards-->
     <div class="container-fluid">
         <div id="datasetCardArea" class="row collapse">
-            <div id="createNewDatasetCard" class="card" style="width: 20rem; height: 15rem;">
+            <div id="createNewDatasetCard" class="card hidden-sm" style="width: 20rem; height: 15rem;">
                 <div class="card-block">
-                        <img src="plus.png" style = "width: 5rem; padding-top:4rem;">
+                        <img src="img/plus.png" style = "width: 5rem; padding-top:4rem;">
                 </div>
                 <h6 class="card-title"> Upload Dataset </h6>
             </div>
@@ -65,10 +66,11 @@
 
     <!--Display the map-->
     <div id="main-map-container" class="container-fluid hidden">
-        <div id="sidebar" class="col-3 col-lg-2">
+        <div id="sidebar" class="col-lg-2 col-md-3 hidden-sm">
             <form id="projectOptionsForm">
-                <label>Show</label>
-                <br>
+                <div class="form-group">
+                    <input id="projectTitleField" type="text" class="col-12" />
+                </div>                
                 <div class="form-check">
                     <label class="form-check-label">
                         <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="dataset1"> Dataset 1
@@ -83,21 +85,17 @@
                     <label class="form-check-label">
                         <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio3" value="correlation"> Correlation
                     </label>
-                </div>
+                </div>    
                 <hr>
                 <div class="form-group">
-                    <label for="projectTitleField">Project Title</label>
-                    <input type="text" class="form-control" id="projectTitleField" placeholder="Project Title">
-                </div>
-                <hr/>
-                <div class="form-group">
                     <label for="dataset1Select">Dataset 1</label>
+                    <button type="button" id= "dataset1SelectButton" class="btn btn-secondary pull-right circlebutton" data-container="body" data-toggle="popover" data-placement="right" data-content="<div id ='colorpicker1Popover'><button type='button' id='color1' class='circlebutton'></button><button type='button' id='color2' class='circlebutton'></button><button type='button' id='color3' class='circlebutton'></button></div><div><button type='button' id='color4' class='circlebutton'></button><button type='button' id='color5' class='circlebutton'></button><button type='button' id='color6' class='circlebutton'></button></div><div><button type='button' id='color7' class='circlebutton'></button><button type='button' id='color8' class='circlebutton'></button><button type='button' id='color9' class='circlebutton'></button></div>" data-html='true'></button>
                     <select class="form-control" id="dataset1Select">
-
                     </select>
                 </div>
                 <div class="form-group">
                     <label for="dataset2Select">Dataset 2</label>
+                    <button type="button" id="dataset2SelectButton" class="btn btn-secondary pull-right circlebutton" style="align-items: flex" data-container="body" data-toggle="popover" data-placement="right" data-content="<div id ='colorpicker2Popover'><button type='button' id='color1' class='circlebutton'></button><button type='button' id='color2' class='circlebutton'></button><button type='button' id='color3' class='circlebutton'></button></div><div><button type='button' id='color4' class='circlebutton'></button><button type='button' id='color5' class='circlebutton'></button><button type='button' id='color6' class='circlebutton'></button></div><div><button type='button' id='color7' class='circlebutton'></button><button type='button' id='color8' class='circlebutton'></button><button type='button' id='color9' class='circlebutton'></button></div>" data-html='true'></button>
                     <select class="form-control" id="dataset2Select">
                         <option value="-1">None</option>
                     </select>
@@ -111,7 +109,7 @@
                 </div>
             </form>
         </div>
-        <div id="map" class="col-9 col-lg-10"></div>
+        <div id="map" class="col-12 col-lg-12"></div>
     </div>
 </div>
 
@@ -162,7 +160,7 @@
             </div>
             <div id="newDatasetModalBody" class="modal-body">
                 <a href="/downloadGlobalTemplate" target="_blank">
-                    <button class="btn btn-info col-12">Global Countries Template</button>
+                    <button class="btn btn-info col-3">Global Countries Template</button>
                 </a>
                 <a href="/downloadUSCANTemplate" target="_blank">
                     <button class="btn btn-info col-12">USA & Canada Template</button>
@@ -209,9 +207,8 @@
                     <div class="form-group">
                         <label class="col-12">Save as</label>
                         <div style="text-align: center">
-                            <button id="downloadMapAsPNG" class="btn btn-outline-primary col-3">PNG</button>
-                            <button id="downloadMapAsJPG" class="btn btn-outline-primary col-3">JPG</button>
-                            <button id="downloadMapAsSVG" class="btn btn-outline-primary col-3">SVG</button>
+                            <button id="downloadMapAsPNG" class="btn btn-outline-primary col-5 col-offset-1">PNG</button>
+                            <button id="downloadMapAsJPG" class="btn btn-outline-primary col-5">JPG</button>
                         </div>
                     </div>
                 </div>
@@ -222,7 +219,9 @@
 
 <div id="loading" class="collapse" style="z-index: 9999">
     <div class="cs-loader">
+
         <div class="cs-loader-inner">
+            <h3 id="loadingTitle">Now fetching data via carrier pigeon...</h3>
             <label>	●</label>
             <label>	●</label>
             <label>	●</label>
@@ -243,6 +242,7 @@
         crossorigin="anonymous"></script>
 <script src="https://unpkg.com/leaflet@1.0.3/dist/leaflet.js"></script>
 <script src='http://xn--dahlstrm-t4a.net/svg/libraries/canvas-svg/canvas-getsvg.js'></script>
+<script src="js/rainbowvis.js"></script>
 <script src="js/project.js"></script>
 
 </body>
