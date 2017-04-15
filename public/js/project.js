@@ -550,6 +550,9 @@ function setupProjectFromID(id, socket, userDatasets) {
         $(this).css("border-color", "white");
         console.log(color);
 
+        $('#dataset1SelectButton').popover('hide');
+        $('#dataset2SelectButton').popover('hide');
+
         // Do this if we're changing the first color, else second color
         if (document.getElementById('colorpicker1Popover')) {
             $('#dataset1SelectButton').css("background-color", color);
