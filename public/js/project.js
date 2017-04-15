@@ -45,7 +45,7 @@ $(function () {
             console.log(firebaseUser);
             //Redirect to the maps page
 
-            $('#loading').show();
+            $('#loading').fadeIn('slow');
 
             socket.emit('getListOfUserDatasets', {uid: firebaseUser.uid});
             socket.emit('getListOfUserProjects', {uid: firebaseUser.uid});
@@ -238,8 +238,6 @@ function setupViewOnlyProject(id, socket) {
             center: [46.938984, 2.373590],
             zoom: 4,
             preferCanvas: true
-            
-            
         });
 
         
@@ -387,7 +385,7 @@ function setupViewOnlyProject(id, socket) {
 function setupProjectFromID(id, socket, userDatasets) {
     changeToProjectView();
 
-    $('#loading').show();
+    $('#loading').fadeIn('slow');
 
     let project = null;
     let geojson = null;
@@ -606,7 +604,7 @@ function setupProjectFromID(id, socket, userDatasets) {
     $('#saveProjectChangesButton').on('click', () => {
         $("#loadingTitle").text('Now sending data via carrier pigeon...');
 
-        $('#loading').show();
+        $('#loading').fadeIn('slow');
 
         let projectData = {
             title: $('#projectTitleField').val(),
