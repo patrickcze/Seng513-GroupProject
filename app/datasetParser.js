@@ -3,6 +3,7 @@ module.exports = {
         //setup connecyion to fireabse
         var firebase = require('firebase');
 
+        //Get a new static firebase reference key
         let newDatasetKey = firebase.database().ref('datasets').push().key;
 
         let datasetDetails = {
@@ -10,6 +11,7 @@ module.exports = {
             userID: userID
         };
 
+        //Upload the users data to firebase
         var updates = {};
         updates['/datasets/' + newDatasetKey + '/data'] = jsonData;
         updates['/datasets-metadata/'+newDatasetKey] = datasetDetails;
