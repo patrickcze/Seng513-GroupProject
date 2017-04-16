@@ -57,7 +57,8 @@
         <div id="datasetCardArea" class="row collapse">
             <div id="createNewDatasetCard" class="card hidden-sm" style="width: 20rem; height: 15rem;">
                 <div class="card-block">
-                        <img src="img/plus.png" style = "width: 5rem; padding-top:4rem;">
+                    <img src="img/upload.png" style = "width: 5rem; padding-top:4rem;">
+
                 </div>
                 <h6 class="card-title"> Upload Dataset </h6>
             </div>
@@ -90,15 +91,12 @@
                 <div class="form-group">
                     <label for="dataset1Select">Dataset 1</label>
                     <button type="button" id= "dataset1SelectButton" class="btn btn-secondary pull-right circlebutton" data-container="body" data-toggle="popover" data-placement="right" data-content="<div id ='colorpicker1Popover'><button type='button' id='color1' class='circlebutton'></button><button type='button' id='color2' class='circlebutton'></button><button type='button' id='color3' class='circlebutton'></button></div><div><button type='button' id='color4' class='circlebutton'></button><button type='button' id='color5' class='circlebutton'></button><button type='button' id='color6' class='circlebutton'></button></div><div><button type='button' id='color7' class='circlebutton'></button><button type='button' id='color8' class='circlebutton'></button><button type='button' id='color9' class='circlebutton'></button></div>" data-html='true'></button>
-                    <select class="form-control" id="dataset1Select">
-                    </select>
+                    <select class="form-control" id="dataset1Select"></select>
                 </div>
                 <div class="form-group">
                     <label for="dataset2Select">Dataset 2</label>
                     <button type="button" id="dataset2SelectButton" class="btn btn-secondary pull-right circlebutton" style="align-items: flex" data-container="body" data-toggle="popover" data-placement="right" data-content="<div id ='colorpicker2Popover'><button type='button' id='color1' class='circlebutton'></button><button type='button' id='color2' class='circlebutton'></button><button type='button' id='color3' class='circlebutton'></button></div><div><button type='button' id='color4' class='circlebutton'></button><button type='button' id='color5' class='circlebutton'></button><button type='button' id='color6' class='circlebutton'></button></div><div><button type='button' id='color7' class='circlebutton'></button><button type='button' id='color8' class='circlebutton'></button><button type='button' id='color9' class='circlebutton'></button></div>" data-html='true'></button>
-                    <select class="form-control" id="dataset2Select">
-                        <option value="-1">None</option>
-                    </select>
+                    <select class="form-control" id="dataset2Select"><option value="-1">None</option></select>
                 </div>
                 <hr>
                 <div class="form-group">
@@ -141,7 +139,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button id="createNewProjectButton" type="button" class="btn btn-success">Create Project</button>
+                <button id="createNewProjectButton" type="button" class="btn btn-success" disabled="disabled">Create Project</button>
             </div>
         </div>
     </div>
@@ -159,17 +157,18 @@
                 </button>
             </div>
             <div id="newDatasetModalBody" class="modal-body">
-                <a href="/downloadGlobalTemplate" target="_blank">
-                    <button class="btn btn-info col-3">Global Countries Template</button>
-                </a>
-                <a href="/downloadUSCANTemplate" target="_blank">
-                    <button class="btn btn-info col-12">USA & Canada Template</button>
-                </a>
-                <a href="/downloadUSATemplate" target="_blank">
-                    <button class="btn btn-info col-12">USA Template</button>
-                </a>
-                <a href="/downloadCANTemplate" target="_blank">
-                    <button class="btn btn-info col-12">Canada Template</button>
+                <a href="/downloadGlobalTemplate" target="_blank">   
+                    <div class="form-group" id="downloadtemplate">
+                       <label class="col-md-12 control-label" for="singlebutton">
+                           <div class="col-md-12 center-block">
+                              <button id="downloadtemplatebutton" name="singlebutton" class="btn btn-primary center-block">
+                                  <img src="csv.png" style = "height: 3rem; margin-left: 2px;">
+                                  <hr>
+                                  <div>International Template</div>
+                              </button>
+                           </div>  
+                       </label>
+                    </div>                    
                 </a>
             </div>
             <div class="modal-footer">
@@ -205,7 +204,7 @@
                     </div>
                     <hr>
                     <div class="form-group">
-                        <label class="col-12">Save as</label>
+                        <label class="col-12">Export as</label>
                         <div style="text-align: center">
                             <button id="downloadMapAsPNG" class="btn btn-outline-primary col-5 col-offset-1">PNG</button>
                             <button id="downloadMapAsJPG" class="btn btn-outline-primary col-5">JPG</button>

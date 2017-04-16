@@ -219,7 +219,8 @@ $(function () {
 
         function style(feature) {
             return {
-                weight: 1,
+                // fillColor: getColor(feature.properties.pop_est),
+                weight: 0,
                 opacity: 1,
                 color: 'white',
                 fillOpacity: 0.0
@@ -230,7 +231,7 @@ $(function () {
             var layer = e.target;
 
             layer.setStyle({
-                weight: 5,
+                weight: 1,
                 color: '#666',
                 dashArray: '',
                 fillOpacity: 0.7
@@ -283,8 +284,9 @@ $(function () {
 
         // method that we will use to update the control based on feature properties passed
         info.update = function (props) {
-            this._div.innerHTML = '<h4>Population</h4>' + (props ?
-                    '<b>' + props.name + '</b><br />' + props.pop_est + ' people' : 'Hover over a country');
+            /*this._div.innerHTML = '<h4>Population</h4>' + (props ?
+                '<b>' + props.name + '</b><br />' + props.pop_est + ' people' : 'Hover over a country');*/
+
         };
 
         var legend = L.control({
@@ -307,9 +309,10 @@ $(function () {
         //     return div;
         // };
 
-        legend.addTo(map);
-
-        info.addTo(map);
+        //
+        // legend.addTo(map);
+        //
+        // info.addTo(map);
 
         //Perform map coloring based on dataset values
         function colorDataset(startColor, endColor) {
