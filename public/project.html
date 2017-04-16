@@ -159,12 +159,19 @@
                 </button>
             </div>
             <div id="newDatasetModalBody" class="modal-body">
-                <a href="/downloadGlobalTemplate" target="_blank">
-                    <button class="btn btn-info col-3">Global Countries Template</button>
+                <a href="/downloadGlobalTemplate" target="_blank">   
+                    <div class="form-group" id="downloadtemplate">
+                       <label class="col-md-12 control-label" for="singlebutton">
+                           <div class="col-md-12 center-block">
+                              <button id="downloadtemplatebutton" name="singlebutton" class="btn btn-primary center-block">
+                                  <img src="csv.png" style = "height: 3rem; margin-left: 2px;">
+                                  <hr>
+                                  <div>International Template</div>
+                              </button>
+                           </div>  
+                       </label>
+                    </div>                    
                 </a>
-                <button class="btn btn-info col-3">USA & Canada Template</button>
-                <button class="btn btn-info col-3">USA Template</button>
-                <button class="btn btn-info col-3">Canada Template</button>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>

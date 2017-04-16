@@ -78,6 +78,25 @@ label{
     -webkit-transition: .4s;
     transition: .4s;
 }
+#downloadtemplate{
+    text-align: center;
+}
+
+#downloadtemplatebutton{
+    height: 130px;
+    background-color: #404040;
+    border-width: 0px;
+}
+
+#downloadtemplatebutton:hover{
+    background-color: #303030;
+    border-width: 0px;
+}
+
+#downloadtemplatebutton:active{
+    background-color: #202020;
+    border-width: 0px;
+}
 
 .close:hover {
     color: crimson;
