@@ -521,12 +521,154 @@ function setupProjectFromID(id, socket, userDatasets) {
     socket.on('globalGeoJSON', (globaljson) => {
         console.log(globaljson);
 
+        function highlightFeature(e) {
+            var layer = e.target;
+
+            layer.setStyle({
+                weight: 3,
+                //color: '#666',
+                dashArray: '',
+                fillOpacity: 0.7
+            });
+
+            if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
+                layer.bringToFront();
+            }
+            info.update(layer.feature.properties);
+        }
+
+        function resetHighlight(e) {
+            geojson.resetStyle(e.target);
+            
+            
+            info.update();
+        }
+
+        function zoomToFeature(e) {
+            map.fitBounds(e.target.getBounds());
+        }
+
+        
         geojson = L.geoJson(globaljson, {
             style: {
                 fillColor: "#FFFFFF",
                 opacity: 0
-            }
+            },
+            onEachFeature: function (feature, layer) {
+                layer.on('mouseover', function () {
+                    this.setStyle({
+                        fillColor: "#FFFFFF",
+                    });
+                    
+                    info.update(layer.feature.properties);
+
+                });
+                
+                layer.on('mouseout', function () {
+                           
+                    var datasetid = ""
+                    
+                    switch (project.visibleDataset) {
+                        case "dataset1":
+                            datasetid = project.dataset1ID;
+                            break;
+                        case "dataset2":
+                            datasetid = project.dataset2ID;
+                            break;
+                        case "correlation":
+                            datasetid = "correlation";
+                            break;
+                    }    
+                    
+                    if ($("#inlineRadio1").prop("checked")){
+                        plotDataset('#dataset1Select');
+                    } else if ($("#inlineRadio2").prop("checked")){
+                        plotDataset('#dataset2Select');
+                    } else if ($("#inlineRadio3").prop("checked")){
+                        plotCorrelation()
+                    }
+                });
+            }   
         }).addTo(map);
+        
+        
+        
+        var info = L.control();
+
+        info.onAdd = function (map) {
+            this._div = L.DomUtil.create('div', 'info'); // create a div with a class "info"
+            this.update();
+            return this._div;
+        };
+        
+                
+        // method that we will use to update the control based on feature properties passed
+        info.update = function (props) {
+            
+            
+            if (props != null){
+                console.log(props.iso_a3);
+            
+                let countryCode = props.iso_a3; 
+
+                var datasetid = ""
+
+                // get the dataset id
+                switch (project.visibleDataset) {
+                    case "dataset1":
+                        datasetid = project.dataset1ID;
+                        break;
+                    case "dataset2":
+                        datasetid = project.dataset2ID;
+                        break;
+                    case "correlation":
+                        datasetid = "correlation";
+                        break;
+                }    
+
+                console.log(datasetid);
+
+                var dataval = ''
+                
+                // get the value of the hovered country in that dataset
+                for (let dataset of projectDatasets) {
+                    if (datasetid === dataset.datasetid.datasetid) {
+                        for (let dataPoint of dataset.data.data) {
+                            
+                            console.log(dataPoint);
+                            
+                            if (dataPoint.isoA3 === countryCode) {
+                                dataval = dataPoint.value;
+                                break;
+                            }   
+                        }
+                    }
+                    break;
+                }
+
+                // Update the info box accordingly
+                this._div.innerHTML = "<div style='text-align:right; color:rgba(255,255,255,0.5); font-size:30px; line-height: 125%;'>" + (props ? '<b>' + props.name + '</b><br />' + dataval : 'Hover over a country');
+                }
+        };
+/*
+        var legend = L.control({
+            position: 'bottomright'
+        });
+
+        legend.onAdd = function (map) {
+
+            var div = L.DomUtil.create('div', 'info legend'),
+                grades = [0, 100000, 2000000, 5000000, 10000000, 20000000, 50000000, 100000000],
+                labels = [];
+
+            return div;
+            
+        };
+        legend.addTo(map);
+*/
+
+        info.addTo(map);
+        
     });
 
     // Deal with incoming dataset data
