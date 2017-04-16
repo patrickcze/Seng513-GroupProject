@@ -10,7 +10,7 @@ html, body {
 }
 
 #main-map-container {
-    height: calc(100% - 40px);
+    height: calc(100% - 56px);
     display: flex ;
     display: -webkit-flex;
     flex-direction: row ;
@@ -44,7 +44,7 @@ hr{
 #projectOptionsForm {
     z-index: inherit;
     margin: -15px;
-    height: 100%;
+    height: calc(100% + 15px);
     padding: 30px;
     background-color: rgba(0,0,0,0.9);
     
@@ -218,6 +218,13 @@ input:checked + .slider:before {
 
 .card-title{
     text-align: center;
+}
+
+.datacard-title{
+    text-align: center;
+    margin-bottom: 105px;
+    font-size: 24px;
+    font-weight: 300;
 }
 
 .card-block{
@@ -726,4 +733,8 @@ input[type="radio"]:checked:before {
     border-color: #0077B1;
     border-width: 1px;
     color: white;
+}
+
+dataset-card{
+    
 }
