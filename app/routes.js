@@ -1,8 +1,8 @@
 const express = require('express');
-let multer  =   require('multer');
+let multer = require('multer');
 const path = require('path');
 
-let router =  express.Router();
+let router = express.Router();
 
 let storage = multer.diskStorage({
     destination: function (req, file, callback) {
@@ -13,19 +13,27 @@ let storage = multer.diskStorage({
     }
 });
 
-let upload = multer({storage: storage}).array('userDataset',1);
+let upload = multer({storage: storage}).array('userDataset', 1);
 
-router.post('/api/dataset',function(req,res){
-    upload(req,res,function(err) {
-        if(err) {
-            return res.end("Error uploading file.");
+router.post('/api/dataset', function (req, res) {
+    let userid = req.body;
+    console.log(userid);
+
+    upload(req, res, function (err) {
+        console.log(req.body);
+
+        console.log(res);
+
+        if (err) {
+            return res.end("Error uploading file." + err);
         }
         res.end("File is uploaded");
     });
+
 });
 
 router.get('/', function (req, res) {
-    res.sendFile(path.join(__dirname,'../public/index.html'));
+    res.sendFile(path.join(__dirname, '../public/index.html'));
 });
 
 router.get('/project', function (req, res) {

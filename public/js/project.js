@@ -5,6 +5,7 @@ $(function () {
     $('[data-toggle="popover"]').popover();
 
     let userDatasets = null;
+    let curentUserID = null;
 
     var urlParams;
     (window.onpopstate = function () {
@@ -43,6 +44,7 @@ $(function () {
             setupViewOnlyProject(urlParams.projectid, socket);
         } else if (firebaseUser) {
             console.log(firebaseUser);
+            curentUserID = firebaseUser.uid;
             //Redirect to the maps page
 
             $('#loading').fadeIn('slow');
@@ -54,18 +56,43 @@ $(function () {
         }
     });
 
-    $('#uploadForm').submit(function () {
-        $("#status").empty().text("File is uploading...");
-        $(this).ajaxSubmit({
-            error: function (xhr) {
-                status('Error: ' + xhr.status);
-            },
-            success: function (response) {
-                console.log(response)
-                $("#status").empty().text(response);
-            }
+    // Display modal to add new dataset
+    $('#createNewDatasetCard').on('click', () => {
+        $('#newDatasetModal').modal('show');
+    });
+
+    //after the template download display next step on dataset upload
+    $('#datasetNextStepButton').on('click', () => {
+        $('#newDatasetModalLabel').text("Upload your filled in template data");
+        $('#newDatasetModalBody').html('' +
+            '<form id="uploadForm">' +
+            '   <input type="file" name="userDataset"/>' +
+            '   <input type="button" id="uploadFileButton" value="Upload Dataset" name="submit">' +
+            '   <input type="text"><br><span id="status"></span>' +
+            '</form>');
+
+        $('#uploadFileButton').on("click", function () {
+            console.log("Sending file...");
+            $("#status").empty().text("File is uploading...");
+
+            var formdata = new FormData($('#uploadForm')[0]);
+            formdata.append('userid', curentUserID);
+
+            console.log(formdata);
+
+            $.ajax({
+                url: "/api/dataset",
+                type: "POST",
+                data: formdata,
+                processData: false,
+                contentType: false,
+                success: function (res) {
+                    console.log(res);
+                }
+            });
         });
     });
+
 
     // All for the user to be logged out when the logout button is clicked
     $('#logoutUserBtn').on("click", function () {
@@ -119,15 +146,15 @@ $(function () {
         $(".project-card").click(function () {
             console.log("Handler for .click() called.");
             console.log($(this).attr("projectid"));
-            
+
             var hoveringMoreMenu = $(this).find("#moreMenu:hover").length;
             console.log(hoveringMoreMenu);
 
             // Make sure user is not trying to select the more options button instead of opening a project
-            if(hoveringMoreMenu < 1){
+            if (hoveringMoreMenu < 1) {
                 setupProjectFromID($(this).attr("projectid"), socket, userDatasets);
             }
-            
+
         });
     });
 
@@ -170,20 +197,9 @@ $(function () {
         });
     });
 
-    // Display modal to add new dataset
-    $('#createNewDatasetCard').on('click', () => {
-        $('#newDatasetModal').modal('show');
-    });
-
     // Display share modal
     $('#shareProjectButton').on('click', () => {
         $('#shareProjectModal').modal('show');
-    });
-
-    //after the template download display next step on dataset upload
-    $('#datasetNextStepButton').on('click', () => {
-        $('#newDatasetModalLabel').text("Upload your filled in template data");
-        $('#newDatasetModalBody').html('<form id="uploadForm" enctype="multipart/form-data" action="/api/dataset" method="post" target="_blank"><input type="file" name="userDataset"/><input type="submit" value="Upload Dataset" name="submit"><input type=\'text\' id=\'random\' name=\'random\'><br><span id="status"></span></form>');
     });
 });
 
@@ -241,10 +257,10 @@ function setupViewOnlyProject(id, socket) {
             preferCanvas: true
         });
 
-        
+
         map.zoomControl.setPosition('bottomright');
 
-        
+
         L.tileLayer('http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="http://cartodb.com/attributions">CartoDB</a>'
         }).addTo(map);
@@ -420,10 +436,10 @@ function setupProjectFromID(id, socket, userDatasets) {
         preferCanvas: true
     });
 
-        
+
     map.zoomControl.setPosition('bottomright');
-    
-    
+
+
     L.tileLayer('http://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="http://cartodb.com/attributions">CartoDB</a>'
     }).addTo(map);
@@ -547,18 +563,18 @@ function setupProjectFromID(id, socket, userDatasets) {
         }
     });
 
-    $('#dataset1Select').on('change', function() {
-        if ($("#inlineRadio1").prop("checked")){
+    $('#dataset1Select').on('change', function () {
+        if ($("#inlineRadio1").prop("checked")) {
             plotDataset('#dataset1Select');
-        } else if ($("#inlineRadio3").prop("checked")){
+        } else if ($("#inlineRadio3").prop("checked")) {
             plotCorrelation()
         }
     });
 
-    $('#dataset2Select').on('change', function() {
-        if ($("#inlineRadio2").prop("checked")){
+    $('#dataset2Select').on('change', function () {
+        if ($("#inlineRadio2").prop("checked")) {
             plotDataset('#dataset2Select');
-        } else if ($("#inlineRadio3").prop("checked")){
+        } else if ($("#inlineRadio3").prop("checked")) {
             plotCorrelation()
         }
     });
