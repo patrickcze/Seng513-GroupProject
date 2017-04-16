@@ -309,10 +309,10 @@ $(function () {
         //     return div;
         // };
 
-
-        legend.addTo(map);
-
-        info.addTo(map);
+        //
+        // legend.addTo(map);
+        //
+        // info.addTo(map);
 
         //Perform map coloring based on dataset values
         function colorDataset(startColor, endColor) {
