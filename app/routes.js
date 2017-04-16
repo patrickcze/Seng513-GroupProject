@@ -1,35 +1,31 @@
 const express = require('express');
 let multer = require('multer');
-const path = require('path');
+var upload = multer({ dest: 'uploads' });
+const csv=require('csvtojson');
 
+
+
+const path = require('path');
 let router = express.Router();
 
-let storage = multer.diskStorage({
-    destination: function (req, file, callback) {
-        callback(null, './uploads');
-    },
-    filename: function (req, file, callback) {
-        callback(null, file.fieldname + '-' + Date.now() + '.csv');
-    }
-});
+router.post('/api/dataset',  upload.any(), function(req, res, next) {
+    console.log(req.body, 'Body');
+    console.log(req.files, 'files');
 
-let upload = multer({storage: storage}).array('userDataset', 1);
+    let csvFilePath = req.files[0].path;
+    console.log(csvFilePath);
+    csv()
+        .fromFile(csvFilePath)
+        .on('json',(jsonObj)=>{
+            console.log(jsonObj);
+            // combine csv header row and csv line to a json object
+            // jsonObj.a ==> 1 or 4
+        })
+        .on('done',(error)=>{
+            console.log('end')
+        })
 
-router.post('/api/dataset', function (req, res) {
-    let userid = req.body;
-    console.log(userid);
-
-    upload(req, res, function (err) {
-        console.log(req.body);
-
-        console.log(res);
-
-        if (err) {
-            return res.end("Error uploading file." + err);
-        }
-        res.end("File is uploaded");
-    });
-
+    res.end();
 });
 
 router.get('/', function (req, res) {
