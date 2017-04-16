@@ -78,6 +78,7 @@ $(function () {
     });
 
     // Get a list of the user data sets so that this information can be prefilled within the modal
+    // Upload image from http://www.flaticon.com/free-icon/upload-to-cloud_109713#term=upload&page=1&position=13
     socket.on('listOfUserDatasets', (data) => {
         userDatasets = data.dataset;
         console.log(userDatasets);
@@ -86,10 +87,10 @@ $(function () {
             let option = '<option value="' + dataset.id + '">' + dataset.name + '</option>';
             $("#projectModalDataSetSelection").append(option);
             //Setup the cards within the datasetCardArea
-            let card = '<div class="card project-card" style="width: 20rem; height: 15rem;"> <div class="card-block"><div class="dropdown"><button class="btn moreoptions dropdown-toggle" type="button" id="moreMenu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true"></button><ul class="dropdown-menu dropdown-menu-right" aria-labelledby="moreMenu"><li><a href="#" class="standardMenuOption">Rename</a></li><li><a href="#" class="deleteMenuOption">Delete</a></li></ul></div></p></div><h6 class="card-title">' + dataset.name + '</h6></div>';
+            let card = '<div class="card dataset-card" style="width: 20rem; height: 15rem;"><div class="card-block"><div class="dropdown"><button class="btn moreoptions dropdown-toggle" type="button" id="moreMenu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button><ul class="dropdown-menu dropdown-menu-right" aria-labelledby="moreMenu"><li><a href="#" class="standardMenuOption">Rename</a></li><li><a href="#" class="deleteMenuOption">Delete</a></li></ul></div></p></div><h6 class="datacard-title">' + dataset.name + '</h6></div>';
             $('#datasetCardArea').append(card);
         }
-    });
+    })
 
 
     //Get a list of the users projects
@@ -100,7 +101,7 @@ $(function () {
                 screenShotURL = project.projectScreenshotURL;
             }
 
-            let card = '<div class="card project-card" style="width: 20rem; height: 15rem;" projectid="' + project.id + '"> <img class="card-img-top" src="' + screenShotURL + '" alt="Card image" style="height:12rem; width:19.9rem; position:absolute;"><div class="card-block"><div class="dropdown"><button class="btn moreoptions dropdown-toggle" type="button" id="moreMenu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true"></button><ul class="dropdown-menu dropdown-menu-right" aria-labelledby="moreMenu"><li><a href="#" class="standardMenuOption">Rename</a></li><li><a href="#" class="deleteMenuOption">Delete</a></li></ul></div></p></div><h6 class="card-title">' + project.title + '</h6></div>';
+            let card = '<div class="card project-card" style="width: 20rem; height: 15rem;" projectid="' + project.id + '"> <img class="card-img-top" src="' + screenShotURL + '" alt="Card image" style="height:12rem; width:19.9rem; position:absolute;"><div class="card-block"><div class="dropdown"><button class="btn moreoptions dropdown-toggle" type="button" id="moreMenu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button><ul class="dropdown-menu dropdown-menu-right" aria-labelledby="moreMenu"><li><a href="#" class="standardMenuOption">Rename</a></li><li><a href="#" class="deleteMenuOption">Delete</a></li></ul></div></p></div><h6 class="card-title">' + project.title + '</h6></div>';
             $('#mapCardArea').append(card);
         }
 
@@ -120,11 +121,16 @@ $(function () {
             console.log("Handler for .click() called.");
             console.log($(this).attr("projectid"));
             
-            var hoveringMoreMenu = $(this).find("#moreMenu:hover").length;
-            console.log(hoveringMoreMenu);
+            // Check if the more dropdown is open
+            var moreMenuOpen = $(this).find("#moreMenu").attr('aria-expanded') === "true";
+            console.log(moreMenuOpen);
+
+            // Check if the more button is being hovered
+            var moreMenuHover = $(this).find("#moreMenu:hover").length >= 1;
+            console.log(moreMenuHover);
 
             // Make sure user is not trying to select the more options button instead of opening a project
-            if(hoveringMoreMenu < 1){
+            if(!moreMenuOpen && !moreMenuHover){
                 setupProjectFromID($(this).attr("projectid"), socket, userDatasets);
             }
             
@@ -169,6 +175,15 @@ $(function () {
             $('#loading').hide();
         });
     });
+    
+    $('#projectTitle').keyup(function() {
+        updateCreateProjectButton();
+    });
+    
+    
+    $('#projectModalDataSetSelection').change(function(){
+        updateCreateProjectButton();
+    });
 
     // Display modal to start creating a new project
     $('#createNewDatasetCard').on('click', () => {
@@ -185,6 +200,24 @@ $(function () {
         $('#newDatasetModalBody').html('<form id="uploadForm" enctype="multipart/form-data" action="/api/dataset" method="post" target="_blank"><input type="file" name="userDataset"/><input type="submit" value="Upload Dataset" name="submit"><input type=\'text\' id=\'random\' name=\'random\'><br><span id="status"></span></form>');
     });
 });
+
+
+function updateCreateProjectButton(){
+
+        var empty = false;
+        $('#projectTitle').each(function() {
+            if ($(this).val() == '') {
+                empty = true;
+            }
+        });
+        
+        if (empty || $('#projectModalDataSetSelection').val() == 'select') {
+            $('#createNewProjectButton').attr('disabled', 'disabled');
+        } else {
+            $('#createNewProjectButton').removeAttr('disabled');
+        }
+
+}
 
 //Setup the project when a user shares their project url with others
 function setupViewOnlyProject(id, socket) {
@@ -312,7 +345,7 @@ function setupViewOnlyProject(id, socket) {
         } else {
             for (let dataset of projectDatasets) {
                 if (datasetid === dataset.datasetid.datasetid) {
-                    colorDataset(dataset, "#FFFFFF", color);
+                    colorDataset(dataset, "#242426", color);
                     $('#loading').hide();
                 }
             }
@@ -488,12 +521,154 @@ function setupProjectFromID(id, socket, userDatasets) {
     socket.on('globalGeoJSON', (globaljson) => {
         console.log(globaljson);
 
+        function highlightFeature(e) {
+            var layer = e.target;
+
+            layer.setStyle({
+                weight: 3,
+                //color: '#666',
+                dashArray: '',
+                fillOpacity: 0.7
+            });
+
+            if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
+                layer.bringToFront();
+            }
+            info.update(layer.feature.properties);
+        }
+
+        function resetHighlight(e) {
+            geojson.resetStyle(e.target);
+            
+            
+            info.update();
+        }
+
+        function zoomToFeature(e) {
+            map.fitBounds(e.target.getBounds());
+        }
+
+        
         geojson = L.geoJson(globaljson, {
             style: {
                 fillColor: "#FFFFFF",
                 opacity: 0
-            }
+            },
+            onEachFeature: function (feature, layer) {
+                layer.on('mouseover', function () {
+                    this.setStyle({
+                        fillColor: "#FFFFFF",
+                    });
+                    
+                    info.update(layer.feature.properties);
+
+                });
+                
+                layer.on('mouseout', function () {
+                           
+                    var datasetid = ""
+                    
+                    switch (project.visibleDataset) {
+                        case "dataset1":
+                            datasetid = project.dataset1ID;
+                            break;
+                        case "dataset2":
+                            datasetid = project.dataset2ID;
+                            break;
+                        case "correlation":
+                            datasetid = "correlation";
+                            break;
+                    }    
+                    
+                    if ($("#inlineRadio1").prop("checked")){
+                        plotDataset('#dataset1Select');
+                    } else if ($("#inlineRadio2").prop("checked")){
+                        plotDataset('#dataset2Select');
+                    } else if ($("#inlineRadio3").prop("checked")){
+                        plotCorrelation()
+                    }
+                });
+            }   
         }).addTo(map);
+        
+        
+        
+        var info = L.control();
+
+        info.onAdd = function (map) {
+            this._div = L.DomUtil.create('div', 'info'); // create a div with a class "info"
+            this.update();
+            return this._div;
+        };
+        
+                
+        // method that we will use to update the control based on feature properties passed
+        info.update = function (props) {
+            
+            
+            if (props != null){
+                console.log(props.iso_a3);
+            
+                let countryCode = props.iso_a3; 
+
+                var datasetid = ""
+
+                // get the dataset id
+                switch (project.visibleDataset) {
+                    case "dataset1":
+                        datasetid = project.dataset1ID;
+                        break;
+                    case "dataset2":
+                        datasetid = project.dataset2ID;
+                        break;
+                    case "correlation":
+                        datasetid = "correlation";
+                        break;
+                }    
+
+                console.log(datasetid);
+
+                var dataval = ''
+                
+                // get the value of the hovered country in that dataset
+                for (let dataset of projectDatasets) {
+                    if (datasetid === dataset.datasetid.datasetid) {
+                        for (let dataPoint of dataset.data.data) {
+                            
+                            console.log(dataPoint);
+                            
+                            if (dataPoint.isoA3 === countryCode) {
+                                dataval = dataPoint.value;
+                                break;
+                            }   
+                        }
+                    }
+                    break;
+                }
+
+                // Update the info box accordingly
+                this._div.innerHTML = "<div style='text-align:right; color:rgba(255,255,255,0.5); font-size:30px; line-height: 125%;'>" + (props ? '<b>' + props.name + '</b><br />' + dataval : 'Hover over a country');
+                }
+        };
+/*
+        var legend = L.control({
+            position: 'bottomright'
+        });
+
+        legend.onAdd = function (map) {
+
+            var div = L.DomUtil.create('div', 'info legend'),
+                grades = [0, 100000, 2000000, 5000000, 10000000, 20000000, 50000000, 100000000],
+                labels = [];
+
+            return div;
+            
+        };
+        legend.addTo(map);
+*/
+
+        info.addTo(map);
+        
     });
 
     // Deal with incoming dataset data
@@ -582,11 +757,17 @@ function setupProjectFromID(id, socket, userDatasets) {
         }
 
         if (color === null) {
-            alert('Hey, looks like your trying to plot without choosing a color first!');
+            
+            // Provide default colors if none selected
             if (datasetSelector === "#dataset1Select") {
-                $('#dataset1SelectButton').popover('show');
+                ds1Color = '#00A3FF'
+                color = ds1Color;
+                $('#dataset1SelectButton').css("background-color", ds1Color);
+                
             } else {
-                $('#dataset2SelectButton').popover('show');
+                ds2Color = '#FF2E00'
+                color = ds2Color;
+                $('#dataset2SelectButton').css("background-color", ds2Color);
             }
         }
 
@@ -595,7 +776,7 @@ function setupProjectFromID(id, socket, userDatasets) {
         } else {
             for (let dataset of projectDatasets) {
                 if (datasetid === dataset.datasetid.datasetid) {
-                    colorDataset(dataset, "#FFFFFF", color);
+                    colorDataset(dataset, "#242426", color);
                 }
             }
         }
@@ -804,8 +985,7 @@ function setupProjectFromID(id, socket, userDatasets) {
 
 
 function clearMap() {
-    $('#main-map-container').html('<div id="sidebar" class="col-3 col-lg-2"> <form id="projectOptionsForm"> <label>Show</label> <br><div class="form-check form-check-inline"> <label class="form-check-label"> <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="dataset1"> Dataset 1 </label> </div><div class="form-check form-check-inline"> <label class="form-check-label"> <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="dataset2"> Dataset 2 </label> </div><div class="form-check form-check-inline" hidden> <label class="form-check-label"> <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio3" value="correlation"> Correlation </label> </div><hr> <div class="form-group"> <label for="projectTitleField">Project Title</label> <input type="text" class="form-control" id="projectTitleField" placeholder="Project Title"> </div><hr/> <div class="form-group"> <label for="dataset1Select">Dataset 1</label> <select class="form-control" id="dataset1Select"> </select> </div><div class="form-group"> <label for="dataset2Select">Dataset 2</label> <select class="form-control" id="dataset2Select"> <option value="-1">None</option> </select> </div><hr> <div class="form-group"> <button type="button" id="saveProjectChangesButton" class="btn btn-success col-12">Save Changes</button> </div><div class="form-group"> <button type="button" id="shareProjectButton" class="btn btn-info col-12">Share Project</button> </div></form> </div><div id="map" class="col-9 col-lg-10"></div>');
-}
+    $('#main-map-container').html("<div id='sidebar' class='col-lg-2 col-md-3 hidden-sm'><form id='projectOptionsForm'><div class='form-group'><input id='projectTitleField' type='text' class='col-12' /></div><div class='form-check'><label class='form-check-label'><input class='form-check-input' type='radio' name='inlineRadioOptions' id='inlineRadio1' value='dataset1'> Dataset 1</label></div><div class='form-check'><label class='form-check-label'><input class='form-check-input' type='radio' name='inlineRadioOptions' id='inlineRadio2' value='dataset2'> Dataset 2</label></div><div class='form-check'><label class='form-check-label'><input class='form-check-input' type='radio' name='inlineRadioOptions' id='inlineRadio3' value='correlation'> Correlation</label></div><hr><div class='form-group'><label for='dataset1Select'>Dataset 1</label'<button type='button' id= 'dataset1SelectButton' class='btn btn-secondary pull-right circlebutton' data-container='body' data-toggle='popover' data-placement='right' data-content='<div id ='colorpicker1Popover'><button type='button' id='color1' class='circlebutton'></button><button type='button' id='color2' class='circlebutton'></button><button type='button' id='color3' class='circlebutton'></button></div><div><button type='button' id='color4' class='circlebutton'></button><button type='button' id='color5' class='circlebutton'></button><button type='button' id='color6' class='circlebutton'></button></div><div><button type='button' id='color7' class='circlebutton'></button><button type='button' id='color8' class='circlebutton'></button><button type='button' id='color9' class='circlebutton'></button></div>'data-html='true'></button><select class='form-control' id='dataset1Select'></select></div><div class='form-group'><label for='dataset2Select'>Dataset 2</label><button type='button' id='dataset2SelectButton' class='btn btn-secondary pull-right circlebutton' style='align-items: flex' data-container='body' data-toggle='popover' data-placement='right' data-content='<div id ='colorpicker2Popover'><button type='button' id='color1' class='circlebutton'></button><button type='button' id='color2' class='circlebutton'></button><button type='button' id='color3' class='circlebutton'></button></div><div><button type='button' id='color4' class='circlebutton'></button><button type='button' id='color5' class='circlebutton'></button><button type='button' id='color6' class='circlebutton'></button></div><div><button type='button' id='color7' class='circlebutton'></button><button type='button' id='color8' class='circlebutton'></button><button type='button' id='color9' class='circlebutton'></button></div>' data-html='true'></button><select class='form-control' id='dataset2Select'><option value='-1'>None</option></select></div><hr><div class='form-group'><button type='button' id='saveProjectChangesButton' class='btn btn-success col-12'>Save Changes</button></div><div class='form-group'><button type='button' id='shareProjectButton' class='btn btn-info col-12'>Share Project</button></div></form></div><div id='map' class='col-12 col-lg-12'></div>");}
 
 function setupProjectInDatabase(firebase) {
     let projectTitle = $('#projectTitle').val();
