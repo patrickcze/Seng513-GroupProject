@@ -86,7 +86,7 @@ $(function () {
             let option = '<option value="' + dataset.id + '">' + dataset.name + '</option>';
             $("#projectModalDataSetSelection").append(option);
             //Setup the cards within the datasetCardArea
-            let card = '<div class="card project-card" style="width: 20rem; height: 15rem;"> <div class="card-block"><div class="dropdown"><button class="btn moreoptions dropdown-toggle" type="button" id="moreMenu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true"></button><ul class="dropdown-menu dropdown-menu-right" aria-labelledby="moreMenu"><li><a href="#" class="standardMenuOption">Rename</a></li><li><a href="#" class="deleteMenuOption">Delete</a></li></ul></div></p></div><h6 class="card-title">' + dataset.name + '</h6></div>';
+            let card = '<div class="card project-card" style="width: 20rem; height: 15rem;"> <div class="card-block"><div class="dropdown"><button class="btn moreoptions dropdown-toggle" type="button" id="moreMenu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button><ul class="dropdown-menu dropdown-menu-right" aria-labelledby="moreMenu"><li><a href="#" class="standardMenuOption">Rename</a></li><li><a href="#" class="deleteMenuOption">Delete</a></li></ul></div></p></div><h6 class="card-title">' + dataset.name + '</h6></div>';
             $('#datasetCardArea').append(card);
         }
     });
@@ -100,7 +100,7 @@ $(function () {
                 screenShotURL = project.projectScreenshotURL;
             }
 
-            let card = '<div class="card project-card" style="width: 20rem; height: 15rem;" projectid="' + project.id + '"> <img class="card-img-top" src="' + screenShotURL + '" alt="Card image" style="height:12rem; width:19.9rem; position:absolute;"><div class="card-block"><div class="dropdown"><button class="btn moreoptions dropdown-toggle" type="button" id="moreMenu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true"></button><ul class="dropdown-menu dropdown-menu-right" aria-labelledby="moreMenu"><li><a href="#" class="standardMenuOption">Rename</a></li><li><a href="#" class="deleteMenuOption">Delete</a></li></ul></div></p></div><h6 class="card-title">' + project.title + '</h6></div>';
+            let card = '<div class="card project-card" style="width: 20rem; height: 15rem;" projectid="' + project.id + '"> <img class="card-img-top" src="' + screenShotURL + '" alt="Card image" style="height:12rem; width:19.9rem; position:absolute;"><div class="card-block"><div class="dropdown"><button class="btn moreoptions dropdown-toggle" type="button" id="moreMenu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button><ul class="dropdown-menu dropdown-menu-right" aria-labelledby="moreMenu"><li><a href="#" class="standardMenuOption">Rename</a></li><li><a href="#" class="deleteMenuOption">Delete</a></li></ul></div></p></div><h6 class="card-title">' + project.title + '</h6></div>';
             $('#mapCardArea').append(card);
         }
 
@@ -122,10 +122,12 @@ $(function () {
             
             // Check if the more dropdown is open
             var moreMenuOpen = $(this).find("#moreMenu").attr('aria-expanded') === "true";
+            console.log(moreMenuOpen);
 
             // Check if the more button is being hovered
             var moreMenuHover = $(this).find("#moreMenu:hover").length >= 1;
-            
+            console.log(moreMenuHover);
+
             // Make sure user is not trying to select the more options button instead of opening a project
             if(!moreMenuOpen && !moreMenuHover){
                 setupProjectFromID($(this).attr("projectid"), socket, userDatasets);
