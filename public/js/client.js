@@ -286,6 +286,7 @@ $(function () {
         info.update = function (props) {
             /*this._div.innerHTML = '<h4>Population</h4>' + (props ?
                 '<b>' + props.name + '</b><br />' + props.pop_est + ' people' : 'Hover over a country');*/
+
         };
 
         var legend = L.control({
@@ -308,8 +309,10 @@ $(function () {
         //     return div;
         // };
 
-        // legend.addTo(map);
-        // info.addTo(map);
+
+        legend.addTo(map);
+
+        info.addTo(map);
 
         //Perform map coloring based on dataset values
         function colorDataset(startColor, endColor) {
