@@ -120,11 +120,14 @@ $(function () {
             console.log("Handler for .click() called.");
             console.log($(this).attr("projectid"));
             
-            var hoveringMoreMenu = $(this).find("#moreMenu:hover").length;
-            console.log(hoveringMoreMenu);
+            // Check if the more dropdown is open
+            var moreMenuOpen = $(this).find("#moreMenu").attr('aria-expanded') === "true";
 
+            // Check if the more button is being hovered
+            var moreMenuHover = $(this).find("#moreMenu:hover").length >= 1;
+            
             // Make sure user is not trying to select the more options button instead of opening a project
-            if(hoveringMoreMenu < 1){
+            if(!moreMenuOpen && !moreMenuHover){
                 setupProjectFromID($(this).attr("projectid"), socket, userDatasets);
             }
             
