@@ -3,6 +3,7 @@ let multer = require('multer');
 var upload = multer({dest: 'uploads'});
 const csv = require('csvtojson');
 var datasetParser = require('./datasetParser');
+var fs = require("fs");
 
 const path = require('path');
 let router = express.Router();
@@ -15,10 +16,17 @@ router.post('/api/dataset', upload.any(), function (req, res, next) {
         let userid = req.body.userid;
         let csvFilePath = req.files[0].path;
 
+        let csvData = [];
+
         csv().fromFile(csvFilePath).on('json', (jsonObj) => {
-            datasetParser.uploadJSONtoFirebase(userid, jsonObj);
+            console.log("Something");
+            csvData.push(jsonObj);
+            // datasetParser.uploadJSONtoFirebase(userid, jsonObj);
         }).on('done', (error) => {
-            console.log('end')
+            console.log('end');
+            console.log(csvData, csvData.length);
+            datasetParser.uploadJSONtoFirebase(userid, csvData);
+
         });
     }
     res.end();
