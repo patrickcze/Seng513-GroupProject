@@ -169,6 +169,15 @@ $(function () {
             $('#loading').hide();
         });
     });
+    
+    $('#projectTitle').keyup(function() {
+        updateCreateProjectButton();
+    });
+    
+    
+    $('#projectModalDataSetSelection').change(function(){
+        updateCreateProjectButton();
+    });
 
     // Display modal to start creating a new project
     $('#createNewDatasetCard').on('click', () => {
@@ -185,6 +194,24 @@ $(function () {
         $('#newDatasetModalBody').html('<form id="uploadForm" enctype="multipart/form-data" action="/api/dataset" method="post" target="_blank"><input type="file" name="userDataset"/><input type="submit" value="Upload Dataset" name="submit"><input type=\'text\' id=\'random\' name=\'random\'><br><span id="status"></span></form>');
     });
 });
+
+
+function updateCreateProjectButton(){
+
+        var empty = false;
+        $('#projectTitle').each(function() {
+            if ($(this).val() == '') {
+                empty = true;
+            }
+        });
+        
+        if (empty || $('#projectModalDataSetSelection').val() == 'select') {
+            $('#createNewProjectButton').attr('disabled', 'disabled');
+        } else {
+            $('#createNewProjectButton').removeAttr('disabled');
+        }
+
+}
 
 //Setup the project when a user shares their project url with others
 function setupViewOnlyProject(id, socket) {
@@ -582,11 +609,17 @@ function setupProjectFromID(id, socket, userDatasets) {
         }
 
         if (color === null) {
-            alert('Hey, looks like your trying to plot without choosing a color first!');
+            
+            // Provide default colors if none selected
             if (datasetSelector === "#dataset1Select") {
-                $('#dataset1SelectButton').popover('show');
+                ds1Color = '#00A3FF'
+                color = ds1Color;
+                $('#dataset1SelectButton').css("background-color", ds1Color);
+                
             } else {
-                $('#dataset2SelectButton').popover('show');
+                ds2Color = '#FF2E00'
+                color = ds2Color;
+                $('#dataset2SelectButton').css("background-color", ds2Color);
             }
         }
 
