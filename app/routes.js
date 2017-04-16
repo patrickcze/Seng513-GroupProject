@@ -3,30 +3,32 @@ let multer = require('multer');
 var upload = multer({dest: 'uploads'});
 const csv = require('csvtojson');
 var datasetParser = require('./datasetParser');
-var fs = require("fs");
+var fs = require('fs');
 
 const path = require('path');
 let router = express.Router();
 
 router.post('/api/dataset', upload.any(), function (req, res, next) {
-    console.log(req.body, 'Body');
-    console.log(req.files, 'files');
-
+    //Check if we have a userid associated with the file
     if (req.body.userid) {
         let userid = req.body.userid;
         let csvFilePath = req.files[0].path;
 
         let csvData = [];
 
+        //Convert csv into json object
         csv().fromFile(csvFilePath).on('json', (jsonObj) => {
-            console.log("Something");
             csvData.push(jsonObj);
-            // datasetParser.uploadJSONtoFirebase(userid, jsonObj);
         }).on('done', (error) => {
-            console.log('end');
-            console.log(csvData, csvData.length);
+            //Once we have all the csv data as json upload to firabse
             datasetParser.uploadJSONtoFirebase(userid, csvData);
 
+            //Delete the uploaded file after the data is in firebase
+            fs.unlink(csvFilePath, function(err) {
+                if (err) {
+                    return console.error(err);
+                }
+            });
         });
     }
     res.end();
