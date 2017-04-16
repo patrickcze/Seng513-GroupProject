@@ -212,7 +212,7 @@ $(function () {
         function style(feature) {
             return {
                 fillColor: getColor(feature.properties.pop_est),
-                weight: 1,
+                weight: 0,
                 opacity: 1,
                 color: 'white',
                 fillOpacity: 0.7
@@ -223,7 +223,7 @@ $(function () {
             var layer = e.target;
 
             layer.setStyle({
-                weight: 5,
+                weight: 1,
                 color: '#666',
                 dashArray: '',
                 fillOpacity: 0.7
@@ -267,8 +267,8 @@ $(function () {
 
         // method that we will use to update the control based on feature properties passed
         info.update = function (props) {
-            this._div.innerHTML = '<h4>Population</h4>' + (props ?
-                '<b>' + props.name + '</b><br />' + props.pop_est + ' people' : 'Hover over a country');
+            /*this._div.innerHTML = '<h4>Population</h4>' + (props ?
+                '<b>' + props.name + '</b><br />' + props.pop_est + ' people' : 'Hover over a country');*/
         };
 
         var legend = L.control({
@@ -281,18 +281,18 @@ $(function () {
                 grades = [0, 100000, 2000000, 5000000, 10000000, 20000000, 50000000, 100000000],
                 labels = [];
 
-            // loop through our density intervals and generate a label with a colored square for each interval
+            /*// loop through our density intervals and generate a label with a colored square for each interval
             for (var i = 0; i < grades.length; i++) {
                 div.innerHTML +=
                     '<i style="background:' + getColor(grades[i] + 1) + '"></i> ' +
                     grades[i] + (grades[i + 1] ? '&ndash;' + grades[i + 1] + '<br>' : '+');
-            }
+            }*/
 
             return div;
         };
 
-        legend.addTo(map);
+        //legend.addTo(map);
 
-        info.addTo(map);
+        //info.addTo(map);
     }
 });

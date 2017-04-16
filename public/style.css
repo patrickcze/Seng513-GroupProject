@@ -19,6 +19,17 @@ body {
     padding: 0 0 0 0;
 }
 
+.midimg{
+
+    position: absolute;
+    margin: auto;
+    left: 0; 
+    right: 0;
+    top: 0;
+    bottom: 0;  
+    z-index: 1001;
+}
+
 #map {
     -webkit-flex: 1;
     flex: 1;
@@ -29,7 +40,7 @@ body {
 .info {
     padding: 20px 20px;
     font: 14px/16px Arial, Helvetica, sans-serif;
-    background: white;
+    background: black;
     background: rgba(255, 255, 255, 0.8);
     box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
     border-radius: 5px;
@@ -75,4 +86,337 @@ Center the modals vertically
     vertical-align: middle;
     min-width: 500px;
 }
+
+.leaflet-control-container{
+display: none;
+}
+
+html, body {
+    background-color: #000;
+    margin: 0;
+    height: 100%;
+}
+
+#pageContent {
+    margin-top: 56px;
+    height: 100%;
+}
+
+#main-map-container {
+    height: calc(100% - 56px);
+    display: flex ;
+    display: -webkit-flex;
+    flex-direction: row ;
+    -webkit-flex-direction: row;
+    -webkit-align-content: stretch;
+    align-content: stretch;
+    padding: 0 0 0 0 ;
+}
+
+#map {
+    -webkit-flex: 1;
+    flex: 1;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: #242426;
+}
+
+.hidden {
+    display: none !important;
+}
+
+.visible {
+    display: inherit !important;
+}
+
+hr{
+    background-color: #252525;
+}
+
+#projectOptionsForm {
+    z-index: inherit;
+    margin: -15px;
+    height: calc(100% + 15px);
+    padding: 30px;
+    background-color: rgba(0,0,0,0.9);
+    
+}
+
+#sidebar{
+    
+    z-index: 1001;
+}
+
+#sidebar label {
+    color: #ffffff;
+}
+
+/*Changing the color of the modals*/
+.modal-header, .modal-body, .modal-footer {
+    background-color: #111111;
+}
+
+.modal-header, .modal-footer {
+    border-color: #555555;
+}
+
+label{
+    color: #FFFFFF;
+}
+
+.modal-title, .close {
+    color: #FFFFFF;
+    -webkit-transition: .4s;
+    transition: .4s;
+}
+#downloadtemplate{
+    text-align: center;
+}
+
+#downloadtemplatebutton{
+    height: 130px;
+    background-color: #404040;
+    border-width: 0px;
+}
+
+#downloadtemplatebutton:hover{
+    background-color: #303030;
+    border-width: 0px;
+}
+
+#downloadtemplatebutton:active{
+    background-color: #202020;
+    border-width: 0px;
+}
+
+.close:hover {
+    color: crimson;
+    text-shadow: none;
+
+}
+
+#shareProjectModalLabel, #newProjectModalLabel, #newDatasetModalLabel {
+    cursor: default;
+}
+
+#projectModalDataSetSelection{
+    cursor: pointer;
+}
+
+input {
+    color: #777777 !important;
+    background-color: #111111 !important;
+    border: 0px solid #FFFFFF !important;
+    border-radius: 3px !important;
+}
+
+input:focus {
+    outline:none;    
+}
+
+#projectTitleField{
+        height: 30px;
+}
+
+.nav-link{
+    -webkit-transition: .2s;
+    transition: .2s;
+}
+
+.container-fluid{
+    margin-top: 0px;
+}
+
+
+.navbar-collapse {
+    background-color: #000000;
+}
+
+/*https://work.smarchal.com/twbscolor/css/e74c3cc0392becf0f1ffbbbc0*/
+.navbar-default {
+    background-color: #000000;
+    border-color: #2d2d2d;
+}
+.navbar-default .navbar-brand {
+    color: #858585;
+}
+.navbar-default .navbar-brand:hover,
+.navbar-default .navbar-brand:focus {
+    color: #ffffff;
+}
+.navbar-default .navbar-text {
+    color: #858585;
+}
+.navbar-default .navbar-nav > li > a {
+    color: #858585;
+}
+.navbar-default .navbar-nav > li > a:hover,
+.navbar-default .navbar-nav > li > a:focus {
+    color: #ffffff;
+}
+.navbar-default .navbar-nav > .active > a,
+.navbar-default .navbar-nav > .active > a:hover,
+.navbar-default .navbar-nav > .active > a:focus {
+    color: #ffffff;
+    background-color: #2d2d2d;
+}
+.navbar-default .navbar-nav > .open > a,
+.navbar-default .navbar-nav > .open > a:hover,
+.navbar-default .navbar-nav > .open > a:focus {
+    color: #ffffff;
+    background-color: #2d2d2d;
+}
+.navbar-default .navbar-toggle {
+    border-color: #2d2d2d;
+}
+.navbar-default .navbar-toggle:hover,
+.navbar-default .navbar-toggle:focus {
+    background-color: #2d2d2d;
+}
+.navbar-default .navbar-toggle .icon-bar {
+    background-color: #858585;
+}
+.navbar-default .navbar-collapse,
+.navbar-default .navbar-form {
+    border-color: #858585;
+}
+.navbar-default .navbar-link {
+    color: #858585;
+}
+.navbar-default .navbar-link:hover {
+    color: #ffffff;
+}
+
+@media (max-width: 767px) {
+    .navbar-default .navbar-nav .open .dropdown-menu > li > a {
+        color: #858585;
+    }
+    .navbar-default .navbar-nav .open .dropdown-menu > li > a:hover,
+    .navbar-default .navbar-nav .open .dropdown-menu > li > a:focus {
+        color: #ffffff;
+    }
+    .navbar-default .navbar-nav .open .dropdown-menu > .active > a,
+    .navbar-default .navbar-nav .open .dropdown-menu > .active > a:hover,
+    .navbar-default .navbar-nav .open .dropdown-menu > .active > a:focus {
+        color: #ffffff;
+        background-color: #2d2d2d;
+    }
+}
+
+
+/**/
+.cs-loader-inner {
+    transform: translateY(-50%);
+    top: 50%;
+    position: absolute;
+    width: 100%;
+    color: #FFF;
+    padding: 0 100px;
+    text-align: center;
+}
+
+.cs-loader-inner label {
+    font-size: 20px;
+    opacity: 0;
+    display:inline-block;
+}
+
+@keyframes lol {
+    0% {
+        opacity: 0;
+        transform: translateX(-300px);
+    }
+    33% {
+        opacity: 1;
+        transform: translateX(0px);
+    }
+    66% {
+        opacity: 1;
+        transform: translateX(0px);
+    }
+    100% {
+        opacity: 0;
+        transform: translateX(300px);
+    }
+}
+
+@-webkit-keyframes lol {
+    0% {
+        opacity: 0;
+        -webkit-transform: translateX(-300px);
+    }
+    33% {
+        opacity: 1;
+        -webkit-transform: translateX(0px);
+    }
+    66% {
+        opacity: 1;
+        -webkit-transform: translateX(0px);
+    }
+    100% {
+        opacity: 0;
+        -webkit-transform: translateX(300px);
+    }
+}
+
+.cs-loader-inner label:nth-child(6) {
+    -webkit-animation: lol 3s infinite ease-in-out;
+    animation: lol 3s infinite ease-in-out;
+}
+
+.cs-loader-inner label:nth-child(5) {
+    -webkit-animation: lol 3s 100ms infinite ease-in-out;
+    animation: lol 3s 100ms infinite ease-in-out;
+}
+
+.cs-loader-inner label:nth-child(4) {
+    -webkit-animation: lol 3s 200ms infinite ease-in-out;
+    animation: lol 3s 200ms infinite ease-in-out;
+}
+
+.cs-loader-inner label:nth-child(3) {
+    -webkit-animation: lol 3s 300ms infinite ease-in-out;
+    animation: lol 3s 300ms infinite ease-in-out;
+}
+
+.cs-loader-inner label:nth-child(2) {
+    -webkit-animation: lol 3s 400ms infinite ease-in-out;
+    animation: lol 3s 400ms infinite ease-in-out;
+}
+
+.cs-loader-inner label:nth-child(1) {
+    -webkit-animation: lol 3s 500ms infinite ease-in-out;
+    animation: lol 3s 500ms infinite ease-in-out;
+}
+
+#loading {
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    position: fixed;
+    display: block;
+    opacity: 0.7;
+    background-color: #000;
+    z-index: 99;
+    text-align: center;
+}
+
+#loading-image {
+    position: absolute;
+    top: 100px;
+    left: 240px;
+    z-index: 100;
+}
+
+
+
+@media (max-width: 768px) {
+    .hidden-sm {
+        background-color: #00A3FF;
+        display: none;
+    }
+}
+
 
