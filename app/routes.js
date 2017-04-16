@@ -17,7 +17,7 @@ router.post('/api/dataset', upload.any(), function (req, res, next) {
         let csvData = [];
 
         //Convert csv into json object
-        csv().fromFile(csvFilePath).on('json', (jsonObj) => {
+        csv({checkType:true}).fromFile(csvFilePath).on('json', (jsonObj) => {
             csvData.push(jsonObj);
         }).on('done', (error) => {
             //Once we have all the csv data as json upload to firabse

@@ -467,9 +467,7 @@ function setupProjectFromID(id, socket, userDatasets) {
         preferCanvas: true
     });
 
-
     map.zoomControl.setPosition('bottomright');
-
 
     L.tileLayer('http://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="http://cartodb.com/attributions">CartoDB</a>'
@@ -541,7 +539,6 @@ function setupProjectFromID(id, socket, userDatasets) {
 
             layer.setStyle({
                 weight: 3,
-                //color: '#666',
                 dashArray: '',
                 fillOpacity: 0.7
             });
@@ -765,6 +762,8 @@ function setupProjectFromID(id, socket, userDatasets) {
 
     function plotDataset(datasetSelector) {
         let datasetid = $(datasetSelector).val();
+        let color = null;
+
         if (datasetSelector === "#dataset1Select") {
             color = ds1Color;
         } else {
@@ -772,17 +771,16 @@ function setupProjectFromID(id, socket, userDatasets) {
         }
 
         if (color === null) {
-            
             // Provide default colors if none selected
             if (datasetSelector === "#dataset1Select") {
                 ds1Color = '#00A3FF'
                 color = ds1Color;
-                $('#dataset1SelectButton').css("background-color", ds1Color);
+                $('#dataset1SelectButton').css("background-color", color);
                 
             } else {
                 ds2Color = '#FF2E00'
                 color = ds2Color;
-                $('#dataset2SelectButton').css("background-color", ds2Color);
+                $('#dataset2SelectButton').css("background-color", color);
             }
         }
 
