@@ -10,7 +10,7 @@ html, body {
 }
 
 #main-map-container {
-    height: 100%;
+    height: calc(100% - 40px);
     display: flex ;
     display: -webkit-flex;
     flex-direction: row ;
@@ -75,6 +75,22 @@ label{
 
 .modal-title, .close {
     color: #FFFFFF;
+    -webkit-transition: .4s;
+    transition: .4s;
+}
+
+.close:hover {
+    color: crimson;
+    text-shadow: none;
+
+}
+
+#shareProjectModalLabel, #newProjectModalLabel, #newDatasetModalLabel {
+    cursor: default;
+}
+
+#projectModalDataSetSelection{
+    cursor: pointer;
 }
 
 input {
@@ -90,7 +106,11 @@ input:focus {
 
 #projectTitleField{
         height: 30px;
+}
 
+.nav-link{
+    -webkit-transition: .2s;
+    transition: .2s;
 }
 
 select {
@@ -583,4 +603,109 @@ input[type="radio"]:checked:before {
         background-color: #00A3FF;
         display: none;
     }
+}
+
+
+.leaflet-bar a{
+    background-color: rgba(0,0,0,0.0);
+    color: rgba(255,255,255,0.66);
+    text-shadow: 0px 0px 5px #111111;
+    border-width: 0px;
+}
+
+.leaflet-bar a:hover{
+    background-color: rgba(0,0,0,0.5);
+    color: rgba(255,255,255,1);
+}
+
+.leaflet-touch .leaflet-control-layers,
+.leaflet-touch .leaflet-bar {
+	border: 0px solid rgba(0,0,0,0.2);
+	background-clip: padding-box;
+}
+
+.leaflet-bar a:hover {
+	border-bottom: 0px solid #ccc;
+	}
+
+
+.fixed-top{
+    background-color: black;
+}
+
+#logoutUserBtn{
+    background-color: transparent;
+    border-width: 0px;
+    color: gray;
+}
+
+#logoutUserBtn:hover{
+    background-color: transparent;
+    color: white;
+}
+
+#logoutUserBtn:active{
+    background-color: transparent;
+    border-width: 0px;
+    color: white;
+}
+
+
+.leaflet-control-attribution a{
+    color:lightgrey;
+}
+
+.leaflet-container .leaflet-control-attribution{
+    background-color: rgba(0,0,0,0.2);
+}
+
+.leaflet-control-attribution, .leaflet-control-scale-line{
+    color: white;
+}
+
+#downloadMapAsPNG{
+    
+}
+
+
+#downloadMapAsPNG{
+    background-color: transparent;
+    border-color: #6C00FF;
+    border-width: 1px;
+    color: rgba(255,255,255,0.66)
+}
+
+#downloadMapAsPNG:hover{
+    background-color: #5D00DC;
+    border-color: #5D00DC;
+    border-width: 1px;
+    color: white;
+}
+
+#downloadMapAsPNG:active{
+    background-color: #4500A3;
+    border-color: #4500A3;
+    border-width: 1px;
+    color: white;
+}
+
+#downloadMapAsJPG{
+    background-color: transparent;
+    border-color: #00ABFF;
+    border-width: 1px;
+    color: rgba(255,255,255,0.66)
+}
+
+#downloadMapAsJPG:hover{
+    background-color: #0092DA;
+    border-color: #0092DA;
+    border-width: 1px;
+    color: white;
+}
+
+#downloadMapAsJPG:active{
+    background-color: #0077B1;
+    border-color: #0077B1;
+    border-width: 1px;
+    color: white;
 }

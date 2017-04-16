@@ -312,7 +312,7 @@ function setupViewOnlyProject(id, socket) {
         } else {
             for (let dataset of projectDatasets) {
                 if (datasetid === dataset.datasetid.datasetid) {
-                    colorDataset(dataset, "#FFFFFF", color);
+                    colorDataset(dataset, "#242426", color);
                     $('#loading').hide();
                 }
             }
@@ -595,7 +595,7 @@ function setupProjectFromID(id, socket, userDatasets) {
         } else {
             for (let dataset of projectDatasets) {
                 if (datasetid === dataset.datasetid.datasetid) {
-                    colorDataset(dataset, "#FFFFFF", color);
+                    colorDataset(dataset, "#242426", color);
                 }
             }
         }
