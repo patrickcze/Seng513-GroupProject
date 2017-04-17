@@ -19,22 +19,22 @@ body {
     padding: 0 0 0 0;
 }
 
-.midimg{
-
-    position: absolute;
-    margin: auto;
-    left: 0; 
-    right: 0;
-    top: 0;
-    bottom: 0;  
-    z-index: 1001;
-}
-
 #map {
     -webkit-flex: 1;
     flex: 1;
     position: relative;
     position: relative;
+}
+
+.midimg{
+
+    position: absolute;
+    margin: auto;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    z-index: 1001;
 }
 
 .info {
@@ -88,7 +88,7 @@ Center the modals vertically
 }
 
 .leaflet-control-container{
-display: none;
+    display: none;
 }
 
 html, body {
@@ -140,11 +140,11 @@ hr{
     height: calc(100% + 15px);
     padding: 30px;
     background-color: rgba(0,0,0,0.9);
-    
+
 }
 
 #sidebar{
-    
+
     z-index: 1001;
 }
 
@@ -212,11 +212,11 @@ input {
 }
 
 input:focus {
-    outline:none;    
+    outline:none;
 }
 
 #projectTitleField{
-        height: 30px;
+    height: 30px;
 }
 
 .nav-link{
@@ -418,5 +418,4 @@ input:focus {
         display: none;
     }
 }
-
 
