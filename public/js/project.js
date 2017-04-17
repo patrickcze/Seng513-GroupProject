@@ -5,6 +5,7 @@ $(function () {
     $('[data-toggle="popover"]').popover();
 
     let userDatasets = null;
+    let curentUserID = null;
 
     var urlParams;
     (window.onpopstate = function () {
@@ -43,6 +44,7 @@ $(function () {
             setupViewOnlyProject(urlParams.projectid, socket);
         } else if (firebaseUser) {
             console.log(firebaseUser);
+            curentUserID = firebaseUser.uid;
             //Redirect to the maps page
 
             $('#loading').fadeIn('slow');
@@ -54,18 +56,53 @@ $(function () {
         }
     });
 
-    $('#uploadForm').submit(function () {
-        $("#status").empty().text("File is uploading...");
-        $(this).ajaxSubmit({
-            error: function (xhr) {
-                status('Error: ' + xhr.status);
-            },
-            success: function (response) {
-                console.log(response)
-                $("#status").empty().text(response);
-            }
+    // Display modal to add new dataset
+    $('#createNewDatasetCard').on('click', () => {
+        $('#newDatasetModal').modal('show');
+    });
+
+    //after the template download display next step on dataset upload
+    $('#datasetNextStepButton').on('click', () => {
+        $('#newDatasetModalLabel').text("Upload your filled in template data");
+        $('#newDatasetModalBody').html('' +
+            '<form id="uploadForm" class="col-12">' +
+            '   <input type="text" id="newDatasetName" class="col-12 form-control" placeholder="Name your dataset..."/>' +
+            '   <input type="file" name="userDataset" class="col-12 form-control-file"/>' +
+            '</form>');
+        $("#datasetNextStepButton").hide();
+        $("#createNewDatasetButton").removeClass('hidden').show();
+
+        $('#createNewDatasetButton').on("click", function () {
+            console.log("Sending file...");
+
+            var formdata = new FormData($('#uploadForm')[0]);
+            formdata.append('userid', curentUserID);
+            formdata.append('datasetname', $('#newDatasetName').val());
+
+            console.log(formdata);
+
+            $.ajax({
+                url: "/api/dataset",
+                type: "POST",
+                data: formdata,
+                processData: false,
+                contentType: false,
+                success: function (res) {
+                    console.log(res);
+                    $('#newDatasetModal').modal('hide');
+                }
+            });
         });
     });
+
+    $('#newDatasetModal').on('hidden.bs.modal', function (e) {
+        console.log("Hidding upload ds");
+
+        $('#newDatasetModalBody').html('<a href="/downloadGlobalTemplate" target="_blank"><div class="form-group" id="downloadtemplate"><label class="col-md-12 control-label" for="singlebutton"><div class="col-md-12 center-block"> <button id="downloadtemplatebutton" name="singlebutton" class="btn btn-primary center-block"> <img src="csv.png" style = "height: 3rem; margin-left: 2px;"> <hr> <div>International Template</div> </button> </div> </label> </div> </a>');
+        $("#datasetNextStepButton").show();
+        $("#createNewDatasetButton").hide();
+    });
+
 
     // All for the user to be logged out when the logout button is clicked
     $('#logoutUserBtn').on("click", function () {
@@ -81,7 +118,8 @@ $(function () {
     // Upload image from http://www.flaticon.com/free-icon/upload-to-cloud_109713#term=upload&page=1&position=13
     socket.on('listOfUserDatasets', (data) => {
         userDatasets = data.dataset;
-        console.log(userDatasets);
+
+        // console.log(userDatasets);
         for (let dataset of data.dataset) {
             //Setup the options within the modal
             let option = '<option value="' + dataset.id + '">' + dataset.name + '</option>';
@@ -120,20 +158,18 @@ $(function () {
         $(".project-card").click(function () {
             console.log("Handler for .click() called.");
             console.log($(this).attr("projectid"));
-            
             // Check if the more dropdown is open
             var moreMenuOpen = $(this).find("#moreMenu").attr('aria-expanded') === "true";
-            console.log(moreMenuOpen);
+            // console.log(moreMenuOpen);
 
             // Check if the more button is being hovered
             var moreMenuHover = $(this).find("#moreMenu:hover").length >= 1;
-            console.log(moreMenuHover);
+            // console.log(moreMenuHover);
 
             // Make sure user is not trying to select the more options button instead of opening a project
-            if(!moreMenuOpen && !moreMenuHover){
+            if (!moreMenuOpen && !moreMenuHover) {
                 setupProjectFromID($(this).attr("projectid"), socket, userDatasets);
             }
-            
         });
     });
 
@@ -175,47 +211,37 @@ $(function () {
             $('#loading').hide();
         });
     });
-    
-    $('#projectTitle').keyup(function() {
-        updateCreateProjectButton();
-    });
-    
-    
-    $('#projectModalDataSetSelection').change(function(){
+
+    $('#projectTitle').keyup(function () {
         updateCreateProjectButton();
     });
 
-    // Display modal to start creating a new project
-    $('#createNewDatasetCard').on('click', () => {
-        $('#newDatasetModal').modal('show');
+
+    $('#projectModalDataSetSelection').change(function () {
+        updateCreateProjectButton();
     });
 
-    // Display modal to start creating a new project
+    // Display share modal
     $('#shareProjectButton').on('click', () => {
         $('#shareProjectModal').modal('show');
-    });
-
-    $('#datasetNextStepButton').on('click', () => {
-        $('#newDatasetModalLabel').text("Upload your filled in template data");
-        $('#newDatasetModalBody').html('<form id="uploadForm" enctype="multipart/form-data" action="/api/dataset" method="post" target="_blank"><input type="file" name="userDataset"/><input type="submit" value="Upload Dataset" name="submit"><input type=\'text\' id=\'random\' name=\'random\'><br><span id="status"></span></form>');
     });
 });
 
 
-function updateCreateProjectButton(){
+function updateCreateProjectButton() {
 
-        var empty = false;
-        $('#projectTitle').each(function() {
-            if ($(this).val() == '') {
-                empty = true;
-            }
-        });
-        
-        if (empty || $('#projectModalDataSetSelection').val() == 'select') {
-            $('#createNewProjectButton').attr('disabled', 'disabled');
-        } else {
-            $('#createNewProjectButton').removeAttr('disabled');
+    var empty = false;
+    $('#projectTitle').each(function () {
+        if ($(this).val() == '') {
+            empty = true;
         }
+    });
+
+    if (empty || $('#projectModalDataSetSelection').val() == 'select') {
+        $('#createNewProjectButton').attr('disabled', 'disabled');
+    } else {
+        $('#createNewProjectButton').removeAttr('disabled');
+    }
 
 }
 
@@ -273,11 +299,11 @@ function setupViewOnlyProject(id, socket) {
             preferCanvas: true
         });
 
-        
+
         map.zoomControl.setPosition('bottomright');
 
-        
-        L.tileLayer('http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png', {
+
+        L.tileLayer('http://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="http://cartodb.com/attributions">CartoDB</a>'
         }).addTo(map);
 
@@ -425,6 +451,8 @@ function setupProjectFromID(id, socket, userDatasets) {
     let ds1Color = null;
     let ds2Color = null;
 
+    clearPlotDataset();
+
     let ds1present = false;
     let ds2present = false;
 
@@ -445,6 +473,8 @@ function setupProjectFromID(id, socket, userDatasets) {
 
     $('#inlineRadio1').prop("checked", true);
 
+    map = null;
+
     //Setup the Map
     map = L.map('map', {
         center: [46.938984, 2.373590],
@@ -452,10 +482,13 @@ function setupProjectFromID(id, socket, userDatasets) {
         preferCanvas: true
     });
 
-        
+    map.eachLayer(function (layer) {
+        console.log("layer");
+        map.removeLayer(layer);
+    });
+
     map.zoomControl.setPosition('bottomright');
-    
-    
+
     L.tileLayer('http://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="http://cartodb.com/attributions">CartoDB</a>'
     }).addTo(map);
@@ -526,7 +559,6 @@ function setupProjectFromID(id, socket, userDatasets) {
 
             layer.setStyle({
                 weight: 3,
-                //color: '#666',
                 dashArray: '',
                 fillOpacity: 0.7
             });
@@ -539,8 +571,8 @@ function setupProjectFromID(id, socket, userDatasets) {
 
         function resetHighlight(e) {
             geojson.resetStyle(e.target);
-            
-            
+
+
             info.update();
         }
 
@@ -548,7 +580,7 @@ function setupProjectFromID(id, socket, userDatasets) {
             map.fitBounds(e.target.getBounds());
         }
 
-        
+
         geojson = L.geoJson(globaljson, {
             style: {
                 fillColor: "#FFFFFF",
@@ -559,15 +591,15 @@ function setupProjectFromID(id, socket, userDatasets) {
                     this.setStyle({
                         fillColor: "#FFFFFF",
                     });
-                    
+
                     info.update(layer.feature.properties);
 
                 });
-                
+
                 layer.on('mouseout', function () {
-                           
+
                     var datasetid = ""
-                    
+
                     switch (project.visibleDataset) {
                         case "dataset1":
                             datasetid = project.dataset1ID;
@@ -578,21 +610,20 @@ function setupProjectFromID(id, socket, userDatasets) {
                         case "correlation":
                             datasetid = "correlation";
                             break;
-                    }    
-                    
-                    if ($("#inlineRadio1").prop("checked")){
+                    }
+
+                    if ($("#inlineRadio1").prop("checked")) {
                         plotDataset('#dataset1Select');
-                    } else if ($("#inlineRadio2").prop("checked")){
+                    } else if ($("#inlineRadio2").prop("checked")) {
                         plotDataset('#dataset2Select');
-                    } else if ($("#inlineRadio3").prop("checked")){
+                    } else if ($("#inlineRadio3").prop("checked")) {
                         plotCorrelation()
                     }
                 });
-            }   
+            }
         }).addTo(map);
-        
-        
-        
+
+
         var info = L.control();
 
         info.onAdd = function (map) {
@@ -600,18 +631,15 @@ function setupProjectFromID(id, socket, userDatasets) {
             this.update();
             return this._div;
         };
-        
-                
+
         // method that we will use to update the control based on feature properties passed
         info.update = function (props) {
-            
-            
-            if (props != null){
-                console.log(props.iso_a3);
-            
-                let countryCode = props.iso_a3; 
+            if (props != null) {
+                // console.log(props.iso_a3);
 
-                var datasetid = ""
+                let countryCode = props.iso_a3;
+
+                var datasetid = "";
 
                 // get the dataset id
                 switch (project.visibleDataset) {
@@ -624,23 +652,21 @@ function setupProjectFromID(id, socket, userDatasets) {
                     case "correlation":
                         datasetid = "correlation";
                         break;
-                }    
+                }
 
-                console.log(datasetid);
+                var dataval = '';
 
-                var dataval = ''
-                
                 // get the value of the hovered country in that dataset
                 for (let dataset of projectDatasets) {
                     if (datasetid === dataset.datasetid.datasetid) {
                         for (let dataPoint of dataset.data.data) {
-                            
-                            console.log(dataPoint);
-                            
+
+                            // console.log(dataPoint);
+
                             if (dataPoint.isoA3 === countryCode) {
                                 dataval = dataPoint.value;
                                 break;
-                            }   
+                            }
                         }
                     }
                     break;
@@ -648,27 +674,11 @@ function setupProjectFromID(id, socket, userDatasets) {
 
                 // Update the info box accordingly
                 this._div.innerHTML = "<div style='text-align:right; color:rgba(255,255,255,0.5); font-size:30px; line-height: 125%;'>" + (props ? '<b>' + props.name + '</b><br />' + dataval : 'Hover over a country');
-                }
+            }
         };
-/*
-        var legend = L.control({
-            position: 'bottomright'
-        });
-
-        legend.onAdd = function (map) {
-
-            var div = L.DomUtil.create('div', 'info legend'),
-                grades = [0, 100000, 2000000, 5000000, 10000000, 20000000, 50000000, 100000000],
-                labels = [];
-
-            return div;
-            
-        };
-        legend.addTo(map);
-*/
 
         info.addTo(map);
-        
+
     });
 
     // Deal with incoming dataset data
@@ -721,18 +731,18 @@ function setupProjectFromID(id, socket, userDatasets) {
         }
     });
 
-    $('#dataset1Select').on('change', function() {
-        if ($("#inlineRadio1").prop("checked")){
+    $('#dataset1Select').on('change', function () {
+        if ($("#inlineRadio1").prop("checked")) {
             plotDataset('#dataset1Select');
-        } else if ($("#inlineRadio3").prop("checked")){
+        } else if ($("#inlineRadio3").prop("checked")) {
             plotCorrelation()
         }
     });
 
-    $('#dataset2Select').on('change', function() {
-        if ($("#inlineRadio2").prop("checked")){
+    $('#dataset2Select').on('change', function () {
+        if ($("#inlineRadio2").prop("checked")) {
             plotDataset('#dataset2Select');
-        } else if ($("#inlineRadio3").prop("checked")){
+        } else if ($("#inlineRadio3").prop("checked")) {
             plotCorrelation()
         }
     });
@@ -750,6 +760,9 @@ function setupProjectFromID(id, socket, userDatasets) {
 
     function plotDataset(datasetSelector) {
         let datasetid = $(datasetSelector).val();
+        let color = null;
+        let datasetFound = false;
+
         if (datasetSelector === "#dataset1Select") {
             color = ds1Color;
         } else {
@@ -757,17 +770,16 @@ function setupProjectFromID(id, socket, userDatasets) {
         }
 
         if (color === null) {
-            
             // Provide default colors if none selected
             if (datasetSelector === "#dataset1Select") {
                 ds1Color = '#00A3FF'
                 color = ds1Color;
-                $('#dataset1SelectButton').css("background-color", ds1Color);
-                
+                $('#dataset1SelectButton').css("background-color", color);
+
             } else {
                 ds2Color = '#FF2E00'
                 color = ds2Color;
-                $('#dataset2SelectButton').css("background-color", ds2Color);
+                $('#dataset2SelectButton').css("background-color", color);
             }
         }
 
@@ -776,8 +788,13 @@ function setupProjectFromID(id, socket, userDatasets) {
         } else {
             for (let dataset of projectDatasets) {
                 if (datasetid === dataset.datasetid.datasetid) {
+                    datasetFound = true;
                     colorDataset(dataset, "#242426", color);
                 }
+            }
+            if (!datasetFound){
+                $('#loading').show();
+                socket.emit('getDatasetWithID', {datasetid: $('#dataset1Select').val(), viewOnly: false});
             }
         }
     }
@@ -970,22 +987,33 @@ function setupProjectFromID(id, socket, userDatasets) {
     }
 
     function clearPlotDataset() {
-        geojson.eachLayer(function (layer) {
-            layer.setStyle({
-                fillColor: "#FFFFFF",
-                weight: 2,
-                opacity: 1,
-                color: 'white',
-                dashArray: '3',
-                fillOpacity: 0.0
-            });
-        });
+        // geojson.eachLayer(function (layer) {
+        //     layer.setStyle({
+        //         fillColor: "#FFFFFF",
+        //         weight: 2,
+        //         opacity: 1,
+        //         color: 'white',
+        //         dashArray: '3',
+        //         fillOpacity: 0.0
+        //     });
+        // });
+
+        // if (map != null){
+        //     console.log('clear');
+        //
+        //     map.eachLayer(function (layer) {
+        //         map.removeLayer(layer);
+        //     });
+        // }
+
+
     }
 }
 
 
 function clearMap() {
-    $('#main-map-container').html("<div id='sidebar' class='col-lg-2 col-md-3 hidden-sm'><form id='projectOptionsForm'><div class='form-group'><input id='projectTitleField' type='text' class='col-12' /></div><div class='form-check'><label class='form-check-label'><input class='form-check-input' type='radio' name='inlineRadioOptions' id='inlineRadio1' value='dataset1'> Dataset 1</label></div><div class='form-check'><label class='form-check-label'><input class='form-check-input' type='radio' name='inlineRadioOptions' id='inlineRadio2' value='dataset2'> Dataset 2</label></div><div class='form-check'><label class='form-check-label'><input class='form-check-input' type='radio' name='inlineRadioOptions' id='inlineRadio3' value='correlation'> Correlation</label></div><hr><div class='form-group'><label for='dataset1Select'>Dataset 1</label'<button type='button' id= 'dataset1SelectButton' class='btn btn-secondary pull-right circlebutton' data-container='body' data-toggle='popover' data-placement='right' data-content='<div id ='colorpicker1Popover'><button type='button' id='color1' class='circlebutton'></button><button type='button' id='color2' class='circlebutton'></button><button type='button' id='color3' class='circlebutton'></button></div><div><button type='button' id='color4' class='circlebutton'></button><button type='button' id='color5' class='circlebutton'></button><button type='button' id='color6' class='circlebutton'></button></div><div><button type='button' id='color7' class='circlebutton'></button><button type='button' id='color8' class='circlebutton'></button><button type='button' id='color9' class='circlebutton'></button></div>'data-html='true'></button><select class='form-control' id='dataset1Select'></select></div><div class='form-group'><label for='dataset2Select'>Dataset 2</label><button type='button' id='dataset2SelectButton' class='btn btn-secondary pull-right circlebutton' style='align-items: flex' data-container='body' data-toggle='popover' data-placement='right' data-content='<div id ='colorpicker2Popover'><button type='button' id='color1' class='circlebutton'></button><button type='button' id='color2' class='circlebutton'></button><button type='button' id='color3' class='circlebutton'></button></div><div><button type='button' id='color4' class='circlebutton'></button><button type='button' id='color5' class='circlebutton'></button><button type='button' id='color6' class='circlebutton'></button></div><div><button type='button' id='color7' class='circlebutton'></button><button type='button' id='color8' class='circlebutton'></button><button type='button' id='color9' class='circlebutton'></button></div>' data-html='true'></button><select class='form-control' id='dataset2Select'><option value='-1'>None</option></select></div><hr><div class='form-group'><button type='button' id='saveProjectChangesButton' class='btn btn-success col-12'>Save Changes</button></div><div class='form-group'><button type='button' id='shareProjectButton' class='btn btn-info col-12'>Share Project</button></div></form></div><div id='map' class='col-12 col-lg-12'></div>");}
+    $('#main-map-container').html('<div id="sidebar" class="col-lg-2 col-md-3 hidden-sm"> <form id="projectOptionsForm"> <div class="form-group"> <input id="projectTitleField" type="text" class="col-12"/> </div><div class="form-check"> <label class="form-check-label"> <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="dataset1"> Dataset 1 </label> </div><div class="form-check"> <label class="form-check-label"> <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="dataset2"> Dataset 2 </label> </div><div class="form-check"> <label class="form-check-label"> <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio3" value="correlation"> Correlation </label> </div><hr> <div class="form-group"> <label for="dataset1Select">Dataset 1</label> <button type="button" id="dataset1SelectButton" class="btn btn-secondary pull-right circlebutton" data-container="body" data-toggle="popover" data-placement="right" data-content="<div id=\'colorpicker1Popover\'><button type=\'button\' id=\'color1\' class=\'circlebutton\'></button><button type=\'button\' id=\'color2\' class=\'circlebutton\'></button><button type=\'button\' id=\'color3\' class=\'circlebutton\'></button></div><div><button type=\'button\' id=\'color4\' class=\'circlebutton\'></button><button type=\'button\' id=\'color5\' class=\'circlebutton\'></button><button type=\'button\' id=\'color6\' class=\'circlebutton\'></button></div><div><button type=\'button\' id=\'color7\' class=\'circlebutton\'></button><button type=\'button\' id=\'color8\' class=\'circlebutton\'></button><button type=\'button\' id=\'color9\' class=\'circlebutton\'></button></div>" data-html=\'true\'></button> <select class="form-control" id="dataset1Select"></select> </div><div class="form-group"> <label for="dataset2Select">Dataset 2</label> <button type="button" id="dataset2SelectButton" class="btn btn-secondary pull-right circlebutton" style="align-items: flex" data-container="body" data-toggle="popover" data-placement="right" data-content="<div id=\'colorpicker2Popover\'><button type=\'button\' id=\'color1\' class=\'circlebutton\'></button><button type=\'button\' id=\'color2\' class=\'circlebutton\'></button><button type=\'button\' id=\'color3\' class=\'circlebutton\'></button></div><div><button type=\'button\' id=\'color4\' class=\'circlebutton\'></button><button type=\'button\' id=\'color5\' class=\'circlebutton\'></button><button type=\'button\' id=\'color6\' class=\'circlebutton\'></button></div><div><button type=\'button\' id=\'color7\' class=\'circlebutton\'></button><button type=\'button\' id=\'color8\' class=\'circlebutton\'></button><button type=\'button\' id=\'color9\' class=\'circlebutton\'></button></div>" data-html=\'true\'></button> <select class="form-control" id="dataset2Select"><option value="-1">None</option></select> </div><hr> <div class="form-group"> <button type="button" id="saveProjectChangesButton" class="btn btn-success col-12">Save Changes</button> </div><div class="form-group"> <button type="button" id="shareProjectButton" class="btn btn-info col-12">Share Project</button> </div></form> </div><div id="map" class="col-12 col-lg-12"></div>');
+}
 
 function setupProjectInDatabase(firebase) {
     let projectTitle = $('#projectTitle').val();
