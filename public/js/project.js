@@ -65,15 +65,15 @@ $(function () {
     $('#datasetNextStepButton').on('click', () => {
         $('#newDatasetModalLabel').text("Upload your filled in template data");
         $('#newDatasetModalBody').html('' +
-            '<form id="uploadForm">' +
-            '   <input type="file" name="userDataset"/>' +
-            '   <input type="button" id="uploadFileButton" value="Upload Dataset" name="submit">' +
-            '   <input type="text"><br><span id="status"></span>' +
+            '<form id="uploadForm" class="col-12">' +
+            '   <input type="file" name="userDataset" style="width: 100%"/>' +
             '</form>');
+        $("#datasetNextStepButton").hide();
+        $("#createNewDatasetButton").removeClass('hidden').show();
 
-        $('#uploadFileButton').on("click", function () {
+
+        $('#createNewDatasetButton').on("click", function () {
             console.log("Sending file...");
-            $("#status").empty().text("File is uploading...");
 
             var formdata = new FormData($('#uploadForm')[0]);
             formdata.append('userid', curentUserID);
@@ -91,6 +91,14 @@ $(function () {
                 }
             });
         });
+    });
+
+    $('#newDatasetModal').on('hidden.bs.modal', function (e) {
+        console.log("Hidding upload ds");
+
+        $('#newDatasetModalBody').html('<a href="/downloadGlobalTemplate" target="_blank"><div class="form-group" id="downloadtemplate"><label class="col-md-12 control-label" for="singlebutton"><div class="col-md-12 center-block"> <button id="downloadtemplatebutton" name="singlebutton" class="btn btn-primary center-block"> <img src="csv.png" style = "height: 3rem; margin-left: 2px;"> <hr> <div>International Template</div> </button> </div> </label> </div> </a>');
+        $("#datasetNextStepButton").show();
+        $("#createNewDatasetButton").hide();
     });
 
 
@@ -156,7 +164,7 @@ $(function () {
             console.log(moreMenuHover);
 
             // Make sure user is not trying to select the more options button instead of opening a project
-            if(!moreMenuOpen && !moreMenuHover){
+            if (!moreMenuOpen && !moreMenuHover) {
                 setupProjectFromID($(this).attr("projectid"), socket, userDatasets);
             }
         });
@@ -200,13 +208,13 @@ $(function () {
             $('#loading').hide();
         });
     });
-    
-    $('#projectTitle').keyup(function() {
+
+    $('#projectTitle').keyup(function () {
         updateCreateProjectButton();
     });
-    
-    
-    $('#projectModalDataSetSelection').change(function(){
+
+
+    $('#projectModalDataSetSelection').change(function () {
         updateCreateProjectButton();
     });
 
@@ -217,20 +225,20 @@ $(function () {
 });
 
 
-function updateCreateProjectButton(){
+function updateCreateProjectButton() {
 
-        var empty = false;
-        $('#projectTitle').each(function() {
-            if ($(this).val() == '') {
-                empty = true;
-            }
-        });
-        
-        if (empty || $('#projectModalDataSetSelection').val() == 'select') {
-            $('#createNewProjectButton').attr('disabled', 'disabled');
-        } else {
-            $('#createNewProjectButton').removeAttr('disabled');
+    var empty = false;
+    $('#projectTitle').each(function () {
+        if ($(this).val() == '') {
+            empty = true;
         }
+    });
+
+    if (empty || $('#projectModalDataSetSelection').val() == 'select') {
+        $('#createNewProjectButton').attr('disabled', 'disabled');
+    } else {
+        $('#createNewProjectButton').removeAttr('disabled');
+    }
 
 }
 
@@ -551,8 +559,8 @@ function setupProjectFromID(id, socket, userDatasets) {
 
         function resetHighlight(e) {
             geojson.resetStyle(e.target);
-            
-            
+
+
             info.update();
         }
 
@@ -560,7 +568,7 @@ function setupProjectFromID(id, socket, userDatasets) {
             map.fitBounds(e.target.getBounds());
         }
 
-        
+
         geojson = L.geoJson(globaljson, {
             style: {
                 fillColor: "#FFFFFF",
@@ -571,15 +579,15 @@ function setupProjectFromID(id, socket, userDatasets) {
                     this.setStyle({
                         fillColor: "#FFFFFF",
                     });
-                    
+
                     info.update(layer.feature.properties);
 
                 });
-                
+
                 layer.on('mouseout', function () {
-                           
+
                     var datasetid = ""
-                    
+
                     switch (project.visibleDataset) {
                         case "dataset1":
                             datasetid = project.dataset1ID;
@@ -590,21 +598,20 @@ function setupProjectFromID(id, socket, userDatasets) {
                         case "correlation":
                             datasetid = "correlation";
                             break;
-                    }    
-                    
-                    if ($("#inlineRadio1").prop("checked")){
+                    }
+
+                    if ($("#inlineRadio1").prop("checked")) {
                         plotDataset('#dataset1Select');
-                    } else if ($("#inlineRadio2").prop("checked")){
+                    } else if ($("#inlineRadio2").prop("checked")) {
                         plotDataset('#dataset2Select');
-                    } else if ($("#inlineRadio3").prop("checked")){
+                    } else if ($("#inlineRadio3").prop("checked")) {
                         plotCorrelation()
                     }
                 });
-            }   
+            }
         }).addTo(map);
-        
-        
-        
+
+
         var info = L.control();
 
         info.onAdd = function (map) {
@@ -612,16 +619,16 @@ function setupProjectFromID(id, socket, userDatasets) {
             this.update();
             return this._div;
         };
-        
-                
+
+
         // method that we will use to update the control based on feature properties passed
         info.update = function (props) {
-            
-            
-            if (props != null){
+
+
+            if (props != null) {
                 console.log(props.iso_a3);
-            
-                let countryCode = props.iso_a3; 
+
+                let countryCode = props.iso_a3;
 
                 var datasetid = ""
 
@@ -636,23 +643,23 @@ function setupProjectFromID(id, socket, userDatasets) {
                     case "correlation":
                         datasetid = "correlation";
                         break;
-                }    
+                }
 
                 console.log(datasetid);
 
                 var dataval = ''
-                
+
                 // get the value of the hovered country in that dataset
                 for (let dataset of projectDatasets) {
                     if (datasetid === dataset.datasetid.datasetid) {
                         for (let dataPoint of dataset.data.data) {
-                            
+
                             console.log(dataPoint);
-                            
+
                             if (dataPoint.isoA3 === countryCode) {
                                 dataval = dataPoint.value;
                                 break;
-                            }   
+                            }
                         }
                     }
                     break;
@@ -660,27 +667,27 @@ function setupProjectFromID(id, socket, userDatasets) {
 
                 // Update the info box accordingly
                 this._div.innerHTML = "<div style='text-align:right; color:rgba(255,255,255,0.5); font-size:30px; line-height: 125%;'>" + (props ? '<b>' + props.name + '</b><br />' + dataval : 'Hover over a country');
-                }
+            }
         };
-/*
-        var legend = L.control({
-            position: 'bottomright'
-        });
+        /*
+         var legend = L.control({
+         position: 'bottomright'
+         });
 
-        legend.onAdd = function (map) {
+         legend.onAdd = function (map) {
 
-            var div = L.DomUtil.create('div', 'info legend'),
-                grades = [0, 100000, 2000000, 5000000, 10000000, 20000000, 50000000, 100000000],
-                labels = [];
+         var div = L.DomUtil.create('div', 'info legend'),
+         grades = [0, 100000, 2000000, 5000000, 10000000, 20000000, 50000000, 100000000],
+         labels = [];
 
-            return div;
-            
-        };
-        legend.addTo(map);
-*/
+         return div;
+
+         };
+         legend.addTo(map);
+         */
 
         info.addTo(map);
-        
+
     });
 
     // Deal with incoming dataset data
@@ -776,7 +783,7 @@ function setupProjectFromID(id, socket, userDatasets) {
                 ds1Color = '#00A3FF'
                 color = ds1Color;
                 $('#dataset1SelectButton').css("background-color", color);
-                
+
             } else {
                 ds2Color = '#FF2E00'
                 color = ds2Color;
@@ -998,7 +1005,8 @@ function setupProjectFromID(id, socket, userDatasets) {
 
 
 function clearMap() {
-    $('#main-map-container').html("<div id='sidebar' class='col-lg-2 col-md-3 hidden-sm'><form id='projectOptionsForm'><div class='form-group'><input id='projectTitleField' type='text' class='col-12' /></div><div class='form-check'><label class='form-check-label'><input class='form-check-input' type='radio' name='inlineRadioOptions' id='inlineRadio1' value='dataset1'> Dataset 1</label></div><div class='form-check'><label class='form-check-label'><input class='form-check-input' type='radio' name='inlineRadioOptions' id='inlineRadio2' value='dataset2'> Dataset 2</label></div><div class='form-check'><label class='form-check-label'><input class='form-check-input' type='radio' name='inlineRadioOptions' id='inlineRadio3' value='correlation'> Correlation</label></div><hr><div class='form-group'><label for='dataset1Select'>Dataset 1</label'<button type='button' id= 'dataset1SelectButton' class='btn btn-secondary pull-right circlebutton' data-container='body' data-toggle='popover' data-placement='right' data-content='<div id ='colorpicker1Popover'><button type='button' id='color1' class='circlebutton'></button><button type='button' id='color2' class='circlebutton'></button><button type='button' id='color3' class='circlebutton'></button></div><div><button type='button' id='color4' class='circlebutton'></button><button type='button' id='color5' class='circlebutton'></button><button type='button' id='color6' class='circlebutton'></button></div><div><button type='button' id='color7' class='circlebutton'></button><button type='button' id='color8' class='circlebutton'></button><button type='button' id='color9' class='circlebutton'></button></div>'data-html='true'></button><select class='form-control' id='dataset1Select'></select></div><div class='form-group'><label for='dataset2Select'>Dataset 2</label><button type='button' id='dataset2SelectButton' class='btn btn-secondary pull-right circlebutton' style='align-items: flex' data-container='body' data-toggle='popover' data-placement='right' data-content='<div id ='colorpicker2Popover'><button type='button' id='color1' class='circlebutton'></button><button type='button' id='color2' class='circlebutton'></button><button type='button' id='color3' class='circlebutton'></button></div><div><button type='button' id='color4' class='circlebutton'></button><button type='button' id='color5' class='circlebutton'></button><button type='button' id='color6' class='circlebutton'></button></div><div><button type='button' id='color7' class='circlebutton'></button><button type='button' id='color8' class='circlebutton'></button><button type='button' id='color9' class='circlebutton'></button></div>' data-html='true'></button><select class='form-control' id='dataset2Select'><option value='-1'>None</option></select></div><hr><div class='form-group'><button type='button' id='saveProjectChangesButton' class='btn btn-success col-12'>Save Changes</button></div><div class='form-group'><button type='button' id='shareProjectButton' class='btn btn-info col-12'>Share Project</button></div></form></div><div id='map' class='col-12 col-lg-12'></div>");}
+    $('#main-map-container').html("<div id='sidebar' class='col-lg-2 col-md-3 hidden-sm'><form id='projectOptionsForm'><div class='form-group'><input id='projectTitleField' type='text' class='col-12' /></div><div class='form-check'><label class='form-check-label'><input class='form-check-input' type='radio' name='inlineRadioOptions' id='inlineRadio1' value='dataset1'> Dataset 1</label></div><div class='form-check'><label class='form-check-label'><input class='form-check-input' type='radio' name='inlineRadioOptions' id='inlineRadio2' value='dataset2'> Dataset 2</label></div><div class='form-check'><label class='form-check-label'><input class='form-check-input' type='radio' name='inlineRadioOptions' id='inlineRadio3' value='correlation'> Correlation</label></div><hr><div class='form-group'><label for='dataset1Select'>Dataset 1</label'<button type='button' id= 'dataset1SelectButton' class='btn btn-secondary pull-right circlebutton' data-container='body' data-toggle='popover' data-placement='right' data-content='<div id ='colorpicker1Popover'><button type='button' id='color1' class='circlebutton'></button><button type='button' id='color2' class='circlebutton'></button><button type='button' id='color3' class='circlebutton'></button></div><div><button type='button' id='color4' class='circlebutton'></button><button type='button' id='color5' class='circlebutton'></button><button type='button' id='color6' class='circlebutton'></button></div><div><button type='button' id='color7' class='circlebutton'></button><button type='button' id='color8' class='circlebutton'></button><button type='button' id='color9' class='circlebutton'></button></div>'data-html='true'></button><select class='form-control' id='dataset1Select'></select></div><div class='form-group'><label for='dataset2Select'>Dataset 2</label><button type='button' id='dataset2SelectButton' class='btn btn-secondary pull-right circlebutton' style='align-items: flex' data-container='body' data-toggle='popover' data-placement='right' data-content='<div id ='colorpicker2Popover'><button type='button' id='color1' class='circlebutton'></button><button type='button' id='color2' class='circlebutton'></button><button type='button' id='color3' class='circlebutton'></button></div><div><button type='button' id='color4' class='circlebutton'></button><button type='button' id='color5' class='circlebutton'></button><button type='button' id='color6' class='circlebutton'></button></div><div><button type='button' id='color7' class='circlebutton'></button><button type='button' id='color8' class='circlebutton'></button><button type='button' id='color9' class='circlebutton'></button></div>' data-html='true'></button><select class='form-control' id='dataset2Select'><option value='-1'>None</option></select></div><hr><div class='form-group'><button type='button' id='saveProjectChangesButton' class='btn btn-success col-12'>Save Changes</button></div><div class='form-group'><button type='button' id='shareProjectButton' class='btn btn-info col-12'>Share Project</button></div></form></div><div id='map' class='col-12 col-lg-12'></div>");
+}
 
 function setupProjectInDatabase(firebase) {
     let projectTitle = $('#projectTitle').val();
