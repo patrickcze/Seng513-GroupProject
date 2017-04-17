@@ -117,7 +117,7 @@ $(function () {
     // Upload image from http://www.flaticon.com/free-icon/upload-to-cloud_109713#term=upload&page=1&position=13
     socket.on('listOfUserDatasets', (data) => {
         userDatasets = data.dataset;
-        console.log(userDatasets);
+        // console.log(userDatasets);
         for (let dataset of data.dataset) {
             //Setup the options within the modal
             let option = '<option value="' + dataset.id + '">' + dataset.name + '</option>';
@@ -158,11 +158,11 @@ $(function () {
             console.log($(this).attr("projectid"));
             // Check if the more dropdown is open
             var moreMenuOpen = $(this).find("#moreMenu").attr('aria-expanded') === "true";
-            console.log(moreMenuOpen);
+            // console.log(moreMenuOpen);
 
             // Check if the more button is being hovered
             var moreMenuHover = $(this).find("#moreMenu:hover").length >= 1;
-            console.log(moreMenuHover);
+            // console.log(moreMenuHover);
 
             // Make sure user is not trying to select the more options button instead of opening a project
             if (!moreMenuOpen && !moreMenuHover) {
@@ -449,6 +449,8 @@ function setupProjectFromID(id, socket, userDatasets) {
     let ds1Color = null;
     let ds2Color = null;
 
+    clearPlotDataset();
+
     let ds1present = false;
     let ds2present = false;
 
@@ -474,6 +476,11 @@ function setupProjectFromID(id, socket, userDatasets) {
         center: [46.938984, 2.373590],
         zoom: 4,
         preferCanvas: true
+    });
+
+    map.eachLayer(function (layer) {
+        console.log("layer");
+        map.removeLayer(layer);
     });
 
     map.zoomControl.setPosition('bottomright');
@@ -627,7 +634,7 @@ function setupProjectFromID(id, socket, userDatasets) {
 
 
             if (props != null) {
-                console.log(props.iso_a3);
+                // console.log(props.iso_a3);
 
                 let countryCode = props.iso_a3;
 
@@ -646,7 +653,7 @@ function setupProjectFromID(id, socket, userDatasets) {
                         break;
                 }
 
-                console.log(datasetid);
+                // console.log(datasetid);
 
                 var dataval = ''
 
@@ -655,7 +662,7 @@ function setupProjectFromID(id, socket, userDatasets) {
                     if (datasetid === dataset.datasetid.datasetid) {
                         for (let dataPoint of dataset.data.data) {
 
-                            console.log(dataPoint);
+                            // console.log(dataPoint);
 
                             if (dataPoint.isoA3 === countryCode) {
                                 dataval = dataPoint.value;
@@ -991,22 +998,31 @@ function setupProjectFromID(id, socket, userDatasets) {
     }
 
     function clearPlotDataset() {
-        geojson.eachLayer(function (layer) {
-            layer.setStyle({
-                fillColor: "#FFFFFF",
-                weight: 2,
-                opacity: 1,
-                color: 'white',
-                dashArray: '3',
-                fillOpacity: 0.0
+        // geojson.eachLayer(function (layer) {
+        //     layer.setStyle({
+        //         fillColor: "#FFFFFF",
+        //         weight: 2,
+        //         opacity: 1,
+        //         color: 'white',
+        //         dashArray: '3',
+        //         fillOpacity: 0.0
+        //     });
+        // });
+
+        if (map != null){
+            console.log('clear');
+
+            map.eachLayer(function (layer) {
+                map.removeLayer(layer);
             });
-        });
+        }
+
     }
 }
 
 
 function clearMap() {
-    $('#main-map-container').html("<div id='sidebar' class='col-lg-2 col-md-3 hidden-sm'><form id='projectOptionsForm'><div class='form-group'><input id='projectTitleField' type='text' class='col-12' /></div><div class='form-check'><label class='form-check-label'><input class='form-check-input' type='radio' name='inlineRadioOptions' id='inlineRadio1' value='dataset1'> Dataset 1</label></div><div class='form-check'><label class='form-check-label'><input class='form-check-input' type='radio' name='inlineRadioOptions' id='inlineRadio2' value='dataset2'> Dataset 2</label></div><div class='form-check'><label class='form-check-label'><input class='form-check-input' type='radio' name='inlineRadioOptions' id='inlineRadio3' value='correlation'> Correlation</label></div><hr><div class='form-group'><label for='dataset1Select'>Dataset 1</label'<button type='button' id= 'dataset1SelectButton' class='btn btn-secondary pull-right circlebutton' data-container='body' data-toggle='popover' data-placement='right' data-content='<div id ='colorpicker1Popover'><button type='button' id='color1' class='circlebutton'></button><button type='button' id='color2' class='circlebutton'></button><button type='button' id='color3' class='circlebutton'></button></div><div><button type='button' id='color4' class='circlebutton'></button><button type='button' id='color5' class='circlebutton'></button><button type='button' id='color6' class='circlebutton'></button></div><div><button type='button' id='color7' class='circlebutton'></button><button type='button' id='color8' class='circlebutton'></button><button type='button' id='color9' class='circlebutton'></button></div>'data-html='true'></button><select class='form-control' id='dataset1Select'></select></div><div class='form-group'><label for='dataset2Select'>Dataset 2</label><button type='button' id='dataset2SelectButton' class='btn btn-secondary pull-right circlebutton' style='align-items: flex' data-container='body' data-toggle='popover' data-placement='right' data-content='<div id ='colorpicker2Popover'><button type='button' id='color1' class='circlebutton'></button><button type='button' id='color2' class='circlebutton'></button><button type='button' id='color3' class='circlebutton'></button></div><div><button type='button' id='color4' class='circlebutton'></button><button type='button' id='color5' class='circlebutton'></button><button type='button' id='color6' class='circlebutton'></button></div><div><button type='button' id='color7' class='circlebutton'></button><button type='button' id='color8' class='circlebutton'></button><button type='button' id='color9' class='circlebutton'></button></div>' data-html='true'></button><select class='form-control' id='dataset2Select'><option value='-1'>None</option></select></div><hr><div class='form-group'><button type='button' id='saveProjectChangesButton' class='btn btn-success col-12'>Save Changes</button></div><div class='form-group'><button type='button' id='shareProjectButton' class='btn btn-info col-12'>Share Project</button></div></form></div><div id='map' class='col-12 col-lg-12'></div>");
+    $('#main-map-container').html('<div id="sidebar" class="col-lg-2 col-md-3 hidden-sm"> <form id="projectOptionsForm"> <div class="form-group"> <input id="projectTitleField" type="text" class="col-12"/> </div><div class="form-check"> <label class="form-check-label"> <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="dataset1"> Dataset 1 </label> </div><div class="form-check"> <label class="form-check-label"> <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="dataset2"> Dataset 2 </label> </div><div class="form-check"> <label class="form-check-label"> <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio3" value="correlation"> Correlation </label> </div><hr> <div class="form-group"> <label for="dataset1Select">Dataset 1</label> <button type="button" id="dataset1SelectButton" class="btn btn-secondary pull-right circlebutton" data-container="body" data-toggle="popover" data-placement="right" data-content="<div id=\'colorpicker1Popover\'><button type=\'button\' id=\'color1\' class=\'circlebutton\'></button><button type=\'button\' id=\'color2\' class=\'circlebutton\'></button><button type=\'button\' id=\'color3\' class=\'circlebutton\'></button></div><div><button type=\'button\' id=\'color4\' class=\'circlebutton\'></button><button type=\'button\' id=\'color5\' class=\'circlebutton\'></button><button type=\'button\' id=\'color6\' class=\'circlebutton\'></button></div><div><button type=\'button\' id=\'color7\' class=\'circlebutton\'></button><button type=\'button\' id=\'color8\' class=\'circlebutton\'></button><button type=\'button\' id=\'color9\' class=\'circlebutton\'></button></div>" data-html=\'true\'></button> <select class="form-control" id="dataset1Select"></select> </div><div class="form-group"> <label for="dataset2Select">Dataset 2</label> <button type="button" id="dataset2SelectButton" class="btn btn-secondary pull-right circlebutton" style="align-items: flex" data-container="body" data-toggle="popover" data-placement="right" data-content="<div id=\'colorpicker2Popover\'><button type=\'button\' id=\'color1\' class=\'circlebutton\'></button><button type=\'button\' id=\'color2\' class=\'circlebutton\'></button><button type=\'button\' id=\'color3\' class=\'circlebutton\'></button></div><div><button type=\'button\' id=\'color4\' class=\'circlebutton\'></button><button type=\'button\' id=\'color5\' class=\'circlebutton\'></button><button type=\'button\' id=\'color6\' class=\'circlebutton\'></button></div><div><button type=\'button\' id=\'color7\' class=\'circlebutton\'></button><button type=\'button\' id=\'color8\' class=\'circlebutton\'></button><button type=\'button\' id=\'color9\' class=\'circlebutton\'></button></div>" data-html=\'true\'></button> <select class="form-control" id="dataset2Select"><option value="-1">None</option></select> </div><hr> <div class="form-group"> <button type="button" id="saveProjectChangesButton" class="btn btn-success col-12">Save Changes</button> </div><div class="form-group"> <button type="button" id="shareProjectButton" class="btn btn-info col-12">Share Project</button> </div></form> </div><div id="map" class="col-12 col-lg-12"></div>');
 }
 
 function setupProjectInDatabase(firebase) {
