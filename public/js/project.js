@@ -681,6 +681,7 @@ $(function () {
             var info = L.control();
 
             info.onAdd = function (map) {
+                $(".info").remove();
                 this._div = L.DomUtil.create('div', 'info'); // create a div with a class "info"
                 this.update();
                 return this._div;
@@ -727,7 +728,7 @@ $(function () {
                     }
 
                     // Update the info box accordingly
-                    this._div.innerHTML = "<div style='text-align:right; color:rgba(255,255,255,0.5); font-size:30px; line-height: 125%;'>" + (props ? '<b>' + props.name + '</b><br />' + dataval : 'Hover over a country');
+                    this._div.innerHTML = "<div style='text-align:right; color:rgba(255,255,255,0.5); font-size:30px; line-height: 125%;'>" + (props ? '<b>' + props.name : 'Hover over a country');
                 }
             };
 
@@ -932,7 +933,7 @@ $(function () {
             if (document.getElementById('colorpicker2Popover')) {
                 $('#dataset2SelectButton').trigger('click');
             } else {
-
+                $('#dataset1SelectButton').popover('show');
             }
             console.log("color 1 is being changed!");
         });
@@ -943,7 +944,7 @@ $(function () {
             if (document.getElementById('colorpicker1Popover')) {
                 $('#dataset1SelectButton').trigger('click');
             } else {
-                //
+                $('#dataset2SelectButton').popover('show');
             }
             console.log("color 2 is being changed!");
         });
