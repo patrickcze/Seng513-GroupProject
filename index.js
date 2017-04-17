@@ -73,12 +73,15 @@ io.on('connection', function (socket) {
             let datasetIDs = [];
             let datasetDetials = [];
 
-            ref.ref('users/' + uid + '/datasets').once('value').then(function (snapshot) {
+            ref.ref('users/' + uid + '/datasets').on('value', function (snapshot) {
+                console.log(snapshot.val());
+            });
+
+            ref.ref('users/' + uid + '/datasets').on('value', function (snapshot) {
                 let x = snapshot.val();
                 for (let item in x) {
                     datasetIDs.push(item);
                 }
-            }).then(function () {
                 for (i in datasetIDs) {
                     let datasetID = datasetIDs[i];
 

@@ -4,7 +4,7 @@ $(function () {
     // Allow popovers in bootstrap
     $('[data-toggle="popover"]').popover();
 
-    let userDatasets = null;
+    let userDatasets = [];
     let curentUserID = null;
 
     var urlParams;
@@ -117,18 +117,38 @@ $(function () {
     // Get a list of the user data sets so that this information can be prefilled within the modal
     // Upload image from http://www.flaticon.com/free-icon/upload-to-cloud_109713#term=upload&page=1&position=13
     socket.on('listOfUserDatasets', (data) => {
-        userDatasets = data.dataset;
-
-        // console.log(userDatasets);
         for (let dataset of data.dataset) {
-            //Setup the options within the modal
-            let option = '<option value="' + dataset.id + '">' + dataset.name + '</option>';
-            $("#projectModalDataSetSelection").append(option);
-            //Setup the cards within the datasetCardArea
-            let card = '<div class="card dataset-card" style="width: 20rem; height: 15rem;"><div class="card-block"><div class="dropdown"><button class="btn moreoptions dropdown-toggle" type="button" id="moreMenu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button><ul class="dropdown-menu dropdown-menu-right" aria-labelledby="moreMenu"><li><a href="#" class="standardMenuOption">Rename</a></li><li><a href="#" class="deleteMenuOption">Delete</a></li></ul></div></p></div><h6 class="datacard-title">' + dataset.name + '</h6></div>';
-            $('#datasetCardArea').append(card);
+            if (userDatasets.length === 0){
+                userDatasets.push(dataset);
+
+                //Setup the options within the modal
+                let option = '<option value="' + dataset.id + '">' + dataset.name + '</option>';
+                $("#projectModalDataSetSelection").append(option);
+                //Setup the cards within the datasetCardArea
+                let card = '<div class="card dataset-card" style="width: 20rem; height: 15rem;"><div class="card-block"><div class="dropdown"><button class="btn moreoptions dropdown-toggle" type="button" id="moreMenu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button><ul class="dropdown-menu dropdown-menu-right" aria-labelledby="moreMenu"><li><a href="#" class="standardMenuOption">Rename</a></li><li><a href="#" class="deleteMenuOption">Delete</a></li></ul></div></p></div><h6 class="datacard-title">' + dataset.name + '</h6></div>';
+                $('#datasetCardArea').append(card);
+            }else {
+                let isNew = true;
+
+                for (dataset2 of userDatasets) {
+                    if (dataset.id === dataset2.id) {
+                        isNew = false;
+                    }
+                }
+
+                if (isNew){
+                    userDatasets.push(dataset);
+
+                    //Setup the options within the modal
+                    let option = '<option value="' + dataset.id + '">' + dataset.name + '</option>';
+                    $("#projectModalDataSetSelection").append(option);
+                    //Setup the cards within the datasetCardArea
+                    let card = '<div class="card dataset-card" style="width: 20rem; height: 15rem;"><div class="card-block"><div class="dropdown"><button class="btn moreoptions dropdown-toggle" type="button" id="moreMenu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button><ul class="dropdown-menu dropdown-menu-right" aria-labelledby="moreMenu"><li><a href="#" class="standardMenuOption">Rename</a></li><li><a href="#" class="deleteMenuOption">Delete</a></li></ul></div></p></div><h6 class="datacard-title">' + dataset.name + '</h6></div>';
+                    $('#datasetCardArea').append(card);
+                }
+            }
         }
-    })
+    });
 
 
     //Get a list of the users projects
