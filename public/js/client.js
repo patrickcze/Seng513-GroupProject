@@ -219,11 +219,12 @@ $(function () {
 
         function style(feature) {
             return {
-                // fillColor: getColor(feature.properties.pop_est),
+                fillColor: "white",
                 weight: 0,
                 opacity: 1,
-                color: 'white',
-                fillOpacity: 0.0
+                color: '#242426',
+                dashArray: '0',
+                fillOpacity: 0.66
             };
         }
 
@@ -231,10 +232,11 @@ $(function () {
             var layer = e.target;
 
             layer.setStyle({
-                weight: 1,
-                color: '#666',
+                weight: 0,
+                color: 'black',
                 dashArray: '',
-                fillOpacity: 0.7
+                fillOpacity: 0.66,
+                fillColor: "white"
             });
 
             if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
@@ -246,12 +248,15 @@ $(function () {
         function resetHighlight(e) {
             // geojson.resetStyle(e.target);
             e.target.setStyle({
-                weight: 2,
+                fillColor: "white",
+                weight: 0,
                 opacity: 1,
-                color: 'white',
-                dashArray: '3'
+                color: '#242426',
+                dashArray: '0',
+                fillOpacity: 0.66
             });
 
+            colorDataset("#f", "#00FF96");
             info.update();
         }
 
@@ -272,7 +277,7 @@ $(function () {
             onEachFeature: onEachFeature
         }).addTo(map);
 
-        colorDataset("#FF2E00", "#00FF96");
+        colorDataset("#f", "#00FF96");
 
         var info = L.control();
 
@@ -320,8 +325,7 @@ $(function () {
             let numberOfItems = 10;
             let rainbow = new Rainbow();
             rainbow.setNumberRange(1, numberOfItems);
-            rainbow.setSpectrum("#FF2E00", "#FFAE00", "#00FF96", "#FF0097");
-
+            rainbow.setSpectrum("#808080", "#606060", "#404040", "#202020")
             let colors = [];
             let cutPoints = [];
 
@@ -379,11 +383,11 @@ $(function () {
 
                 layer.setStyle({
                     fillColor: color,
-                    weight: 2,
+                    weight: 0,
                     opacity: 1,
-                    color: 'white',
-                    dashArray: '3',
-                    fillOpacity: 0.7
+                    color: '#242426',
+                    dashArray: '0',
+                    fillOpacity: 0.66
                 });
             });
         }
