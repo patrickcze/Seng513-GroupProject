@@ -235,7 +235,7 @@ $(function () {
                 weight: 0,
                 color: 'black',
                 dashArray: '',
-                fillOpacity: 0.7,
+                fillOpacity: 0.66,
                 fillColor: "white"
             });
 

@@ -255,6 +255,9 @@ function setupViewOnlyProject(id, socket) {
     let geojson = null;
     let datasetToDisplay = null;
 
+
+    
+    
     let projectDatasets = [];
 
     $('#logoutUserBtn').addClass('collapse');
@@ -292,13 +295,14 @@ function setupViewOnlyProject(id, socket) {
         $("#projectTitleField").val(project.title);
         $('#main-map-container').removeClass('hidden');
 
+        
         //Setup the Map
         map = L.map('map', {
             center: [46.938984, 2.373590],
             zoom: 4,
             preferCanvas: true
         });
-
+            console.log("AHHHH");
 
         map.zoomControl.setPosition('bottomright');
 
@@ -472,6 +476,7 @@ function setupProjectFromID(id, socket, userDatasets) {
 
     $('#inlineRadio1').prop("checked", true);
 
+    
     map = null;
 
     //Setup the Map
@@ -481,6 +486,8 @@ function setupProjectFromID(id, socket, userDatasets) {
         preferCanvas: true
     });
 
+    
+    
     map.eachLayer(function (layer) {
         console.log("layer");
         map.removeLayer(layer);
@@ -876,7 +883,7 @@ function setupProjectFromID(id, socket, userDatasets) {
         if (document.getElementById('colorpicker2Popover')) {
             $('#dataset2SelectButton').trigger('click');
         } else {
-
+            $('#dataset1SelectButton').popover('show');
         }
         console.log("color 1 is being changed!");
     });
@@ -887,7 +894,7 @@ function setupProjectFromID(id, socket, userDatasets) {
         if (document.getElementById('colorpicker1Popover')) {
             $('#dataset1SelectButton').trigger('click');
         } else {
-            //
+            $('#dataset2SelectButton').popover('show');
         }
         console.log("color 2 is being changed!");
     });
