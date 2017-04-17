@@ -41,12 +41,13 @@ io.on('connection', function (socket) {
             let projectIDs = [];
             let projects = [];
 
-            ref.ref('users/' + uid + '/projects').once('value').then(function (snapshot) {
+            ref.ref('users/' + uid + '/projects').on('value', function (snapshot) {
+                console.log("something changed");
                 let x = snapshot.val();
                 for (let item in x) {
                     projectIDs.push(item);
                 }
-            }).then(function () {
+
                 for (let projectID of projectIDs) {
                     ref.ref('projects/' + projectID).once('value').then((snapshot) => {
                         let result = snapshot.val();

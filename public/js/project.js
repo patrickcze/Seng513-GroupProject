@@ -5,6 +5,7 @@ $(function () {
     $('[data-toggle="popover"]').popover();
 
     let userDatasets = [];
+    let userProjects = [];
     let curentUserID = null;
 
     var urlParams;
@@ -152,11 +153,30 @@ $(function () {
     //Get a list of the users projects
     socket.on('listOfUserProjects', (data) => {
         for (let project of data.projects) {
-            let screenShotURL = "northamerica.png";
+            if (userProjects.length === 0){
+                userProjects.push(project);
+                addProjectCardViews(project);
+            } else {
+                let isNewProject = true;
+
+                for(existingProject of userProjects){
+                    if(existingProject.id === project.id){
+                        isNewProject = false;
+                    }
+                }
+
+                if (isNewProject){
+                    userProjects.push(project);
+                    addProjectCardViews(project);
+                }
+            }
+        }
+
+        function addProjectCardViews(project) {
+            let screenShotURL = "../img/northamerica.png";
             if (project.projectScreenshotURL) {
                 screenShotURL = project.projectScreenshotURL;
             }
-
             let card = '<div class="card project-card" style="width: 20rem; height: 15rem;" projectid="' + project.id + '"> <img class="card-img-top" src="' + screenShotURL + '" alt="Card image" style="height:12rem; width:19.9rem; position:absolute;"><div class="card-block"><div class="dropdown"><button class="btn moreoptions dropdown-toggle" type="button" id="moreMenu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button><ul class="dropdown-menu dropdown-menu-right" aria-labelledby="moreMenu"><li><a href="#" class="standardMenuOption">Rename</a></li><li><a href="#" class="deleteMenuOption">Delete</a></li></ul></div></p></div><h6 class="card-title">' + project.title + '</h6></div>';
             $('#mapCardArea').append(card);
         }
@@ -226,6 +246,7 @@ $(function () {
 
         promiseandkey[0].then(() => {
             setupProjectFromID(promiseandkey[1], socket, userDatasets);
+            socket.emit('getListOfUserProjects', {uid: curentUserID});
             $('#loading').hide();
         });
     });
