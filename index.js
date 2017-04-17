@@ -38,22 +38,34 @@ io.on('connection', function (socket) {
 
         if (uid) {
             let ref = firebase.database();
-            let projectIDs = [];
-            let projects = [];
 
             ref.ref('users/' + uid + '/projects').on('value', function (snapshot) {
-                console.log("something changed");
+                let projects = [];
+                let projectIDs = [];
+
                 let x = snapshot.val();
                 for (let item in x) {
                     projectIDs.push(item);
                 }
 
                 for (let projectID of projectIDs) {
-                    ref.ref('projects/' + projectID).once('value').then((snapshot) => {
+                    ref.ref('projects/' + projectID).on('value', (snapshot) => {
                         let result = snapshot.val();
                         result['id'] = snapshot.key;
 
-                        projects.push(result);
+                        console.log("Project changed");
+
+                        if (projects.length === projectIDs.length) {
+                            let index = projectIDs.indexOf(result.id);
+                            if (index !== -1){
+                                projects[index] = result;
+                            }
+                        } else {
+                            projects.push(result);
+                        }
+
+                        // console.log(projectIDs.indexOf(result.id));
+
 
                         if (projects.length === projectIDs.length) {
                             socket.emit('listOfUserProjects', {projects: projects});
