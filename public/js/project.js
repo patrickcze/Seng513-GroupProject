@@ -679,7 +679,7 @@ function setupProjectFromID(id, socket, userDatasets) {
                 }
 
                 // Update the info box accordingly
-                this._div.innerHTML = "<div style='text-align:right; color:rgba(255,255,255,0.5); font-size:30px; line-height: 125%;'>" + (props ? '<b>' + props.name + '</b><br />' + dataval : 'Hover over a country');
+                this._div.innerHTML = "<div style='text-align:right; color:rgba(255,255,255,0.5); font-size:30px; line-height: 125%;'>" + (props ? '<b>' + props.name : 'Hover over a country');
             }
         };
 
