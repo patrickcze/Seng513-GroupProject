@@ -74,10 +74,6 @@ io.on('connection', function (socket) {
             let datasetDetials = [];
 
             ref.ref('users/' + uid + '/datasets').on('value', function (snapshot) {
-                console.log(snapshot.val());
-            });
-
-            ref.ref('users/' + uid + '/datasets').on('value', function (snapshot) {
                 let x = snapshot.val();
                 for (let item in x) {
                     datasetIDs.push(item);
