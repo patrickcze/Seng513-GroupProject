@@ -23,8 +23,6 @@ $(function () {
             urlParams[decode(match[1])] = decode(match[2]);
     })();
 
-    console.log(urlParams);
-
     //Initialize Socket Connection
     var socket = io();
 
@@ -44,7 +42,6 @@ $(function () {
         if (urlParams.projectid) {
             setupViewOnlyProject(urlParams.projectid, socket);
         } else if (firebaseUser) {
-            console.log(firebaseUser);
             curentUserID = firebaseUser.uid;
             //Redirect to the maps page
 
@@ -74,13 +71,9 @@ $(function () {
         $("#createNewDatasetButton").removeClass('hidden').show();
 
         $('#createNewDatasetButton').on("click", function () {
-            console.log("Sending file...");
-
             var formdata = new FormData($('#uploadForm')[0]);
             formdata.append('userid', curentUserID);
             formdata.append('datasetname', $('#newDatasetName').val());
-
-            console.log(formdata);
 
             $.ajax({
                 url: "/api/dataset",
@@ -89,7 +82,6 @@ $(function () {
                 processData: false,
                 contentType: false,
                 success: function (res) {
-                    console.log(res);
                     $('#newDatasetModal').modal('hide');
                 }
             });
@@ -97,8 +89,6 @@ $(function () {
     });
 
     $('#newDatasetModal').on('hidden.bs.modal', function (e) {
-        console.log("Hidding upload ds");
-
         $('#newDatasetModalBody').html('<a href="/downloadGlobalTemplate" target="_blank"><div class="form-group" id="downloadtemplate"><label class="col-md-12 control-label" for="singlebutton"><div class="col-md-12 center-block"> <button id="downloadtemplatebutton" name="singlebutton" class="btn btn-primary center-block"> <img src="csv.png" style = "height: 3rem; margin-left: 2px;"> <hr> <div>International Template</div> </button> </div> </label> </div> </a>');
         $("#datasetNextStepButton").show();
         $("#createNewDatasetButton").hide();
@@ -153,7 +143,6 @@ $(function () {
     //Get a list of the users projects
     socket.on('listOfUserProjects', (data) => {
         for (let project of data.projects) {
-            console.log(project);
             if (userProjects.length === 0) {
                 userProjects.push(project);
                 addProjectCardViews(project);
@@ -179,7 +168,6 @@ $(function () {
                 }
 
                 if (projectChanged){
-                    console.log("projectChanged");
                     let screenShotURL = "../img/northamerica.png";
                     if (project.projectScreenshotURL) {
                         screenShotURL = project.projectScreenshotURL;
@@ -213,15 +201,11 @@ $(function () {
         $('#loading').hide();
 
         $(".project-card").click(function () {
-            console.log("Handler for .click() called.");
-            console.log($(this).attr("projectid"));
             // Check if the more dropdown is open
             var moreMenuOpen = $(this).find("#moreMenu").attr('aria-expanded') === "true";
-            // console.log(moreMenuOpen);
 
             // Check if the more button is being hovered
             var moreMenuHover = $(this).find("#moreMenu:hover").length >= 1;
-            // console.log(moreMenuHover);
 
             // Make sure user is not trying to select the more options button instead of opening a project
             if (!moreMenuOpen && !moreMenuHover) {
@@ -341,10 +325,6 @@ $(function () {
                     break;
             }
 
-            console.log(datasetToDisplay);
-
-            console.log('PROJECT:', data);
-
             $("#projectTitleField").val(project.title);
             $('#main-map-container').removeClass('hidden');
 
@@ -377,8 +357,6 @@ $(function () {
 
         // Draw the global geojson map
         socket.on('globalGeoJSON', (globaljson) => {
-            console.log(globaljson);
-
             geojson = L.geoJson(globaljson, {
                 style: {
                     fillColor: "#FFFFFF",
@@ -388,7 +366,6 @@ $(function () {
         });
 
         socket.on('setDatasetViewOnly', (dataset) => {
-            console.log(dataset);
             projectDatasets.push(dataset);
 
             if (dataset.datasetid.datasetid === datasetToDisplay) {
@@ -398,7 +375,6 @@ $(function () {
 
         //Do something when a color is selected for a given dataset
         $('.circlebutton').on('click', () => {
-            console.log("click");
         });
 
         function plotCorrelation() {
@@ -537,7 +513,6 @@ $(function () {
         });
 
         map.eachLayer(function (layer) {
-            console.log("layer");
             map.removeLayer(layer);
         });
 
@@ -552,7 +527,6 @@ $(function () {
 
         socket.on('setProjectWithId', (data) => {
             project = data;
-            console.log('PROJECT:', data);
 
             $("#projectTitleField").val(project.title);
 
@@ -590,7 +564,6 @@ $(function () {
             socket.emit('getGlobalGeoJSON');
 
             for (i in project.datasetIDs) {
-                console.log(project.datasetIDs[i]);
                 socket.emit('getDatasetWithID', {datasetid: project.datasetIDs[i], viewOnly: false});
             }
         });
@@ -606,8 +579,6 @@ $(function () {
 
         // Draw the global geojson map
         socket.on('globalGeoJSON', (globaljson) => {
-            console.log(globaljson);
-
             function highlightFeature(e) {
                 var layer = e.target;
 
@@ -690,8 +661,6 @@ $(function () {
             // method that we will use to update the control based on feature properties passed
             info.update = function (props) {
                 if (props != null) {
-                    // console.log(props.iso_a3);
-
                     let countryCode = props.iso_a3;
 
                     var datasetid = "";
@@ -715,9 +684,6 @@ $(function () {
                     for (let dataset of projectDatasets) {
                         if (datasetid === dataset.datasetid.datasetid) {
                             for (let dataPoint of dataset.data.data) {
-
-                                // console.log(dataPoint);
-
                                 if (dataPoint.isoA3 === countryCode) {
                                     dataval = dataPoint.value;
                                     break;
@@ -738,7 +704,6 @@ $(function () {
 
         // Deal with incoming dataset data
         socket.on('setDataset', (dataset) => {
-            console.log(dataset);
             projectDatasets.push(dataset);
 
             if (dataset.datasetid.datasetid === project.dataset1ID) {
@@ -757,7 +722,6 @@ $(function () {
 
             if ($('#inlineRadio3').prop("checked")) {
                 for (dataset of projectDatasets) {
-                    console.log(dataset);
                     if (dataset.datasetid.datasetid === $("#dataset1Select").val()) {
                         ds1present = true;
                     } else if (dataset.datasetid.datasetid === $("#dataset2Select").val()) {
@@ -885,10 +849,7 @@ $(function () {
             let img_dataurl = c.toDataURL("image/png");
 
             storageRef.putString(img_dataurl, 'data_url').then(function (snapshot) {
-                console.log('Uploaded a data_url string!');
-
                 projectData.projectScreenshotURL = snapshot.downloadURL;
-                console.log(projectData);
 
                 socket.emit('saveProjectDetailsInDB', projectData);
                 $('#loading').hide();
@@ -935,7 +896,6 @@ $(function () {
             } else {
                 $('#dataset1SelectButton').popover('show');
             }
-            console.log("color 1 is being changed!");
         });
 
         // When Data Set 2's color is being set
@@ -946,7 +906,6 @@ $(function () {
             } else {
                 $('#dataset2SelectButton').popover('show');
             }
-            console.log("color 2 is being changed!");
         });
 
         // When a color is being changed
@@ -955,7 +914,6 @@ $(function () {
 
             let color = $(this).css("background-color");
             $(this).css("border-color", "white");
-            console.log(color);
 
             $('#dataset1SelectButton').popover('hide');
             $('#dataset2SelectButton').popover('hide');
@@ -1043,26 +1001,6 @@ $(function () {
         }
 
         function clearPlotDataset() {
-            // geojson.eachLayer(function (layer) {
-            //     layer.setStyle({
-            //         fillColor: "#FFFFFF",
-            //         weight: 2,
-            //         opacity: 1,
-            //         color: 'white',
-            //         dashArray: '3',
-            //         fillOpacity: 0.0
-            //     });
-            // });
-
-            // if (map != null){
-            //     console.log('clear');
-            //
-            //     map.eachLayer(function (layer) {
-            //         map.removeLayer(layer);
-            //     });
-            // }
-
-
         }
     }
 
@@ -1075,9 +1013,7 @@ $(function () {
         let projectTitle = $('#projectTitle').val();
         let datasetID = $('#projectModalDataSetSelection').val();
         let currentUserID = firebase.auth().currentUser.uid;
-
-        console.log(projectTitle, datasetID);
-
+        
         // A project entry.
         var projectPost = {
             title: projectTitle,
