@@ -66,17 +66,18 @@ $(function () {
         $('#newDatasetModalLabel').text("Upload your filled in template data");
         $('#newDatasetModalBody').html('' +
             '<form id="uploadForm" class="col-12">' +
-            '   <input type="file" name="userDataset" style="width: 100%"/>' +
+            '   <input type="text" id="newDatasetName" class="col-12 form-control" placeholder="Name your dataset..."/>' +
+            '   <input type="file" name="userDataset" class="col-12 form-control-file"/>' +
             '</form>');
         $("#datasetNextStepButton").hide();
         $("#createNewDatasetButton").removeClass('hidden').show();
-
 
         $('#createNewDatasetButton').on("click", function () {
             console.log("Sending file...");
 
             var formdata = new FormData($('#uploadForm')[0]);
             formdata.append('userid', curentUserID);
+            formdata.append('datasetname', $('#newDatasetName').val());
 
             console.log(formdata);
 

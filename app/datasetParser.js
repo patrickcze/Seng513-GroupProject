@@ -1,5 +1,5 @@
 module.exports = {
-    uploadJSONtoFirebase: function (userID, jsonData) {
+    uploadJSONtoFirebase: function (userID, datasetname, jsonData) {
         //setup connecyion to fireabse
         var firebase = require('firebase');
 
@@ -7,7 +7,7 @@ module.exports = {
         let newDatasetKey = firebase.database().ref('datasets').push().key;
 
         let datasetDetails = {
-            name: "Something",
+            name: datasetname,
             userID: userID
         };
 

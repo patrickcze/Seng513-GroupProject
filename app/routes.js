@@ -12,7 +12,10 @@ router.post('/api/dataset', upload.any(), function (req, res, next) {
     //Check if we have a userid associated with the file
     if (req.body.userid) {
         let userid = req.body.userid;
+        let dsName = req.body.datasetname;
         let csvFilePath = req.files[0].path;
+
+        console.log(userid, dsName);
 
         let csvData = [];
 
@@ -21,7 +24,7 @@ router.post('/api/dataset', upload.any(), function (req, res, next) {
             csvData.push(jsonObj);
         }).on('done', (error) => {
             //Once we have all the csv data as json upload to firabse
-            datasetParser.uploadJSONtoFirebase(userid, csvData);
+            datasetParser.uploadJSONtoFirebase(userid,dsName,csvData);
 
             //Delete the uploaded file after the data is in firebase
             fs.unlink(csvFilePath, function(err) {
