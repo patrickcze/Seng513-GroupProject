@@ -302,11 +302,6 @@ function setupViewOnlyProject(id, socket) {
 
         map.zoomControl.setPosition('bottomright');
 
-<<<<<<< HEAD
-        
-=======
-
->>>>>>> Develop
         L.tileLayer('http://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="http://cartodb.com/attributions">CartoDB</a>'
         }).addTo(map);
@@ -562,15 +557,9 @@ function setupProjectFromID(id, socket, userDatasets) {
             var layer = e.target;
 
             layer.setStyle({
-<<<<<<< HEAD
                 weight: 0,
                 dashArray: '0',
                 fillOpacity: 0.66
-=======
-                weight: 3,
-                dashArray: '',
-                fillOpacity: 0.7
->>>>>>> Develop
             });
 
             if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
@@ -648,7 +637,6 @@ function setupProjectFromID(id, socket, userDatasets) {
                 // console.log(props.iso_a3);
 
                 let countryCode = props.iso_a3;
-
                 var datasetid = "";
 
                 // get the dataset id
@@ -997,18 +985,6 @@ function setupProjectFromID(id, socket, userDatasets) {
     }
 
     function clearPlotDataset() {
-<<<<<<< HEAD
-        geojson.eachLayer(function (layer) {
-            layer.setStyle({
-                fillColor: "#FFFFFF",
-                weight: 0,
-                opacity: 1,
-                color: 'white',
-                dashArray: '0',
-                fillOpacity: 0.66
-            });
-        });
-=======
         // geojson.eachLayer(function (layer) {
         //     layer.setStyle({
         //         fillColor: "#FFFFFF",
@@ -1027,9 +1003,6 @@ function setupProjectFromID(id, socket, userDatasets) {
         //         map.removeLayer(layer);
         //     });
         // }
-
-
->>>>>>> Develop
     }
 }
 
