@@ -53,8 +53,6 @@ io.on('connection', function (socket) {
                         let result = snapshot.val();
                         result['id'] = snapshot.key;
 
-                        console.log("Project changed");
-
                         if (projects.length === projectIDs.length) {
                             let index = projectIDs.indexOf(result.id);
                             if (index !== -1){
@@ -63,9 +61,6 @@ io.on('connection', function (socket) {
                         } else {
                             projects.push(result);
                         }
-
-                        // console.log(projectIDs.indexOf(result.id));
-
 
                         if (projects.length === projectIDs.length) {
                             socket.emit('listOfUserProjects', {projects: projects});
@@ -149,8 +144,6 @@ io.on('connection', function (socket) {
     socket.on('getProjectWithId', (id) => {
         if (id) {
             let ref = firebase.database();
-
-            console.log(id);
 
             ref.ref('projects/' + id).once('value').then(function (snapshot) {
                 let project = snapshot.val();
