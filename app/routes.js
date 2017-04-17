@@ -14,9 +14,6 @@ router.post('/api/dataset', upload.any(), function (req, res, next) {
         let userid = req.body.userid;
         let dsName = req.body.datasetname;
         let csvFilePath = req.files[0].path;
-
-        console.log(userid, dsName);
-
         let csvData = [];
 
         //Convert csv into json object
