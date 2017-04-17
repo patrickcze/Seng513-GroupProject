@@ -402,11 +402,11 @@ function setupViewOnlyProject(id, socket) {
 
                     layer.setStyle({
                         fillColor: color,
-                        weight: 2,
+                        weight: 0,
                         opacity: 1,
-                        color: 'white',
-                        dashArray: '3',
-                        fillOpacity: 0.7
+                        color: '#242426',
+                        dashArray: '0',
+                        fillOpacity: 0.66
                     });
                 }
             }
@@ -525,10 +525,9 @@ function setupProjectFromID(id, socket, userDatasets) {
             var layer = e.target;
 
             layer.setStyle({
-                weight: 3,
-                //color: '#666',
-                dashArray: '',
-                fillOpacity: 0.7
+                weight: 0,
+                dashArray: '0',
+                fillOpacity: 0.66
             });
 
             if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
@@ -973,11 +972,11 @@ function setupProjectFromID(id, socket, userDatasets) {
         geojson.eachLayer(function (layer) {
             layer.setStyle({
                 fillColor: "#FFFFFF",
-                weight: 2,
+                weight: 0,
                 opacity: 1,
                 color: 'white',
-                dashArray: '3',
-                fillOpacity: 0.0
+                dashArray: '0',
+                fillOpacity: 0.66
             });
         });
     }

@@ -219,11 +219,12 @@ $(function () {
 
         function style(feature) {
             return {
-                // fillColor: getColor(feature.properties.pop_est),
+                fillColor: white,
                 weight: 0,
                 opacity: 1,
-                color: 'white',
-                fillOpacity: 0.0
+                color: '#242426',
+                dashArray: '0',
+                fillOpacity: 0.66
             };
         }
 
@@ -379,11 +380,11 @@ $(function () {
 
                 layer.setStyle({
                     fillColor: color,
-                    weight: 2,
+                    weight: 0,
                     opacity: 1,
-                    color: 'white',
-                    dashArray: '3',
-                    fillOpacity: 0.7
+                    color: '#242426',
+                    dashArray: '0',
+                    fillOpacity: 0.66
                 });
             });
         }
