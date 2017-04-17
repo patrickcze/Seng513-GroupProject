@@ -301,7 +301,7 @@ function setupViewOnlyProject(id, socket) {
         map.zoomControl.setPosition('bottomright');
 
 
-        L.tileLayer('http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png', {
+        L.tileLayer('http://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="http://cartodb.com/attributions">CartoDB</a>'
         }).addTo(map);
 
@@ -471,6 +471,8 @@ function setupProjectFromID(id, socket, userDatasets) {
 
     $('#inlineRadio1').prop("checked", true);
 
+    map = null;
+
     //Setup the Map
     map = L.map('map', {
         center: [46.938984, 2.373590],
@@ -628,17 +630,14 @@ function setupProjectFromID(id, socket, userDatasets) {
             return this._div;
         };
 
-
         // method that we will use to update the control based on feature properties passed
         info.update = function (props) {
-
-
             if (props != null) {
                 // console.log(props.iso_a3);
 
                 let countryCode = props.iso_a3;
 
-                var datasetid = ""
+                var datasetid = "";
 
                 // get the dataset id
                 switch (project.visibleDataset) {
@@ -653,9 +652,7 @@ function setupProjectFromID(id, socket, userDatasets) {
                         break;
                 }
 
-                // console.log(datasetid);
-
-                var dataval = ''
+                var dataval = '';
 
                 // get the value of the hovered country in that dataset
                 for (let dataset of projectDatasets) {
@@ -677,22 +674,6 @@ function setupProjectFromID(id, socket, userDatasets) {
                 this._div.innerHTML = "<div style='text-align:right; color:rgba(255,255,255,0.5); font-size:30px; line-height: 125%;'>" + (props ? '<b>' + props.name + '</b><br />' + dataval : 'Hover over a country');
             }
         };
-        /*
-         var legend = L.control({
-         position: 'bottomright'
-         });
-
-         legend.onAdd = function (map) {
-
-         var div = L.DomUtil.create('div', 'info legend'),
-         grades = [0, 100000, 2000000, 5000000, 10000000, 20000000, 50000000, 100000000],
-         labels = [];
-
-         return div;
-
-         };
-         legend.addTo(map);
-         */
 
         info.addTo(map);
 
@@ -778,6 +759,7 @@ function setupProjectFromID(id, socket, userDatasets) {
     function plotDataset(datasetSelector) {
         let datasetid = $(datasetSelector).val();
         let color = null;
+        let datasetFound = false;
 
         if (datasetSelector === "#dataset1Select") {
             color = ds1Color;
@@ -804,8 +786,13 @@ function setupProjectFromID(id, socket, userDatasets) {
         } else {
             for (let dataset of projectDatasets) {
                 if (datasetid === dataset.datasetid.datasetid) {
+                    datasetFound = true;
                     colorDataset(dataset, "#242426", color);
                 }
+            }
+            if (!datasetFound){
+                $('#loading').show();
+                socket.emit('getDatasetWithID', {datasetid: $('#dataset1Select').val(), viewOnly: false});
             }
         }
     }
@@ -1009,13 +996,14 @@ function setupProjectFromID(id, socket, userDatasets) {
         //     });
         // });
 
-        if (map != null){
-            console.log('clear');
+        // if (map != null){
+        //     console.log('clear');
+        //
+        //     map.eachLayer(function (layer) {
+        //         map.removeLayer(layer);
+        //     });
+        // }
 
-            map.eachLayer(function (layer) {
-                map.removeLayer(layer);
-            });
-        }
 
     }
 }
