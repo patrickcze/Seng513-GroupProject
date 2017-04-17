@@ -31,10 +31,12 @@ router.post('/api/dataset', upload.any(), function (req, res, next) {
                 if (err) {
                     return console.error(err);
                 }
+                res.sendStatus(200, "SUCCESS");
             });
         });
+    } else {
+        res.end('Missing user id');
     }
-    res.end();
 });
 
 router.get('/', function (req, res) {

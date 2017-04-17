@@ -89,6 +89,7 @@ $(function () {
                 contentType: false,
                 success: function (res) {
                     console.log(res);
+                    $('#newDatasetModal').modal('hide');
                 }
             });
         });
@@ -117,6 +118,7 @@ $(function () {
     // Upload image from http://www.flaticon.com/free-icon/upload-to-cloud_109713#term=upload&page=1&position=13
     socket.on('listOfUserDatasets', (data) => {
         userDatasets = data.dataset;
+
         // console.log(userDatasets);
         for (let dataset of data.dataset) {
             //Setup the options within the modal
