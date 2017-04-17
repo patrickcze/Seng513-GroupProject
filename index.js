@@ -38,21 +38,34 @@ io.on('connection', function (socket) {
 
         if (uid) {
             let ref = firebase.database();
-            let projectIDs = [];
-            let projects = [];
 
-            ref.ref('users/' + uid + '/projects').once('value').then(function (snapshot) {
+            ref.ref('users/' + uid + '/projects').on('value', function (snapshot) {
+                let projects = [];
+                let projectIDs = [];
+
                 let x = snapshot.val();
                 for (let item in x) {
                     projectIDs.push(item);
                 }
-            }).then(function () {
+
                 for (let projectID of projectIDs) {
-                    ref.ref('projects/' + projectID).once('value').then((snapshot) => {
+                    ref.ref('projects/' + projectID).on('value', (snapshot) => {
                         let result = snapshot.val();
                         result['id'] = snapshot.key;
 
-                        projects.push(result);
+                        console.log("Project changed");
+
+                        if (projects.length === projectIDs.length) {
+                            let index = projectIDs.indexOf(result.id);
+                            if (index !== -1){
+                                projects[index] = result;
+                            }
+                        } else {
+                            projects.push(result);
+                        }
+
+                        // console.log(projectIDs.indexOf(result.id));
+
 
                         if (projects.length === projectIDs.length) {
                             socket.emit('listOfUserProjects', {projects: projects});
@@ -73,12 +86,11 @@ io.on('connection', function (socket) {
             let datasetIDs = [];
             let datasetDetials = [];
 
-            ref.ref('users/' + uid + '/datasets').once('value').then(function (snapshot) {
+            ref.ref('users/' + uid + '/datasets').on('value', function (snapshot) {
                 let x = snapshot.val();
                 for (let item in x) {
                     datasetIDs.push(item);
                 }
-            }).then(function () {
                 for (i in datasetIDs) {
                     let datasetID = datasetIDs[i];
 
